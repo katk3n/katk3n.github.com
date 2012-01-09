@@ -4,7 +4,7 @@
   <title><![CDATA[ApprEngineer.log]]></title>
   <link href="http://kentaktwo.github.com/atom.xml" rel="self"/>
   <link href="http://kentaktwo.github.com/"/>
-  <updated>2012-01-09T17:49:18+09:00</updated>
+  <updated>2012-01-09T18:08:18+09:00</updated>
   <id>http://kentaktwo.github.com/</id>
   <author>
     <name><![CDATA[kentaktwo]]></name>
@@ -12,5 +12,16 @@
   </author>
   <generator uri="http://octopress.org/">Octopress</generator>
 
+  
+  <entry>
+    <title type="html"><![CDATA[test post]]></title>
+    <link href="http://kentaktwo.github.com/blog/2012/01/09/test-post/"/>
+    <updated>2012-01-09T18:03:00+09:00</updated>
+    <id>http://kentaktwo.github.com/blog/2012/01/09/test-post</id>
+    <content type="html"><![CDATA[<p>Test Post</p>
+
+<p>$B%F%9%HEj9F(B</p>
+]]></content>
+  </entry>
   
 </feed>
