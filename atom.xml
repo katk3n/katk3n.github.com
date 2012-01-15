@@ -4,7 +4,7 @@
   <title><![CDATA[ApprEngineer.log]]></title>
   <link href="http://kentaktwo.github.com/atom.xml" rel="self"/>
   <link href="http://kentaktwo.github.com/"/>
-  <updated>2012-01-15T18:54:15+09:00</updated>
+  <updated>2012-01-15T22:45:33+09:00</updated>
   <id>http://kentaktwo.github.com/</id>
   <author>
     <name><![CDATA[kentaktwo]]></name>
@@ -12,6 +12,414 @@
   </author>
   <generator uri="http://octopress.org/">Octopress</generator>
 
+  
+  <entry>
+    <title type="html"><![CDATA[Advanced Programming in the UNIX Environment - Chapter 3, Part 2]]></title>
+    <link href="http://kentaktwo.github.com/blog/2012/01/15/apue-chapter-3-part-2/"/>
+    <updated>2012-01-15T21:56:00+09:00</updated>
+    <id>http://kentaktwo.github.com/blog/2012/01/15/apue-chapter-3-part-2</id>
+    <content type="html"><![CDATA[<p>File I/O の続き。UNIX での open されたファイルをプロセス間で共有するシステムについて。</p>
+
+<!-- more -->
+
+
+<p>kernel は open されたファイルを表すのに３つのデータ構造を使う。</p>
+
+<ul>
+<li>process table entry<br/>
+open されたファイルのファイルディスクリプタを管理する</li>
+<li>file table<br/>
+ファイルのステータス (read, write など)、現在のファイルオフセット、v-node へのポインタを持っている</li>
+<li>v-node table<br/>
+ファイルタイプや、i-node の情報を持っている。<br/>
+i-node はファイルの所有者やファイルサイズ、ディスク上のファイルが置かれている所へのポインタなどの情報を持っている。<br/>
+Linux には v-node は無いが、 generic i-node の中に同じ情報を持っている。</li>
+</ul>
+
+
+<p>２つの異なるプロセスが同じファイルを open すると、process table entry と file table はプロセスごとに用意されるが、v-node table は同じものを見る。
+file table が別になっているので、プロセスごとにファイルオフセットを持つことができる。
+<code>write()</code> が実行される毎にファイルサイズはインクリメントされていく。<code>O_APPEND</code> flag を付けてファイルを開いている場合、
+<code>write()</code> が呼び出される毎に i-node table entry からファイルサイズを取得するため、毎回ファイルの末尾に追加することができる。</p>
+
+<h2>Atomic Operations</h2>
+
+<p>offset の seek とファイルへの書き込みを別々に行うと、複数のプロセスが同じファイルを変更しようとしているときに、 不整合が起こる可能性がある。<br/>
+例えば、プロセス A と B があって、どちらもファイル末尾にデータを追加という処理を行う場合、</p>
+
+<figure class='code'><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+</pre></td><td class='code'><pre><code class=''><span class='line'>A が lseek
+</span><span class='line'>B が lseek
+</span><span class='line'>B が write
+</span><span class='line'>A が write</span></code></pre></td></tr></table></div></figure>
+
+
+<p>という順で実行されてしまうと、プロセス A はプロセス B が書いた領域を上書きすることになってしまう。
+このような問題を防ぐために、一連の処理をまとめて行い、その間他のプロセスの割り込みをさせない関数 (Atomic operations) に <code>pread()</code> と <code>pwrite()</code> がある。</p>
+
+<pre><code>#include &lt;unistd.h&gt;
+ssize_t pread(int filedes, void *buf, size_t nbytes, off_t offset);
+ssize_t pwrite(int filedes, const void *buf, size_t nbytes, off_t offset);
+</code></pre>
+
+<p>これらの関数は lseek をした後に read / write をするのと同じ処理を行うが、</p>
+
+<ul>
+<li>pread / pwrite の間は割り込みをさせない</li>
+<li>ファイルオフセットがアップデートされない</li>
+</ul>
+
+
+<p>という違いがある。</p>
+
+<h2>dup(), dup2() 関数</h2>
+
+<p><code>dup()</code> 関数を使うと今あるファイルディスクリプタを複製 (duplicate) できる。
+つまり、ファイルディスクリプタが指す file table を指すファイルディスクリプタをもう１個作ることができる。</p>
+
+<pre><code>#include &lt;unistd.h&gt;
+int dup(int filedes);
+int dup2(int filedes, int filedes2);
+</code></pre>
+
+<p>新しく作られたファイルディスクリプタが戻り値として返される。
+<code>dup2()</code> は新しく作るファイルディスクリプタの値を <code>filedes2</code> として指定できる。
+もし <code>filedes2</code> が既に open されていた場合、まずそのファイルが close される。
+もし <code>filedes</code> と <code>filedes2</code> が等しかった場合、 <code>filedes2</code> は close されず、<code>filedes2</code> が返される。</p>
+
+<h2>sync(), fsync(), fdatasync() 関数</h2>
+
+<p>UNIX システムは kernel に buffer cache あるいは page cache を持っている。
+データをファイルに書きこもうとすると、そのデータは kernel によって buffer にコピーされ、 書き込み待ち状態となり、少し遅れてディスクに書き込まれる (delayed write) 。
+ディスクに今すぐ書き込み、同期を取りたいときは <code>sync()</code>, <code>fsync()</code>, <code>fdatasync()</code> 関数を使う。</p>
+
+<pre><code>#include &lt;unistd.h&gt;
+int fsync(int filedes);
+int fdatasync(int filedes);
+void sync(void);
+</code></pre>
+
+<p><code>sync()</code> 関数はすべての変更された block buffers の書き込みを実行する。
+<code>sync()</code> は通常 daemon によって 30秒おきに実行される (update) 。
+<code>sync(1)</code> コマンドは <code>sync()</code> 関数を呼ぶだけである。<br/>
+<code>fsync()</code> は１つのファイルにのみ作用する。
+<code>fdatasync()</code> は <code>fsync()</code> に似ているが、ファイルのデータしか更新しない。 <code>fsync()</code> はファイルの属性も更新される。</p>
+
+<h2>fcntl() 関数</h2>
+
+<p>ファイルディスクリプタの操作を行うには <code>fcntl()</code> 関数を使う。</p>
+
+<pre><code>#include &lt;fcntl.h&gt;
+int fcntl(int filedes, int cmd, ... /* int arg */);
+</code></pre>
+
+<p><code>cmd</code> の値によって以下のことができる。</p>
+
+<ul>
+<li>ディスクリプタを複製する (<code>cmd = F_DUPFD</code>)<br/>
+これは <code>dup(filedes)</code> と同じである。</li>
+<li>discriptor flag を設定・取得する (<code>cmd = F_GETFD or F_SETFD</code>)<br/>
+現在のところ、 <code>FD_CLOEXEC</code> のみが定義されている。<br/>
+このフラグが設定されたディスクリプタは不要になると自動的に close される。</li>
+<li>file status flag を設定・取得する (<code>cmd = F_GETFL or F_SETFL</code>)<br/>
+<code>O_RDONLY</code>, <code>O_WRONLY</code>, <code>O_RDWR</code>, <code>O_APPEND</code>, <code>O_SYNC</code> など。<br/>
+<code>O_RDONLY</code>, <code>O_WRONLY</code>, <code>O_RDWR</code> を調べるにはまず <code>O_ACCMODE</code> でマスクする必要がある。</li>
+<li>SIGIO や SIGURG シグナルを受け取るプロセス ID や グループ ID を取得・設定する (<code>cmd = F_GETOWN or F_SETOWN</code>)<br/>
+詳しくは14章で。</li>
+<li>record rock を設定・取得する (<code>cmd = F_GETLK, F_SETLK, or F_SETLKW</code>)<br/>
+詳しくは14章で。</li>
+</ul>
+
+
+<p><code>fcntl()</code> を使って、あらかじめ <code>STDOUT_FILENO</code> に <code>O_SYNC</code> フラグを設定しておけば、標準出力への書き込みが即反映されるようになる。</p>
+
+<figure class='code'> <div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+<span class='line-number'>7</span>
+<span class='line-number'>8</span>
+<span class='line-number'>9</span>
+<span class='line-number'>10</span>
+<span class='line-number'>11</span>
+<span class='line-number'>12</span>
+<span class='line-number'>13</span>
+<span class='line-number'>14</span>
+<span class='line-number'>15</span>
+<span class='line-number'>16</span>
+<span class='line-number'>17</span>
+<span class='line-number'>18</span>
+<span class='line-number'>19</span>
+<span class='line-number'>20</span>
+<span class='line-number'>21</span>
+<span class='line-number'>22</span>
+</pre></td><td class='code'><pre><code class='c'><span class='line'><span class="cp">#include &quot;apue.h&quot;</span>
+</span><span class='line'><span class="cp">#include &lt;fcntl.h&gt;</span>
+</span><span class='line'>
+</span><span class='line'><span class="kt">void</span>
+</span><span class='line'><span class="nf">set_fl</span><span class="p">(</span><span class="kt">int</span> <span class="n">fd</span><span class="p">,</span> <span class="kt">int</span> <span class="n">flags</span><span class="p">)</span>
+</span><span class='line'><span class="p">{</span>
+</span><span class='line'>    <span class="kt">int</span> <span class="n">val</span><span class="p">;</span>
+</span><span class='line'>    <span class="k">if</span> <span class="p">((</span><span class="n">val</span> <span class="o">=</span> <span class="n">fcntl</span><span class="p">(</span><span class="n">fd</span><span class="p">,</span> <span class="n">F_GETFL</span><span class="p">,</span> <span class="mi">0</span><span class="p">))</span> <span class="o">&lt;</span> <span class="mi">0</span><span class="p">)</span>
+</span><span class='line'>        <span class="n">err_sys</span><span class="p">(</span><span class="s">&quot;fcntl F_GETFL error&quot;</span><span class="p">);</span>
+</span><span class='line'>
+</span><span class='line'>    <span class="n">val</span> <span class="o">|=</span> <span class="n">flags</span><span class="p">;</span>
+</span><span class='line'>
+</span><span class='line'>    <span class="k">if</span> <span class="p">(</span><span class="n">fcntl</span><span class="p">(</span><span class="n">fd</span><span class="p">,</span> <span class="n">F_SETFL</span><span class="p">,</span> <span class="n">val</span><span class="p">)</span> <span class="o">&lt;</span> <span class="mi">0</span><span class="p">)</span>
+</span><span class='line'>        <span class="n">err_sys</span><span class="p">(</span><span class="s">&quot;fcntl F_SETFL error&quot;</span><span class="p">);</span>
+</span><span class='line'><span class="p">}</span>
+</span><span class='line'>
+</span><span class='line'><span class="kt">int</span>
+</span><span class='line'><span class="nf">main</span><span class="p">(</span><span class="kt">int</span> <span class="n">argc</span><span class="p">,</span> <span class="kt">char</span> <span class="o">*</span><span class="n">argv</span><span class="p">[])</span>
+</span><span class='line'><span class="p">{</span>
+</span><span class='line'>    <span class="n">set_fl</span><span class="p">(</span><span class="n">STDOUT_FILENO</span><span class="p">,</span> <span class="n">O_SYNC</span><span class="p">);</span>
+</span><span class='line'>    <span class="p">...</span>
+</span><span class='line'><span class="p">}</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<h2>ioctl() 関数</h2>
+
+<p><code>ioctl()</code> はデバイスの制御を行う。詳しくは18章で。</p>
+
+<h2>/dev/fd</h2>
+
+<p>最近のシステムには、<code>0</code>, <code>1</code>, <code>2</code> という名前のファイルが入った <code>/dev/fd</code> というディレクトリがある。</p>
+
+<pre><code>fd = open("/dev/fd/0", mode);
+</code></pre>
+
+<p>は、</p>
+
+<pre><code>fd = dup(0)
+</code></pre>
+
+<p>と同じである。ディスクリプタ 0 は既に開かれているので、<code>mode</code> は無視される。<br/>
+このディレクトリは、shell から使われることが多い。</p>
+
+<pre><code>filter file2 | cat file1 - file3 | lpr
+</code></pre>
+
+<p>は、</p>
+
+<pre><code>filter file2 | cat file1 /dev/fd/0 file3 | lpr
+</code></pre>
+
+<p>と同じである。<code>cat</code> の部分の <code>file1</code> と <code>file3</code> の間にある <code>-</code> は標準入出力を表す <em>ことが多く</em> 、
+今回の場合は標準入力として解釈してくれるはずだが、分かりづらいので、 <code>/dev/fd</code> を使ってわかりやすく書くことができる。</p>
+]]></content>
+  </entry>
+  
+  <entry>
+    <title type="html"><![CDATA[Advanced Programming in the UNIX Environment - Chapter 3, Part 1]]></title>
+    <link href="http://kentaktwo.github.com/blog/2012/01/15/apue-chapter-3-part-1/"/>
+    <updated>2012-01-15T21:17:00+09:00</updated>
+    <id>http://kentaktwo.github.com/blog/2012/01/15/apue-chapter-3-part-1</id>
+    <content type="html"><![CDATA[<p>Chapter 3 は file I/O について。長いので数回に分けます。</p>
+
+<!-- more -->
+
+
+<p>UNIX システムでは基本的に file I/O は <code>open</code>, <code>read</code>, <code>write</code>, <code>lseek</code>, <code>close</code> の5種類のみで行われる。
+これらの関数は standerd I/O と 区別して、unbuffered I/O と呼ばれる。 unbuffered とは、 read や write が kernel のシステムコールから呼ばれる所からきている。</p>
+
+<h2>ファイルディスクリプタ</h2>
+
+<p>open されたファイルは全てファイルディスクリプタで管理される。 ファイルディスクリプタは non-negative な integer。
+ファイルを open したり creat すると、kernel は process にファイルディスクリプタを返す。
+read や write をするときは、ファイルディスクリプタを引数に指定する。</p>
+
+<p>ほとんどの仕様で、ファイルディスクリプタ0番は標準入力、1番は標準出力、2番は標準エラー出力に割り当てられている。
+この仕様は shell やアプリケーションのものであり、UNIX kernel のものではない。<br/>
+ファイルディスクリプタ 0, 1, 2 はそれぞれ unistd.h によって <code>STDIN_FILENO</code>, <code>STDOUT_FILENO</code>, <code>STDERR_FILENO</code> として定義されている。
+ファイルディスクリプタの値の範囲は 0 から <code>OPEN_MAX</code> までである。
+昔の実装では 19 まで（1プロセスにつき20ファイルまで open できる) だったが、最近は多くのシステムでは 63 まである。</p>
+
+<h2>open() 関数</h2>
+
+<p>ファイルを開くには、<code>open()</code> 関数を使う。</p>
+
+<pre><code>#include &lt;fcntl.h&gt;
+int open(const char *pathname, int oflag, ... /* mode_t mode */ );
+</code></pre>
+
+<p>open 時のオプションは <code>oflag</code> で指定する。指定する定数は <code>fcntl.h</code> で定義されている。</p>
+
+<p><code>open()</code> によって返されるファイルディスクリプタの値は、使われていないディスクリプタのうち最小のものとなる。
+なので、もし標準出力（ファイルディスクリプタ 1）を close したあとに、新しいファイルを開くと、 そのディスクリプタは1番になる。ディスクリプタを指定したい場合は <code>dup2()</code> を使う。</p>
+
+<h2>creat() 関数</h2>
+
+<p>新規ファイルは <code>creat()</code> 関数を呼ぶことで作ることもできる。</p>
+
+<pre><code>#include &lt;fcntl.h&gt;
+int creat(const char *pathname, mode_t mode);
+</code></pre>
+
+<p>この関数は、</p>
+
+<pre><code>open(pathname, O_WRONLY | O_CREAT | O_TRUNC, mode);
+</code></pre>
+
+<p>と同じである。</p>
+
+<h2>close() 関数</h2>
+
+<p>open されたファイルは <code>close()</code> 関数で close する。</p>
+
+<pre><code>#include &lt;unistd.h&gt;
+int close(int filedes);
+</code></pre>
+
+<p>この関数を呼ばなくても、プロセスが終了すると open されていた全てのファイルは kernel によって自動的に close される。</p>
+
+<h2>lseek() 関数</h2>
+
+<p>open されたファイルは、現在の読み込み（書き込み）する位置 (offset) を non-negative integer として持っており、 読み書きされる度にインクリメントされる。
+<code>O_APPEND</code> オプションを指定しない場合、ファイルを open した時点での offset は 0 に設定される。
+open されたファイルの offset を明示的に指定したい場合は、<code>lseek()</code> 関数を使用する。</p>
+
+<pre><code>#include &lt;unistd.h&gt;
+off_t lseek(int filedes, off_t offset, int whence);
+</code></pre>
+
+<p>offset の扱いは、<code>whence</code> の値によって異なる。</p>
+
+<ul>
+<li><code>whence</code> が <code>SEEK_SET</code> のとき、<code>offset</code> はファイルの先頭からの位置となる。</li>
+<li><code>whence</code> が <code>SEEK_CUR</code> のとき、<code>offset</code> は現在の位置からの位置となる。<code>offset</code> は正負の値を取ることができる。</li>
+<li><code>whence</code> が <code>SEEK_END</code> のとき、<code>offset</code> はファイルの終端からの位置となる。<code>offset</code> は正負の値を取ることができる。</li>
+</ul>
+
+
+<p><code>lseek()</code> の戻り値は新しい offset なので、現在の offset を以下のようにして取得することができる。</p>
+
+<pre><code>off_t currpos = lseek(fd, 0, SEEK_CUR);
+</code></pre>
+
+<p>offset は現在のファイルサイズより大きくすることもできる。
+そのようにして書き込みを行った場合、ファイルに穴 (hole) ができる。その部分は 0 として read back される。
+ファイルの終端より後に書き込みを行うと、データを格納するために新しいディスクブロックが確保されるが、
+書きこむ前のファイルの終端から書き込みを始める位置の間にディスクブロックは確保されない。</p>
+
+<p><code>od(1)</code> コマンドを使うと、ファイルダンプを見ることができる。<code>-c</code> オプションでダンプした内容を文字に変換して見ることができる。</p>
+
+<p><code>ls</code> コマンドで <code>-s</code> オプションを使うと、ファイルサイズをブロック単位で見ることができる。</p>
+
+<h2>read() 関数</h2>
+
+<p>ファイルからデータを読み込むときには <code>read()</code> 関数を使う。</p>
+
+<pre><code>#include &lt;unistd.h&gt;
+ssize_t read(int filedes, void *buf, size_t nbytes);
+</code></pre>
+
+<p><code>read()</code> は読み込んだ byte 数を返すが、引数に渡した <code>nbytes</code> の値よりファイルの残りサイズが少ない場合等、
+<code>nbytes</code> より小さな値を返す場合がある。 ファイルの終端に達していた場合には 0 を返す。
+<code>read()</code> はファイルの現在の offset から読み始め、成功すると offset の値を実際に読み込んだ分だけ進める。</p>
+
+<h2>write() 関数</h2>
+
+<p>ファイルにデータを書き込むときには <code>write()</code> 関数を使う。</p>
+
+<pre><code>#include &lt;unistd.h&gt;
+ssize_t write(int filedes, const void *buf, size_t nbytes);
+</code></pre>
+
+<p><code>write()</code> も <code>read()</code> 同様現在の offset から書き込みを始めるが、 <code>open()</code> で <code>O_APPEND</code> が設定されていると、write を行う前に offset がファイルの終端にセットされる。</p>
+]]></content>
+  </entry>
+  
+  <entry>
+    <title type="html"><![CDATA[Advanced Programming in the UNIX Environment - Chapter 2]]></title>
+    <link href="http://kentaktwo.github.com/blog/2012/01/15/apue-chapter-2/"/>
+    <updated>2012-01-15T20:57:00+09:00</updated>
+    <id>http://kentaktwo.github.com/blog/2012/01/15/apue-chapter-2</id>
+    <content type="html"><![CDATA[<p>Chapter 2 は UNIX の標準化や実装について。</p>
+
+<!-- more -->
+
+
+<h2>UNIX 標準</h2>
+
+<p>現在 C 言語の標準化は ISO / IEC によって行われている。
+ISO は International Organization for Standardization, IEC は International Electrotechnical Commission 。
+ISO C library に <code>stdio.h</code> や <code>stdlib.h</code> など 24 種類が含まれている。</p>
+
+<p>POSIX (Portable Operating System Interface) は IEEE (Institute of Electrical and Electronics Engineers) によって管理される標準化の1つ。
+POSIX によって定義されるヘッダはには <code>unistd.h</code> や <code>sys/types.h</code> などがある。</p>
+
+<h2>UNIX の実装</h2>
+
+<p>UNIX の実装には、Sytem V, 4.4BSD, FreeBSD, Linux, Mac OS X, Solaris などがある。
+各実装は多くの定数などの定義を行なっている。</p>
+
+<p>limits については、Compile-time limits と Runtime limits の二種類に分かれる。
+Compile-time limits はコンパイル時にヘッダに定義されている定数で、例えば short integer の最大値など。
+Runtime limits プロセス呼び出し時に要求され、filename の文字数などがある。
+Compile-time limits を使うときはヘッダから読んでくればいいが、Runtime limits はプログラム実行時まで値が分からないため、 <code>sysconf()</code>, <code>pathconf()</code>, <code>fpathconf()</code> などの関数を利用する。</p>
+
+<p>実装によって、ヘッダに定義されていたり、されていなかったりする定数がある。 そのような場合は定義されていればその値を使い、されていなかったら、関数を利用して取ってくる。</p>
+
+<figure class='code'> <div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+<span class='line-number'>7</span>
+<span class='line-number'>8</span>
+<span class='line-number'>9</span>
+<span class='line-number'>10</span>
+<span class='line-number'>11</span>
+<span class='line-number'>12</span>
+<span class='line-number'>13</span>
+<span class='line-number'>14</span>
+<span class='line-number'>15</span>
+<span class='line-number'>16</span>
+<span class='line-number'>17</span>
+<span class='line-number'>18</span>
+<span class='line-number'>19</span>
+<span class='line-number'>20</span>
+<span class='line-number'>21</span>
+<span class='line-number'>22</span>
+<span class='line-number'>23</span>
+<span class='line-number'>24</span>
+</pre></td><td class='code'><pre><code class='c'><span class='line'><span class="cp">#include </span>
+</span><span class='line'><span class="cp">#ifdef OPEN_MAX</span>
+</span><span class='line'><span class="k">static</span> <span class="kt">long</span> <span class="n">openmax</span> <span class="o">=</span> <span class="n">OPEN_MAX</span><span class="p">;</span>
+</span><span class='line'><span class="cp">#else</span>
+</span><span class='line'><span class="k">static</span> <span class="kt">long</span> <span class="n">openmax</span> <span class="o">=</span> <span class="mi">0</span><span class="p">;</span>
+</span><span class='line'><span class="cp">#endif</span>
+</span><span class='line'>
+</span><span class='line'><span class="cp">#define OPEN_MAX_GUESS 256</span>
+</span><span class='line'>
+</span><span class='line'><span class="kt">long</span>
+</span><span class='line'><span class="nf">open_max</span><span class="p">(</span><span class="kt">void</span><span class="p">)</span>
+</span><span class='line'><span class="p">{</span>
+</span><span class='line'>    <span class="p">...</span>
+</span><span class='line'>    <span class="k">if</span> <span class="p">(</span><span class="n">openmax</span> <span class="o">==</span> <span class="mi">0</span><span class="p">)</span> <span class="p">{</span>
+</span><span class='line'>        <span class="n">errno</span> <span class="o">=</span> <span class="mi">0</span><span class="p">;</span>
+</span><span class='line'>        <span class="k">if</span> <span class="p">((</span><span class="n">openmax</span> <span class="o">=</span> <span class="n">sysconf</span><span class="p">(</span><span class="n">_SC_OPEN_MAX</span><span class="p">))</span> <span class="o">&lt;</span> <span class="mi">0</span><span class="p">)</span> <span class="p">{</span>
+</span><span class='line'>            <span class="k">if</span> <span class="p">(</span><span class="n">errno</span> <span class="o">==</span> <span class="mi">0</span><span class="p">)</span>
+</span><span class='line'>                <span class="n">open_max</span> <span class="o">=</span> <span class="n">OPEN_MAX_GUESS</span><span class="p">;</span>  <span class="cm">/* 未定義 */</span>
+</span><span class='line'>            <span class="k">else</span>
+</span><span class='line'>                <span class="n">err_sys</span><span class="p">(</span><span class="s">&quot;sysconf error for _SC_OPEN_MAX&quot;</span><span class="p">);</span>
+</span><span class='line'>        <span class="p">}</span>
+</span><span class='line'>    <span class="p">}</span>
+</span><span class='line'>    <span class="p">...</span>
+</span><span class='line'><span class="p">}</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p><code>sys/types.h</code> には <code>clock_t</code> や <code>size_t</code> など、実装依存のデータ型が定義されている。</p>
+]]></content>
+  </entry>
   
   <entry>
     <title type="html"><![CDATA[Advanced Programming in the UNIX Environment - Chapter 1]]></title>
@@ -39,8 +447,7 @@
 
 <p>こんな感じ？</p>
 
-<pre><code>
-applications
+<pre><code>applications
 ｜　　｜
 ｜　　library routines
 ｜　　｜
@@ -48,7 +455,6 @@ system calls
 ｜
 kernel
 </code></pre>
-
 
 <p>shell は他のアプリケーションを動かすための特別なアプリケーションのこと。</p>
 
@@ -70,8 +476,10 @@ kernel
 
 <p>がコロン (:) で区切られて書かれている。</p>
 
-<p>sar:x:205:105:Stephen Rago:/home/sar:/bin/ksh
-パスワードは最近のシステムではここではなく、別のファイルに書かれている (Chapter 6) 。</p>
+<pre><code>sar:x:205:105:Stephen Rago:/home/sar:/bin/ksh
+</code></pre>
+
+<p>パスワードは最近のシステムではここではなく、別のファイルに書かれている (Chapter 6) 。</p>
 
 <h2>ファイル・ディレクトリ</h2>
 
@@ -79,20 +487,22 @@ kernel
 directory とは、directory entry を含んだ file のこと。
 directory entry には、file の属性や filename が格納されている。
 file の属性とは file の種類 (file, directory) 、ファイルサイズ、ファイル所有者、アクセス権などのこと。
-stat や fstat 関数を用いて属性を取得することができる。詳しくは Chapter 4 で。</p>
+<code>stat</code> や <code>fstat</code> 関数を用いて属性を取得することができる。詳しくは Chapter 4 で。</p>
 
-<p>filename に使える文字はスラッシュ (/) と null 文字以外。スラッシュは pathname に使われ、 null 文字は終端記号に使われる。
-新しく directory が作られると、. と .. の2つの filename が自動的に作られる。 root directory では、.. は . と同じ。</p>
+<p>filename に使える文字はスラッシュ (<code>/</code>) と null 文字以外。スラッシュは pathname に使われ、 null 文字は終端記号に使われる。
+新しく directory が作られると、<code>.</code> と <code>..</code> の2つの filename が自動的に作られる。 root directory では、<code>..</code> は <code>.</code> と同じ。</p>
 
-<p>opendir() 関数は、 DIR 構造体のポインタを返す。readdir() 関数は DIR 構造体のポインタを引数に取り、 dirent 構造体のポインタを返す。もう読むエントリが無い場合は null ポインタを返す。
-dirent 構造体には directory entry に関する情報が入っており、d_name で directory entry の名前が取れる。</p>
+<p><code>opendir()</code> 関数は、 <code>DIR</code> 構造体のポインタを返す。<code>readdir()</code> 関数は <code>DIR</code> 構造体のポインタを引数に取り、 <code>dirent</code> 構造体のポインタを返す。
+もう読むエントリが無い場合は null ポインタを返す。
+<code>dirent</code> 構造体には directory entry に関する情報が入っており、<code>d_name</code> で directory entry の名前が取れる。</p>
 
-<p>プログラムを終了するとき、exit() 関数を呼ぶが、慣例により、正常終了のときは 0 、エラーのときは 1 から 255 のいずれかを引数に渡す。</p>
+<p>プログラムを終了するとき、<code>exit()</code> 関数を呼ぶが、慣例により、正常終了のときは 0 、エラーのときは 1 から 255 のいずれかを引数に渡す。</p>
 
 <h2>インプット・アウトプット</h2>
 
 <p>File descriptor とは、 kernel が file にアクセスするために用いる識別子で、普通は非負の小さい整数を用いる。
-慣例により、標準入力には 0 (STDIN_FILENO)、標準出力には 1 (STDOUT_FILENO)、標準エラー出力には 2 (STDERR_FILENO) が既に割り当てられている。 これらのマクロは unistd.h に定義されている。詳しくは Chapter 3 で。</p>
+慣例により、標準入力には 0 (<code>STDIN_FILENO</code>)、標準出力には 1 (<code>STDOUT_FILENO</code>)、標準エラー出力には 2 (<code>STDERR_FILENO</code>) が既に割り当てられている。
+これらのマクロは <code>unistd.h</code> に定義されている。詳しくは Chapter 3 で。</p>
 
 <h2>プログラム・プロセス</h2>
 
@@ -103,10 +513,10 @@ UNIX システムでは、すべてのプロセスにはユニークな番号 (p
 
 <h2>エラー</h2>
 
-<p>UNIX システム関数では、エラーが起こると大抵は負の値を返し、errno という整数型の変数に追加の情報が格納される。
-errno にセットされる値は errno.h に定義されている。
-errno の値が勝手にクリアされることは無いので、errno の値を調べるときは、エラーが起きた直後でなければならない。
-また、errno の値が 0 にセットされることは無く、errno.h には 0 に設定されている定数も存在しない。</p>
+<p>UNIX システム関数では、エラーが起こると大抵は負の値を返し、<code>errno</code> という整数型の変数に追加の情報が格納される。
+<code>errno</code> にセットされる値は <code>errno.h</code> に定義されている。
+<code>errno</code> の値が勝手にクリアされることは無いので、<code>errno</code> の値を調べるときは、エラーが起きた直後でなければならない。
+また、<code>errno</code> の値が 0 にセットされることは無く、<code>errno.h</code> には 0 に設定されている定数も存在しない。</p>
 
 <h2>ユーザ管理</h2>
 
@@ -114,13 +524,13 @@ errno の値が勝手にクリアされることは無いので、errno の値�
 user ID が 0 のユーザは root あるいは superuser とよばれる。</p>
 
 <p>group ID はユーザをグループ化して、リソースを共有したりするのに用いられ、login name が作られるときに割り当てられる。
-group name と group ID の紐付けは group file という file に書かれている。group file は大抵の場合 /etc/group である。</p>
+group name と group ID の紐付けは group file という file に書かれている。group file は大抵の場合 <code>/etc/group</code> である。</p>
 
-<p>user ID と group ID は getuid() 関数と getgid() 関数で取得できる。</p>
+<p>user ID と group ID は <code>getuid()</code> 関数と <code>getgid()</code> 関数で取得できる。</p>
 
 <h2>シグナル</h2>
 
-<p>Signal はプロセスにある状態になったことを通知するのに用いられる。例えば 0 除算が発生した場合、プロセスに SIGFPE シグナルが送られる。
+<p>Signal はプロセスにある状態になったことを通知するのに用いられる。例えば 0 除算が発生した場合、プロセスに <code>SIGFPE</code> シグナルが送られる。
 シグナルが送られた場合、プロセスは</p>
 
 <ul>
@@ -132,26 +542,34 @@ group name と group ID の紐付けは group file という file に書かれ�
 
 <p>のいずれかを行うことになる。</p>
 
-<p>シグナルは kill() 関数を使って発生させることもできる。詳しくは Chapter 10 で。</p>
+<p>シグナルは <code>kill()</code> 関数を使って発生させることもできる。詳しくは Chapter 10 で。</p>
 
 <h2>時間管理</h2>
 
 <p>UNIX システムは二種類の時間を管理している:</p>
 
-<p>Calendar time: 1970 年 1 月 1 日 00:00:00 からの経過時間
-Process time: プロセスによって消費されるプロセッサのリソースを測る時間。CPU time とも呼ばれる
-プログラムの実行時間を測ると、以下の3つの値が取得できる:</p>
+<ul>
+<li>Calendar time: 1970 年 1 月 1 日 00:00:00 からの経過時間</li>
+<li>Process time: プロセスによって消費されるプロセッサのリソースを測る時間。CPU time とも呼ばれる</li>
+</ul>
 
-<p>Clock time: プロセスが実行するのにかかった時間。この時間はシステム上で走っている他のプロセスの数に依存する。
-User CPU time: プログラム中のループ等、ユーザの命令を行うのにかかった時間。
-System CPU time: システムコールを行うのにかかった時間
-user CPU time と system CPU time の合計が大体 CPU time と同じ。</p>
+
+<p>プログラムの実行時間を測ると、以下の3つの値が取得できる:</p>
+
+<ul>
+<li>Clock time: プロセスが実行するのにかかった時間。この時間はシステム上で走っている他のプロセスの数に依存する。</li>
+<li>User CPU time: プログラム中のループ等、ユーザの命令を行うのにかかった時間。</li>
+<li>System CPU time: システムコールを行うのにかかった時間</li>
+</ul>
+
+
+<p>user CPU time と system CPU time の合計が大体 CPU time と同じ。</p>
 
 <h2>システムコール</h2>
 
 <p>UNIX Programmer&#8217;s Manual の Section 2 には、システムコールのドキュメントが書かれている。
-Section 3 には printf() の標準関数のドキュメントが書かれている。
-標準関数は内部でシステムコールを呼んだりしているものもある。例えば、malloc(3) はsbrk(2) を呼んでいる</p>
+Section 3 には <code>printf()</code> の標準関数のドキュメントが書かれている。
+標準関数は内部でシステムコールを呼んだりしているものもある。例えば、<code>malloc(3)</code> は <code>sbrk(2)</code> を呼んでいる</p>
 ]]></content>
   </entry>
   
@@ -175,14 +593,14 @@ Octopress という技術ブログ向けフレームワークがあるという�
 
 <h2>新規投稿</h2>
 
-<pre><code>rake new_post['title']</code></pre>
-
+<pre><code>rake new_post['title']
+</code></pre>
 
 <p>なお、自分の環境だとファイルが作られたときのフォーマットが iso-2022-jp になっているようなので、初回は</p>
 
 <pre><code># In vim
-:set filetype=utf-8</code></pre>
-
+:set fileencoding=utf-8
+</code></pre>
 
 <p>で文字コードを直す。</p>
 
@@ -197,7 +615,6 @@ rake deploy
 # 作成とデプロイを同時にやる場合
 rake_gendeploy
 </code></pre>
-
 
 <h2>markdown 記法</h2>
 

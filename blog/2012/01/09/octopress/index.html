@@ -109,14 +109,14 @@ Octopress という技術ブログ向けフレームワークがあるという�
 
 <h2>新規投稿</h2>
 
-<pre><code>rake new_post['title']</code></pre>
-
+<pre><code>rake new_post['title']
+</code></pre>
 
 <p>なお、自分の環境だとファイルが作られたときのフォーマットが iso-2022-jp になっているようなので、初回は</p>
 
 <pre><code># In vim
-:set filetype=utf-8</code></pre>
-
+:set fileencoding=utf-8
+</code></pre>
 
 <p>で文字コードを直す。</p>
 
@@ -131,7 +131,6 @@ rake deploy
 # 作成とデプロイを同時にやる場合
 rake_gendeploy
 </code></pre>
-
 
 <h2>markdown 記法</h2>
 
@@ -208,6 +207,18 @@ rake_gendeploy
     <section>
   <h1>Recent Posts</h1>
   <ul id="recent_posts">
+    
+      <li class="post">
+        <a href="/blog/2012/01/15/apue-chapter-3-part-2/">Advanced Programming in the UNIX Environment - Chapter 3, Part 2</a>
+      </li>
+    
+      <li class="post">
+        <a href="/blog/2012/01/15/apue-chapter-3-part-1/">Advanced Programming in the UNIX Environment - Chapter 3, Part 1</a>
+      </li>
+    
+      <li class="post">
+        <a href="/blog/2012/01/15/apue-chapter-2/">Advanced Programming in the UNIX Environment - Chapter 2</a>
+      </li>
     
       <li class="post">
         <a href="/blog/2012/01/09/apue-chapter-1/">Advanced Programming in the UNIX Environment - Chapter 1</a>

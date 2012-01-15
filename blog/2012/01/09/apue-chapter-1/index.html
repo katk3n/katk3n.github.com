@@ -114,8 +114,7 @@
 
 <p>こんな感じ？</p>
 
-<pre><code>
-applications
+<pre><code>applications
 ｜　　｜
 ｜　　library routines
 ｜　　｜
@@ -123,7 +122,6 @@ system calls
 ｜
 kernel
 </code></pre>
-
 
 <p>shell は他のアプリケーションを動かすための特別なアプリケーションのこと。</p>
 
@@ -145,8 +143,10 @@ kernel
 
 <p>がコロン (:) で区切られて書かれている。</p>
 
-<p>sar:x:205:105:Stephen Rago:/home/sar:/bin/ksh
-パスワードは最近のシステムではここではなく、別のファイルに書かれている (Chapter 6) 。</p>
+<pre><code>sar:x:205:105:Stephen Rago:/home/sar:/bin/ksh
+</code></pre>
+
+<p>パスワードは最近のシステムではここではなく、別のファイルに書かれている (Chapter 6) 。</p>
 
 <h2>ファイル・ディレクトリ</h2>
 
@@ -154,20 +154,22 @@ kernel
 directory とは、directory entry を含んだ file のこと。
 directory entry には、file の属性や filename が格納されている。
 file の属性とは file の種類 (file, directory) 、ファイルサイズ、ファイル所有者、アクセス権などのこと。
-stat や fstat 関数を用いて属性を取得することができる。詳しくは Chapter 4 で。</p>
+<code>stat</code> や <code>fstat</code> 関数を用いて属性を取得することができる。詳しくは Chapter 4 で。</p>
 
-<p>filename に使える文字はスラッシュ (/) と null 文字以外。スラッシュは pathname に使われ、 null 文字は終端記号に使われる。
-新しく directory が作られると、. と .. の2つの filename が自動的に作られる。 root directory では、.. は . と同じ。</p>
+<p>filename に使える文字はスラッシュ (<code>/</code>) と null 文字以外。スラッシュは pathname に使われ、 null 文字は終端記号に使われる。
+新しく directory が作られると、<code>.</code> と <code>..</code> の2つの filename が自動的に作られる。 root directory では、<code>..</code> は <code>.</code> と同じ。</p>
 
-<p>opendir() 関数は、 DIR 構造体のポインタを返す。readdir() 関数は DIR 構造体のポインタを引数に取り、 dirent 構造体のポインタを返す。もう読むエントリが無い場合は null ポインタを返す。
-dirent 構造体には directory entry に関する情報が入っており、d_name で directory entry の名前が取れる。</p>
+<p><code>opendir()</code> 関数は、 <code>DIR</code> 構造体のポインタを返す。<code>readdir()</code> 関数は <code>DIR</code> 構造体のポインタを引数に取り、 <code>dirent</code> 構造体のポインタを返す。
+もう読むエントリが無い場合は null ポインタを返す。
+<code>dirent</code> 構造体には directory entry に関する情報が入っており、<code>d_name</code> で directory entry の名前が取れる。</p>
 
-<p>プログラムを終了するとき、exit() 関数を呼ぶが、慣例により、正常終了のときは 0 、エラーのときは 1 から 255 のいずれかを引数に渡す。</p>
+<p>プログラムを終了するとき、<code>exit()</code> 関数を呼ぶが、慣例により、正常終了のときは 0 、エラーのときは 1 から 255 のいずれかを引数に渡す。</p>
 
 <h2>インプット・アウトプット</h2>
 
 <p>File descriptor とは、 kernel が file にアクセスするために用いる識別子で、普通は非負の小さい整数を用いる。
-慣例により、標準入力には 0 (STDIN_FILENO)、標準出力には 1 (STDOUT_FILENO)、標準エラー出力には 2 (STDERR_FILENO) が既に割り当てられている。 これらのマクロは unistd.h に定義されている。詳しくは Chapter 3 で。</p>
+慣例により、標準入力には 0 (<code>STDIN_FILENO</code>)、標準出力には 1 (<code>STDOUT_FILENO</code>)、標準エラー出力には 2 (<code>STDERR_FILENO</code>) が既に割り当てられている。
+これらのマクロは <code>unistd.h</code> に定義されている。詳しくは Chapter 3 で。</p>
 
 <h2>プログラム・プロセス</h2>
 
@@ -178,10 +180,10 @@ UNIX システムでは、すべてのプロセスにはユニークな番号 (p
 
 <h2>エラー</h2>
 
-<p>UNIX システム関数では、エラーが起こると大抵は負の値を返し、errno という整数型の変数に追加の情報が格納される。
-errno にセットされる値は errno.h に定義されている。
-errno の値が勝手にクリアされることは無いので、errno の値を調べるときは、エラーが起きた直後でなければならない。
-また、errno の値が 0 にセットされることは無く、errno.h には 0 に設定されている定数も存在しない。</p>
+<p>UNIX システム関数では、エラーが起こると大抵は負の値を返し、<code>errno</code> という整数型の変数に追加の情報が格納される。
+<code>errno</code> にセットされる値は <code>errno.h</code> に定義されている。
+<code>errno</code> の値が勝手にクリアされることは無いので、<code>errno</code> の値を調べるときは、エラーが起きた直後でなければならない。
+また、<code>errno</code> の値が 0 にセットされることは無く、<code>errno.h</code> には 0 に設定されている定数も存在しない。</p>
 
 <h2>ユーザ管理</h2>
 
@@ -189,13 +191,13 @@ errno の値が勝手にクリアされることは無いので、errno の値�
 user ID が 0 のユーザは root あるいは superuser とよばれる。</p>
 
 <p>group ID はユーザをグループ化して、リソースを共有したりするのに用いられ、login name が作られるときに割り当てられる。
-group name と group ID の紐付けは group file という file に書かれている。group file は大抵の場合 /etc/group である。</p>
+group name と group ID の紐付けは group file という file に書かれている。group file は大抵の場合 <code>/etc/group</code> である。</p>
 
-<p>user ID と group ID は getuid() 関数と getgid() 関数で取得できる。</p>
+<p>user ID と group ID は <code>getuid()</code> 関数と <code>getgid()</code> 関数で取得できる。</p>
 
 <h2>シグナル</h2>
 
-<p>Signal はプロセスにある状態になったことを通知するのに用いられる。例えば 0 除算が発生した場合、プロセスに SIGFPE シグナルが送られる。
+<p>Signal はプロセスにある状態になったことを通知するのに用いられる。例えば 0 除算が発生した場合、プロセスに <code>SIGFPE</code> シグナルが送られる。
 シグナルが送られた場合、プロセスは</p>
 
 <ul>
@@ -207,26 +209,34 @@ group name と group ID の紐付けは group file という file に書かれ�
 
 <p>のいずれかを行うことになる。</p>
 
-<p>シグナルは kill() 関数を使って発生させることもできる。詳しくは Chapter 10 で。</p>
+<p>シグナルは <code>kill()</code> 関数を使って発生させることもできる。詳しくは Chapter 10 で。</p>
 
 <h2>時間管理</h2>
 
 <p>UNIX システムは二種類の時間を管理している:</p>
 
-<p>Calendar time: 1970 年 1 月 1 日 00:00:00 からの経過時間
-Process time: プロセスによって消費されるプロセッサのリソースを測る時間。CPU time とも呼ばれる
-プログラムの実行時間を測ると、以下の3つの値が取得できる:</p>
+<ul>
+<li>Calendar time: 1970 年 1 月 1 日 00:00:00 からの経過時間</li>
+<li>Process time: プロセスによって消費されるプロセッサのリソースを測る時間。CPU time とも呼ばれる</li>
+</ul>
 
-<p>Clock time: プロセスが実行するのにかかった時間。この時間はシステム上で走っている他のプロセスの数に依存する。
-User CPU time: プログラム中のループ等、ユーザの命令を行うのにかかった時間。
-System CPU time: システムコールを行うのにかかった時間
-user CPU time と system CPU time の合計が大体 CPU time と同じ。</p>
+
+<p>プログラムの実行時間を測ると、以下の3つの値が取得できる:</p>
+
+<ul>
+<li>Clock time: プロセスが実行するのにかかった時間。この時間はシステム上で走っている他のプロセスの数に依存する。</li>
+<li>User CPU time: プログラム中のループ等、ユーザの命令を行うのにかかった時間。</li>
+<li>System CPU time: システムコールを行うのにかかった時間</li>
+</ul>
+
+
+<p>user CPU time と system CPU time の合計が大体 CPU time と同じ。</p>
 
 <h2>システムコール</h2>
 
 <p>UNIX Programmer&#8217;s Manual の Section 2 には、システムコールのドキュメントが書かれている。
-Section 3 には printf() の標準関数のドキュメントが書かれている。
-標準関数は内部でシステムコールを呼んだりしているものもある。例えば、malloc(3) はsbrk(2) を呼んでいる</p>
+Section 3 には <code>printf()</code> の標準関数のドキュメントが書かれている。
+標準関数は内部でシステムコールを呼んだりしているものもある。例えば、<code>malloc(3)</code> は <code>sbrk(2)</code> を呼んでいる</p>
 </div>
 
 
@@ -275,6 +285,8 @@ Section 3 には printf() の標準関数のドキュメントが書かれてい
         <a class="basic-alignment left" href="/blog/2012/01/09/octopress/" title="Previous Post: Octopress を使ってみる">&laquo; Octopress を使ってみる</a>
       
       
+        <a class="basic-alignment right" href="/blog/2012/01/15/apue-chapter-2/" title="next Post: Advanced Programming in the UNIX Environment - Chapter 2">Advanced Programming in the UNIX Environment - Chapter 2 &raquo;</a>
+      
     </p>
   </footer>
 </article>
@@ -292,6 +304,18 @@ Section 3 には printf() の標準関数のドキュメントが書かれてい
     <section>
   <h1>Recent Posts</h1>
   <ul id="recent_posts">
+    
+      <li class="post">
+        <a href="/blog/2012/01/15/apue-chapter-3-part-2/">Advanced Programming in the UNIX Environment - Chapter 3, Part 2</a>
+      </li>
+    
+      <li class="post">
+        <a href="/blog/2012/01/15/apue-chapter-3-part-1/">Advanced Programming in the UNIX Environment - Chapter 3, Part 1</a>
+      </li>
+    
+      <li class="post">
+        <a href="/blog/2012/01/15/apue-chapter-2/">Advanced Programming in the UNIX Environment - Chapter 2</a>
+      </li>
     
       <li class="post">
         <a href="/blog/2012/01/09/apue-chapter-1/">Advanced Programming in the UNIX Environment - Chapter 1</a>
