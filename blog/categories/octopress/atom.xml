@@ -4,7 +4,7 @@
   <title><![CDATA[Category: octopress | ApprEngineer.log]]></title>
   <link href="http://kentaktwo.github.com/blog/categories/octopress/atom.xml" rel="self"/>
   <link href="http://kentaktwo.github.com/"/>
-  <updated>2012-01-15T18:30:57+09:00</updated>
+  <updated>2012-01-15T18:33:06+09:00</updated>
   <id>http://kentaktwo.github.com/</id>
   <author>
     <name><![CDATA[kentaktwo]]></name>
@@ -22,6 +22,9 @@
 Octopress という技術ブログ向けフレームワークがあるということなので、使って見ました。</p>
 
 <p><a href="http://octopress.org/">http://octopress.org/</a></p>
+
+<!--more-->
+
 
 <h2>インストール</h2>
 
