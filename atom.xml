@@ -4,7 +4,7 @@
   <title><![CDATA[ApprEngineer.log]]></title>
   <link href="http://kentaktwo.github.com/atom.xml" rel="self"/>
   <link href="http://kentaktwo.github.com/"/>
-  <updated>2012-01-15T18:45:37+09:00</updated>
+  <updated>2012-01-15T18:54:15+09:00</updated>
   <id>http://kentaktwo.github.com/</id>
   <author>
     <name><![CDATA[kentaktwo]]></name>
@@ -203,13 +203,9 @@ rake_gendeploy
 
 <p>記事は markdown 記法と呼ばれる記法で書くらしい。</p>
 
-<p>参考：</p>
-
-<ul>
-<li><a href="http://www.kotono8.com/wiki/Markdown#.E8.A6.8B.E5.87.BA.E3.81.97">http://www.kotono8.com/wiki/Markdown#.E8.A6.8B.E5.87.BA.E3.81.97</a></li>
-<li><a href="http://nakama.cc.sophia.ac.jp/help.php?file=advanced_markdown.html">http://nakama.cc.sophia.ac.jp/help.php?file=advanced_markdown.html</a></li>
-</ul>
-
+<p>参考：<br/>
+<a href="http://www.kotono8.com/wiki/Markdown#.E8.A6.8B.E5.87.BA.E3.81.97">http://www.kotono8.com/wiki/Markdown#.E8.A6.8B.E5.87.BA.E3.81.97</a>
+<a href="http://nakama.cc.sophia.ac.jp/help.php?file=advanced_markdown.html">http://nakama.cc.sophia.ac.jp/help.php?file=advanced_markdown.html</a></p>
 
 <p>見た目の変更とかは後々やろうと思います。<br/>
 とりあえず、前に書いた記事のうちいくつかを移してみよう。</p>
