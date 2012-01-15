@@ -4,7 +4,7 @@
   <title><![CDATA[Category: octopress | ApprEngineer.log]]></title>
   <link href="http://kentaktwo.github.com/blog/categories/octopress/atom.xml" rel="self"/>
   <link href="http://kentaktwo.github.com/"/>
-  <updated>2012-01-15T18:43:55+09:00</updated>
+  <updated>2012-01-15T18:45:37+09:00</updated>
   <id>http://kentaktwo.github.com/</id>
   <author>
     <name><![CDATA[kentaktwo]]></name>
@@ -19,7 +19,7 @@
     <updated>2012-01-09T18:03:00+09:00</updated>
     <id>http://kentaktwo.github.com/blog/2012/01/09/octopress</id>
     <content type="html"><![CDATA[<p>Tumblr を使って自分が勉強した事のメモとかを書いていましたが、
-Octopress という技術ブログ向けフレームワークがあるということなので、使って見ました。</p>
+Octopress という技術ブログ向けフレームワークがあるということなので、使ってみました。</p>
 
 <p><a href="http://octopress.org/">http://octopress.org/</a></p>
 
