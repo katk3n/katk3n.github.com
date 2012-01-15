@@ -4,7 +4,7 @@
   <title><![CDATA[Category: unix | ApprEngineer.log]]></title>
   <link href="http://kentaktwo.github.com/blog/categories/unix/atom.xml" rel="self"/>
   <link href="http://kentaktwo.github.com/"/>
-  <updated>2012-01-15T18:33:06+09:00</updated>
+  <updated>2012-01-15T18:35:18+09:00</updated>
   <id>http://kentaktwo.github.com/</id>
   <author>
     <name><![CDATA[kentaktwo]]></name>
@@ -30,7 +30,7 @@
 
 <hr />
 
-<h3>UNIX アーキテクチャ</h3>
+<h2>UNIX アーキテクチャ</h2>
 
 <p>Operating System (OS) とは、コンピュータのハードウェアを抽象化したインターフェースをアプリケーションに提供するソフトウェアのこと。
 その中でコンピュータのハードウェアリソースを管理し、その下でプログラムが動く環境を提供する中核部分のことを kernel と呼ぶ。
@@ -54,7 +54,7 @@ kernel
 
 <p>shell は他のアプリケーションを動かすための特別なアプリケーションのこと。</p>
 
-<h3>ログイン</h3>
+<h2>ログイン</h2>
 
 <p>ユーザが UNIX システムにログインするために、 login name と password を入れると、 システムはパスワードファイル（通常は /etc/passwd）を見に行く。
 パスワードファイルには、</p>
@@ -75,7 +75,7 @@ kernel
 <p>sar:x:205:105:Stephen Rago:/home/sar:/bin/ksh
 パスワードは最近のシステムではここではなく、別のファイルに書かれている (Chapter 6) 。</p>
 
-<h3>ファイル・ディレクトリ</h3>
+<h2>ファイル・ディレクトリ</h2>
 
 <p>UNIX ファイルシステムは directory と file からなる階層構造になっている。
 directory とは、directory entry を含んだ file のこと。
@@ -91,26 +91,26 @@ dirent 構造体には directory entry に関する情報が入っており、d_
 
 <p>プログラムを終了するとき、exit() 関数を呼ぶが、慣例により、正常終了のときは 0 、エラーのときは 1 から 255 のいずれかを引数に渡す。</p>
 
-<h3>インプット・アウトプット</h3>
+<h2>インプット・アウトプット</h2>
 
 <p>File descriptor とは、 kernel が file にアクセスするために用いる識別子で、普通は非負の小さい整数を用いる。
 慣例により、標準入力には 0 (STDIN_FILENO)、標準出力には 1 (STDOUT_FILENO)、標準エラー出力には 2 (STDERR_FILENO) が既に割り当てられている。 これらのマクロは unistd.h に定義されている。詳しくは Chapter 3 で。</p>
 
-<h3>プログラム・プロセス</h3>
+<h2>プログラム・プロセス</h2>
 
 <p>program とは、実行可能な file のこと。プログラムはメモリに読み込まれ、kernel によって実行される。詳しくは Chapter 8 で。</p>
 
 <p>実行中のプログラムのインスタンスのことを process という。OS によっては task ということもある。
 UNIX システムでは、すべてのプロセスにはユニークな番号 (process ID) が振られる。プロセス ID は非負整数。</p>
 
-<h3>エラー</h3>
+<h2>エラー</h2>
 
 <p>UNIX システム関数では、エラーが起こると大抵は負の値を返し、errno という整数型の変数に追加の情報が格納される。
 errno にセットされる値は errno.h に定義されている。
 errno の値が勝手にクリアされることは無いので、errno の値を調べるときは、エラーが起きた直後でなければならない。
 また、errno の値が 0 にセットされることは無く、errno.h には 0 に設定されている定数も存在しない。</p>
 
-<h3>ユーザ管理</h3>
+<h2>ユーザ管理</h2>
 
 <p>user ID は各ユーザに固有の値であり、 login name が作られるときにシステム管理者によって割り当てられる。
 user ID が 0 のユーザは root あるいは superuser とよばれる。</p>
@@ -120,7 +120,7 @@ group name と group ID の紐付けは group file という file に書かれ�
 
 <p>user ID と group ID は getuid() 関数と getgid() 関数で取得できる。</p>
 
-<h3>シグナル</h3>
+<h2>シグナル</h2>
 
 <p>Signal はプロセスにある状態になったことを通知するのに用いられる。例えば 0 除算が発生した場合、プロセスに SIGFPE シグナルが送られる。
 シグナルが送られた場合、プロセスは</p>
@@ -136,7 +136,7 @@ group name と group ID の紐付けは group file という file に書かれ�
 
 <p>シグナルは kill() 関数を使って発生させることもできる。詳しくは Chapter 10 で。</p>
 
-<h3>時間管理</h3>
+<h2>時間管理</h2>
 
 <p>UNIX システムは二種類の時間を管理している:</p>
 
@@ -149,7 +149,7 @@ User CPU time: プログラム中のループ等、ユーザの命令を行う�
 System CPU time: システムコールを行うのにかかった時間
 user CPU time と system CPU time の合計が大体 CPU time と同じ。</p>
 
-<h3>システムコール</h3>
+<h2>システムコール</h2>
 
 <p>UNIX Programmer's Manual の Section 2 には、システムコールのドキュメントが書かれている。
 Section 3 には printf() の標準関数のドキュメントが書かれている。
