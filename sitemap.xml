@@ -1,15 +1,19 @@
 <?xml version='1.0' encoding='UTF-8'?>
 <urlset xmlns='http://www.sitemaps.org/schemas/sitemap/0.9'>
     <url>
-        <loc>http://kentaktwo.github.com/blog/2012/01/09/test-post/</loc>
-        <lastmod>2012-01-09T18:49:55+09:00</lastmod>
+        <loc>http://kentaktwo.github.com/blog/2012/01/09/octopress/</loc>
+        <lastmod>2012-01-15T18:30:57+09:00</lastmod>
+    </url>
+    <url>
+        <loc>http://kentaktwo.github.com/blog/2012/01/09/apue-chapter-1/</loc>
+        <lastmod>2012-01-10T00:51:06+09:00</lastmod>
     </url>
     <url>
         <loc>http://kentaktwo.github.com/blog/archives/</loc>
-        <lastmod>2012-01-09T18:49:55+09:00</lastmod>
+        <lastmod>2012-01-15T18:30:57+09:00</lastmod>
     </url>
     <url>
         <loc>http://kentaktwo.github.com/</loc>
-        <lastmod>2012-01-09T18:49:55+09:00</lastmod>
+        <lastmod>2012-01-15T18:30:57+09:00</lastmod>
     </url>
 </urlset>

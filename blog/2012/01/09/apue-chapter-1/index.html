@@ -1,24 +1,99 @@
-<?xml version="1.0" encoding="utf-8"?>
-<feed xmlns="http://www.w3.org/2005/Atom">
 
-  <title><![CDATA[ApprEngineer.log]]></title>
-  <link href="http://kentaktwo.github.com/atom.xml" rel="self"/>
-  <link href="http://kentaktwo.github.com/"/>
-  <updated>2012-01-15T18:30:57+09:00</updated>
-  <id>http://kentaktwo.github.com/</id>
-  <author>
-    <name><![CDATA[kentaktwo]]></name>
-    
-  </author>
-  <generator uri="http://octopress.org/">Octopress</generator>
+<!DOCTYPE html>
+<!--[if IEMobile 7 ]><html class="no-js iem7"><![endif]-->
+<!--[if lt IE 9]><html class="no-js lte-ie8"><![endif]-->
+<!--[if (gt IE 8)|(gt IEMobile 7)|!(IEMobile)|!(IE)]><!--><html class="no-js" lang="en"><!--<![endif]-->
+<head>
+  <meta charset="utf-8">
+  <title>Advanced Programming in the UNIX Environment - Chapter 1 - ApprEngineer.log</title>
+  <meta name="author" content="kentaktwo">
 
   
-  <entry>
-    <title type="html"><![CDATA[Advanced Programming in the UNIX Environment - Chapter 1]]></title>
-    <link href="http://kentaktwo.github.com/blog/2012/01/09/apue-chapter-1/"/>
-    <updated>2012-01-09T21:02:00+09:00</updated>
-    <id>http://kentaktwo.github.com/blog/2012/01/09/apue-chapter-1</id>
-    <content type="html"><![CDATA[<p>unix プログラミングを知っておく必要があるので、勉強することにしました。<br/>
+  <meta name="description" content="unix プログラミングを知っておく必要があるので、勉強することにしました。
+翻訳版が古いので原書を読むことにしました。 Amazon: Advanced Programming in the UNIX Environment Chapter 1 は UNIX システムについての概要。 UNIX &hellip;">
+  
+
+  <!-- http://t.co/dKP3o1e -->
+  <meta name="HandheldFriendly" content="True">
+  <meta name="MobileOptimized" content="320">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+
+  
+  <link rel="canonical" href="http://kentaktwo.github.com/blog/2012/01/09/apue-chapter-1">
+  <link href="/favicon.png" rel="icon">
+  <link href="/stylesheets/screen.css" media="screen, projection" rel="stylesheet" type="text/css">
+  <script src="/javascripts/modernizr-2.0.js"></script>
+  <script src="/javascripts/ender.js"></script>
+  <script src="/javascripts/octopress.js" type="text/javascript"></script>
+  <link href="/atom.xml" rel="alternate" title="ApprEngineer.log" type="application/atom+xml">
+  <!--Fonts from Google"s Web font directory at http://google.com/webfonts -->
+<link href="http://fonts.googleapis.com/css?family=PT+Serif:regular,italic,bold,bolditalic" rel="stylesheet" type="text/css">
+<link href="http://fonts.googleapis.com/css?family=PT+Sans:regular,italic,bold,bolditalic" rel="stylesheet" type="text/css">
+
+  
+
+</head>
+
+<body   >
+  <header role="banner"><hgroup>
+  <h1><a href="/">ApprEngineer.log</a></h1>
+  
+    <h2>A blogging framework for hackers.</h2>
+  
+</hgroup>
+
+</header>
+  <nav role="navigation"><ul class="subscription" data-subscription="rss">
+  <li><a href="/atom.xml" rel="subscribe-rss" title="subscribe via RSS">RSS</a></li>
+  
+</ul>
+  
+<form action="http://google.com/search" method="get">
+  <fieldset role="search">
+    <input type="hidden" name="q" value="site:kentaktwo.github.com" />
+    <input class="search" type="text" name="q" results="0" placeholder="Search"/>
+  </fieldset>
+</form>
+  
+<ul class="main-navigation">
+  <li><a href="/">Blog</a></li>
+  <li><a href="/blog/archives">Archives</a></li>
+</ul>
+
+</nav>
+  <div id="main">
+    <div id="content">
+      <div>
+<article class="hentry" role="article">
+  
+  <header>
+    
+      <h1 class="entry-title">Advanced Programming in the UNIX Environment - Chapter 1</h1>
+    
+    
+      <p class="meta">
+        
+
+
+
+
+
+
+
+
+  
+
+
+<time datetime="2012-01-09T21:02:00+09:00" pubdate data-updated="true">Jan 9<span>th</span>, 2012</time>
+        
+         | <a href="#disqus_thread">Comments</a>
+        
+      </p>
+    
+  </header>
+
+
+<div class="entry-content"><p>unix プログラミングを知っておく必要があるので、勉強することにしました。<br/>
 翻訳版が古いので原書を読むことにしました。</p>
 
 <p><a href="http://www.amazon.com/Advanced-Programming-UNIX-Environment-2nd/dp/0201433079">Amazon: Advanced Programming in the UNIX Environment</a></p>
@@ -154,57 +229,137 @@ user CPU time と system CPU time の合計が大体 CPU time と同じ。</p>
 <p>UNIX Programmer&#8217;s Manual の Section 2 には、システムコールのドキュメントが書かれている。
 Section 3 には printf() の標準関数のドキュメントが書かれている。
 標準関数は内部でシステムコールを呼んだりしているものもある。例えば、malloc(3) はsbrk(2) を呼んでいる</p>
-]]></content>
-  </entry>
+</div>
+
+
+  <footer>
+    <p class="meta">
+      
   
-  <entry>
-    <title type="html"><![CDATA[Octopress を使ってみる]]></title>
-    <link href="http://kentaktwo.github.com/blog/2012/01/09/octopress/"/>
-    <updated>2012-01-09T18:03:00+09:00</updated>
-    <id>http://kentaktwo.github.com/blog/2012/01/09/octopress</id>
-    <content type="html"><![CDATA[<p>Tumblr を使って自分が勉強した事のメモとかを書いていましたが、
-Octopress という技術ブログ向けフレームワークがあるということなので、使って見ました。</p>
 
-<p><a href="http://octopress.org/">http://octopress.org/</a></p>
+<span class="byline author vcard">Posted by <span class="fn">kentaktwo</span></span>
 
-<h2>インストール</h2>
-
-<p>以下を参考にしながらインストール。
-<a href="http://tokkonopapa.github.com/blog/2011/12/30/octopress-on-github-and-bitbucket/">http://tokkonopapa.github.com/blog/2011/12/30/octopress-on-github-and-bitbucket/</a></p>
-
-<h2>新規投稿</h2>
-
-<pre><code>rake new_post['title']</code></pre>
+      
 
 
-<h2>デプロイ</h2>
-
-<pre><code># ページの作成
-rake generate
-# プレビュー
-rake preview
-# デプロイ
-rake deploy
-# 作成とデプロイを同時にやる場合
-rake_gendeploy
-</code></pre>
 
 
-<h2>markdown 記法</h2>
-
-<p>記事は markdown 記法と呼ばれる記法で書くらしい。</p>
-
-<p>参考：</p>
-
-<ul>
-<li><a href="http://www.kotono8.com/wiki/Markdown#.E8.A6.8B.E5.87.BA.E3.81.97">http://www.kotono8.com/wiki/Markdown#.E8.A6.8B.E5.87.BA.E3.81.97</a></li>
-<li><a href="http://nakama.cc.sophia.ac.jp/help.php?file=advanced_markdown.html">http://nakama.cc.sophia.ac.jp/help.php?file=advanced_markdown.html</a></li>
-</ul>
 
 
-<p>見た目の変更とかは後々やろうと思います。<br/>
-とりあえず、前に書いた記事のうちいくつかを移してみよう。</p>
-]]></content>
-  </entry>
+
+
   
-</feed>
+
+
+<time datetime="2012-01-09T21:02:00+09:00" pubdate data-updated="true">Jan 9<span>th</span>, 2012</time>
+      
+
+<span class="categories">
+  
+    <a class='category' href='/blog/categories/unix/'>unix</a>
+  
+</span>
+
+
+    </p>
+    
+      <div class="sharing">
+  
+  <a href="http://twitter.com/share" class="twitter-share-button" data-url="http://kentaktwo.github.com/blog/2012/01/09/apue-chapter-1/" data-via="" data-counturl="http://kentaktwo.github.com/blog/2012/01/09/apue-chapter-1/" >Tweet</a>
+  
+  
+  
+</div>
+
+    
+    <p class="meta">
+      
+        <a class="basic-alignment left" href="/blog/2012/01/09/octopress/" title="Previous Post: Octopress を使ってみる">&laquo; Octopress を使ってみる</a>
+      
+      
+    </p>
+  </footer>
+</article>
+
+  <section>
+    <h1>Comments</h1>
+    <div id="disqus_thread" aria-live="polite"><noscript>Please enable JavaScript to view the <a href="http://disqus.com/?ref_noscript">comments powered by Disqus.</a></noscript>
+</div>
+  </section>
+
+</div>
+
+<aside class="sidebar">
+  
+    <section>
+  <h1>Recent Posts</h1>
+  <ul id="recent_posts">
+    
+      <li class="post">
+        <a href="/blog/2012/01/09/apue-chapter-1/">Advanced Programming in the UNIX Environment - Chapter 1</a>
+      </li>
+    
+      <li class="post">
+        <a href="/blog/2012/01/09/octopress/">Octopress を使ってみる</a>
+      </li>
+    
+  </ul>
+</section>
+
+
+
+
+
+
+  
+</aside>
+
+
+    </div>
+  </div>
+  <footer role="contentinfo"><p>
+  Copyright &copy; 2012 - kentaktwo -
+  <span class="credit">Powered by <a href="http://octopress.org">Octopress</a></span>
+</p>
+
+</footer>
+  
+
+<script type="text/javascript">
+      var disqus_shortname = 'apprengineerlog';
+      
+        
+        // var disqus_developer = 1;
+        var disqus_identifier = 'http://kentaktwo.github.com/blog/2012/01/09/apue-chapter-1/';
+        var disqus_url = 'http://kentaktwo.github.com/blog/2012/01/09/apue-chapter-1/';
+        var disqus_script = 'embed.js';
+      
+    (function () {
+      var dsq = document.createElement('script'); dsq.type = 'text/javascript'; dsq.async = true;
+      dsq.src = 'http://' + disqus_shortname + '.disqus.com/' + disqus_script;
+      (document.getElementsByTagName('head')[0] || document.getElementsByTagName('body')[0]).appendChild(dsq);
+    }());
+</script>
+
+
+
+
+
+
+
+  <script type="text/javascript">
+    (function(){
+      var twitterWidgets = document.createElement('script');
+      twitterWidgets.type = 'text/javascript';
+      twitterWidgets.async = true;
+      twitterWidgets.src = 'http://platform.twitter.com/widgets.js';
+      document.getElementsByTagName('head')[0].appendChild(twitterWidgets);
+    })();
+  </script>
+
+
+
+
+
+</body>
+</html>

@@ -1,0 +1,66 @@
+<?xml version="1.0" encoding="utf-8"?>
+<feed xmlns="http://www.w3.org/2005/Atom">
+
+  <title><![CDATA[Category: octopress | ApprEngineer.log]]></title>
+  <link href="http://kentaktwo.github.com/blog/categories/octopress/atom.xml" rel="self"/>
+  <link href="http://kentaktwo.github.com/"/>
+  <updated>2012-01-15T18:30:57+09:00</updated>
+  <id>http://kentaktwo.github.com/</id>
+  <author>
+    <name><![CDATA[kentaktwo]]></name>
+    
+  </author>
+  <generator uri="http://octopress.org/">Octopress</generator>
+
+  
+  <entry>
+    <title type="html"><![CDATA[Octopress を使ってみる]]></title>
+    <link href="http://kentaktwo.github.com/blog/2012/01/09/octopress/"/>
+    <updated>2012-01-09T18:03:00+09:00</updated>
+    <id>http://kentaktwo.github.com/blog/2012/01/09/octopress</id>
+    <content type="html"><![CDATA[<p>Tumblr を使って自分が勉強した事のメモとかを書いていましたが、
+Octopress という技術ブログ向けフレームワークがあるということなので、使って見ました。</p>
+
+<p><a href="http://octopress.org/">http://octopress.org/</a></p>
+
+<h2>インストール</h2>
+
+<p>以下を参考にしながらインストール。
+<a href="http://tokkonopapa.github.com/blog/2011/12/30/octopress-on-github-and-bitbucket/">http://tokkonopapa.github.com/blog/2011/12/30/octopress-on-github-and-bitbucket/</a></p>
+
+<h2>新規投稿</h2>
+
+<pre><code>rake new_post['title']</code></pre>
+
+
+<h2>デプロイ</h2>
+
+<pre><code># ページの作成
+rake generate
+# プレビュー
+rake preview
+# デプロイ
+rake deploy
+# 作成とデプロイを同時にやる場合
+rake_gendeploy
+</code></pre>
+
+
+<h2>markdown 記法</h2>
+
+<p>記事は markdown 記法と呼ばれる記法で書くらしい。</p>
+
+<p>参考：</p>
+
+<ul>
+<li><a href="http://www.kotono8.com/wiki/Markdown#.E8.A6.8B.E5.87.BA.E3.81.97">http://www.kotono8.com/wiki/Markdown#.E8.A6.8B.E5.87.BA.E3.81.97</a></li>
+<li><a href="http://nakama.cc.sophia.ac.jp/help.php?file=advanced_markdown.html">http://nakama.cc.sophia.ac.jp/help.php?file=advanced_markdown.html</a></li>
+</ul>
+
+
+<p>見た目の変更とかは後々やろうと思います。<br/>
+とりあえず、前に書いた記事のうちいくつかを移してみよう。</p>
+]]></content>
+  </entry>
+  
+</feed>
