@@ -4,7 +4,7 @@
   <title><![CDATA[Category: octopress | ApprEngineer.log]]></title>
   <link href="http://kentaktwo.github.com/blog/categories/octopress/atom.xml" rel="self"/>
   <link href="http://kentaktwo.github.com/"/>
-  <updated>2012-01-15T18:40:34+09:00</updated>
+  <updated>2012-01-15T18:43:55+09:00</updated>
   <id>http://kentaktwo.github.com/</id>
   <author>
     <name><![CDATA[kentaktwo]]></name>
@@ -35,6 +35,14 @@ Octopress という技術ブログ向けフレームワークがあるという�
 
 <pre><code>rake new_post['title']</code></pre>
 
+
+<p>なお、自分の環境だとファイルが作られたときのフォーマットが iso-2022-jp になっているようなので、初回は</p>
+
+<pre><code># In vim
+:set filetype=utf-8</code></pre>
+
+
+<p>で文字コードを直す。</p>
 
 <h2>デプロイ</h2>
 
