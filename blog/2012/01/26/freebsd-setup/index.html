@@ -5,13 +5,13 @@
 <!--[if (gt IE 8)|(gt IEMobile 7)|!(IEMobile)|!(IE)]><!--><html class="no-js" lang="en"><!--<![endif]-->
 <head>
   <meta charset="utf-8">
-  <title>Octopress を使ってみる - ApprEngineer.log</title>
+  <title>FreeBSD のセットアップ - ApprEngineer.log</title>
   <meta name="author" content="kentaktwo">
 
   
-  <meta name="description" content="Tumblr を使って自分が勉強した事のメモとかを書いていましたが、
-Octopress という技術ブログ向けフレームワークがあるということなので、使ってみました。 http://octopress.org/ インストール 以下を参考にしながらインストール。
-http://tokkonopapa. &hellip;">
+  <meta name="description" content="FreeBSD 9.0 のインストールとか設定とか FreeBSD 9.0 のインストール FreeBSD 9.x 以降では bsdinstall と呼ばれるインストールプログラムを使う。
+以下を見ながらインストール
+http://www.freebsd.org/doc/ja_JP.eucJP/ &hellip;">
   
 
   <!-- http://t.co/dKP3o1e -->
@@ -20,7 +20,7 @@ http://tokkonopapa. &hellip;">
   <meta name="viewport" content="width=device-width, initial-scale=1">
 
   
-  <link rel="canonical" href="http://kentaktwo.github.com/blog/2012/01/09/octopress">
+  <link rel="canonical" href="http://kentaktwo.github.com/blog/2012/01/26/freebsd-setup">
   <link href="/favicon.png" rel="icon">
   <link href="/stylesheets/screen.css" media="screen, projection" rel="stylesheet" type="text/css">
   <script src="/javascripts/modernizr-2.0.js"></script>
@@ -69,7 +69,7 @@ http://tokkonopapa. &hellip;">
   
   <header>
     
-      <h1 class="entry-title">Octopress を使ってみる</h1>
+      <h1 class="entry-title">FreeBSD のセットアップ</h1>
     
     
       <p class="meta">
@@ -85,7 +85,7 @@ http://tokkonopapa. &hellip;">
   
 
 
-<time datetime="2012-01-09T18:03:00+09:00" pubdate data-updated="true">Jan 9<span>th</span>, 2012</time>
+<time datetime="2012-01-26T00:16:00+09:00" pubdate data-updated="true">Jan 26<span>th</span>, 2012</time>
         
          | <a href="#disqus_thread">Comments</a>
         
@@ -94,54 +94,106 @@ http://tokkonopapa. &hellip;">
   </header>
 
 
-<div class="entry-content"><p>Tumblr を使って自分が勉強した事のメモとかを書いていましたが、
-Octopress という技術ブログ向けフレームワークがあるということなので、使ってみました。</p>
-
-<p><a href="http://octopress.org/">http://octopress.org/</a></p>
+<div class="entry-content"><p>FreeBSD 9.0 のインストールとか設定とか</p>
 
 <!--more-->
 
 
-<h2>インストール</h2>
+<h2>FreeBSD 9.0 のインストール</h2>
 
-<p>以下を参考にしながらインストール。
-<a href="http://tokkonopapa.github.com/blog/2011/12/30/octopress-on-github-and-bitbucket/">http://tokkonopapa.github.com/blog/2011/12/30/octopress-on-github-and-bitbucket/</a></p>
+<p>FreeBSD 9.x 以降では bsdinstall と呼ばれるインストールプログラムを使う。<br/>
+以下を見ながらインストール<br/>
+<a href="http://www.freebsd.org/doc/ja_JP.eucJP/books/handbook/bsdinstall.html">http://www.freebsd.org/doc/ja_JP.eucJP/books/handbook/bsdinstall.html</a></p>
 
-<h2>新規投稿</h2>
+<h2>ホスト名の変更</h2>
 
-<pre><code>rake new_post['title']
+<pre><code>$ hostname "ホスト名"
 </code></pre>
 
-<p>なお、自分の環境だとファイルが作られたときのフォーマットが iso-2022-jp になっているようなので、初回は</p>
+<p>で一時的に変更できるが、OS を再起動すると元に戻ってしまうため、<br/>
+<code>/etc/hosts</code>, <code>/etc/resolv.conf</code>, <code>/etc/rc.conf</code> の設定も直しておく (Linux の場合は <code>/etc/sysconfig/network</code>)</p>
 
-<pre><code># In vim
-:set fileencoding=utf-8
+<h2>ports からパッケージのインストール</h2>
+
+<h3>ports ツリーの構成</h3>
+
+<pre><code>$ pkg_add -r portsnap  # portsnap が無い場合まず package からインストールする
+$ portsnap fetch
+$ portsnap extract
+$ portsnap update
 </code></pre>
 
-<p>で文字コードを直す。</p>
+<p>ports にあるパッケージは <code>/usr/ports/</code> 以下にカテゴリ別に置かれている。<br/>
+<a href="http://www.freebsd.org/cgi/ports.cgi">http://www.freebsd.org/cgi/ports.cgi</a><br/>
+からパッケージの検索ができる。<br/>
+また、</p>
 
-<h2>デプロイ</h2>
-
-<pre><code># ページの作成
-rake generate
-# プレビュー
-rake preview
-# デプロイ
-rake deploy
-# 作成とデプロイを同時にやる場合
-rake_gendeploy
+<pre><code>$ whereis &lt;package name&gt;
 </code></pre>
 
-<h2>markdown 記法</h2>
+<p>でどこのパッケージがあるか探すことができる。</p>
 
-<p>記事は markdown 記法と呼ばれる記法で書くらしい。</p>
+<h3>sudo</h3>
 
-<p>参考：<br/>
-<a href="http://www.kotono8.com/wiki/Markdown#.E8.A6.8B.E5.87.BA.E3.81.97">http://www.kotono8.com/wiki/Markdown#.E8.A6.8B.E5.87.BA.E3.81.97</a>
-<a href="http://nakama.cc.sophia.ac.jp/help.php?file=advanced_markdown.html">http://nakama.cc.sophia.ac.jp/help.php?file=advanced_markdown.html</a></p>
+<p>FreeBSD には デフォルトで sudo は入っていない</p>
 
-<p>見た目の変更とかは後々やろうと思います。<br/>
-とりあえず、前に書いた記事のうちいくつかを移してみよう。</p>
+<pre><code>$ su root
+# cd /usr/ports/security/sudo
+# make install clean
+</code></pre>
+
+<p>インストール後 visudo で sudoers を編集</p>
+
+<h3>portaudit</h3>
+
+<p>パッケージのセキュリティに関する脆弱性を調べる</p>
+
+<pre><code>$ cd /usr/ports/ports-mgmt/portaudit
+$ sudo make install clean
+$ portaudit -F
+</code></pre>
+
+<h3>portupgrade</h3>
+
+<p>portinstall, portupgrade 等が使えるようになる</p>
+
+<pre><code>$ cd /usr/ports/ports-mgmt/portsupgrade
+$ sudo make install clean
+</code></pre>
+
+<h3>ports package の設定をやり直す</h3>
+
+<pre><code>$ sudo make config
+</code></pre>
+
+<h3>ports package のアンインストール</h3>
+
+<pre><code>$ sudo make deinstall
+</code></pre>
+
+<h3>ports package の再インストール</h3>
+
+<pre><code>$ sudo make reinstall
+</code></pre>
+
+<h2>login 時の shell の設定</h2>
+
+<pre><code>$ chsh -s /usr/local/bin/zsh
+</code></pre>
+
+<h2>apache 起動のための設定</h2>
+
+<p>accept filter を使うために <code>accf_http.ko</code> というカーネルモジュールを読み込む必要がある。</p>
+
+<pre><code>$ sudo kldload accf_http.ko
+</code></pre>
+
+<p>OS 起動時に読み込ませるには、<code>/boot/loader.conf</code> に</p>
+
+<pre><code>accf_http_load="YES"
+</code></pre>
+
+<p>を追加する。</p>
 </div>
 
 
@@ -164,12 +216,12 @@ rake_gendeploy
   
 
 
-<time datetime="2012-01-09T18:03:00+09:00" pubdate data-updated="true">Jan 9<span>th</span>, 2012</time>
+<time datetime="2012-01-26T00:16:00+09:00" pubdate data-updated="true">Jan 26<span>th</span>, 2012</time>
       
 
 <span class="categories">
   
-    <a class='category' href='/blog/categories/octopress/'>octopress</a>
+    <a class='category' href='/blog/categories/freebsd/'>freebsd</a>, <a class='category' href='/blog/categories/unix/'>unix</a>
   
 </span>
 
@@ -178,7 +230,7 @@ rake_gendeploy
     
       <div class="sharing">
   
-  <a href="http://twitter.com/share" class="twitter-share-button" data-url="http://kentaktwo.github.com/blog/2012/01/09/octopress/" data-via="" data-counturl="http://kentaktwo.github.com/blog/2012/01/09/octopress/" >Tweet</a>
+  <a href="http://twitter.com/share" class="twitter-share-button" data-url="http://kentaktwo.github.com/blog/2012/01/26/freebsd-setup/" data-via="" data-counturl="http://kentaktwo.github.com/blog/2012/01/26/freebsd-setup/" >Tweet</a>
   
   
   
@@ -187,8 +239,8 @@ rake_gendeploy
     
     <p class="meta">
       
+        <a class="basic-alignment left" href="/blog/2012/01/25/vbox-portforwarding/" title="Previous Post: VirtualBox に入れたゲスト OS に ssh login">&laquo; VirtualBox に入れたゲスト OS に ssh login</a>
       
-        <a class="basic-alignment right" href="/blog/2012/01/09/apue-chapter-1/" title="next Post: Advanced Programming in the UNIX Environment - Chapter 1">Advanced Programming in the UNIX Environment - Chapter 1 &raquo;</a>
       
     </p>
   </footer>
@@ -255,8 +307,8 @@ rake_gendeploy
       
         
         // var disqus_developer = 1;
-        var disqus_identifier = 'http://kentaktwo.github.com/blog/2012/01/09/octopress/';
-        var disqus_url = 'http://kentaktwo.github.com/blog/2012/01/09/octopress/';
+        var disqus_identifier = 'http://kentaktwo.github.com/blog/2012/01/26/freebsd-setup/';
+        var disqus_url = 'http://kentaktwo.github.com/blog/2012/01/26/freebsd-setup/';
         var disqus_script = 'embed.js';
       
     (function () {

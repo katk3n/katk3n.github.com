@@ -5,13 +5,13 @@
 <!--[if (gt IE 8)|(gt IEMobile 7)|!(IEMobile)|!(IE)]><!--><html class="no-js" lang="en"><!--<![endif]-->
 <head>
   <meta charset="utf-8">
-  <title>Octopress を使ってみる - ApprEngineer.log</title>
+  <title>VirtualBox に入れたゲスト OS に ssh login - ApprEngineer.log</title>
   <meta name="author" content="kentaktwo">
 
   
-  <meta name="description" content="Tumblr を使って自分が勉強した事のメモとかを書いていましたが、
-Octopress という技術ブログ向けフレームワークがあるということなので、使ってみました。 http://octopress.org/ インストール 以下を参考にしながらインストール。
-http://tokkonopapa. &hellip;">
+  <meta name="description" content="家の Mac OS X の VirtualBox に FreeBSD 9.0 を入れました。
+Host から Guest に ssh する設定をしました。 ゲスト OS のポートフォワーディング設定 # ssh の設定
+$ VBoxManage setextradata "f1" " &hellip;">
   
 
   <!-- http://t.co/dKP3o1e -->
@@ -20,7 +20,7 @@ http://tokkonopapa. &hellip;">
   <meta name="viewport" content="width=device-width, initial-scale=1">
 
   
-  <link rel="canonical" href="http://kentaktwo.github.com/blog/2012/01/09/octopress">
+  <link rel="canonical" href="http://kentaktwo.github.com/blog/2012/01/25/vbox-portforwarding">
   <link href="/favicon.png" rel="icon">
   <link href="/stylesheets/screen.css" media="screen, projection" rel="stylesheet" type="text/css">
   <script src="/javascripts/modernizr-2.0.js"></script>
@@ -69,7 +69,7 @@ http://tokkonopapa. &hellip;">
   
   <header>
     
-      <h1 class="entry-title">Octopress を使ってみる</h1>
+      <h1 class="entry-title">VirtualBox に入れたゲスト OS に Ssh Login</h1>
     
     
       <p class="meta">
@@ -85,7 +85,7 @@ http://tokkonopapa. &hellip;">
   
 
 
-<time datetime="2012-01-09T18:03:00+09:00" pubdate data-updated="true">Jan 9<span>th</span>, 2012</time>
+<time datetime="2012-01-25T23:51:00+09:00" pubdate data-updated="true">Jan 25<span>th</span>, 2012</time>
         
          | <a href="#disqus_thread">Comments</a>
         
@@ -94,54 +94,49 @@ http://tokkonopapa. &hellip;">
   </header>
 
 
-<div class="entry-content"><p>Tumblr を使って自分が勉強した事のメモとかを書いていましたが、
-Octopress という技術ブログ向けフレームワークがあるということなので、使ってみました。</p>
+<div class="entry-content"><p>家の Mac OS X の VirtualBox に FreeBSD 9.0 を入れました。<br/>
+Host から Guest に ssh する設定をしました。</p>
 
-<p><a href="http://octopress.org/">http://octopress.org/</a></p>
-
-<!--more-->
+<!-- more -->
 
 
-<h2>インストール</h2>
+<h2>ゲスト OS のポートフォワーディング設定</h2>
 
-<p>以下を参考にしながらインストール。
-<a href="http://tokkonopapa.github.com/blog/2011/12/30/octopress-on-github-and-bitbucket/">http://tokkonopapa.github.com/blog/2011/12/30/octopress-on-github-and-bitbucket/</a></p>
+<pre><code># ssh の設定
+$ VBoxManage setextradata "f1" "VBoxInternal/Devices/e1000/0/LUN#0/Config/guestssh/Protocol" TCP
+$ VBoxManage setextradata "f1" "VBoxInternal/Devices/e1000/0/LUN#0/Config/guestssh/GuestPort" 22
+$ VBoxManage setextradata "f1" "VBoxInternal/Devices/e1000/0/LUN#0/Config/guestssh/HostPort" 60022
 
-<h2>新規投稿</h2>
-
-<pre><code>rake new_post['title']
+# http の設定
+$ VBoxManage setextradata "f1" "VBoxInternal/Devices/e1000/0/LUN#0/Config/guesthttp/Protocol" TCP
+$ VBoxManage setextradata "f1" "VBoxInternal/Devices/e1000/0/LUN#0/Config/guesthttp/GuestPort" 80
+$ VBoxManage setextradata "f1" "VBoxInternal/Devices/e1000/0/LUN#0/Config/guesthttp/HostPort" 60080
 </code></pre>
 
-<p>なお、自分の環境だとファイルが作られたときのフォーマットが iso-2022-jp になっているようなので、初回は</p>
+<ul>
+<li>Guest の 22 番ポートを Host の 60022 番ポートへ</li>
+<li>Guest の 80 番ポートを Host の 60080 番ポートへ</li>
+</ul>
 
-<pre><code># In vim
-:set fileencoding=utf-8
+
+<p>転送する。f1 は VM の名前。<br/>
+自由に使用できるポート番号は 49152 〜 65535 らしい。
+50000 番台は CentOS が使っているので、FreeBSD は 60000 番台に割り当てました。</p>
+
+<h2>ゲスト OS の起動</h2>
+
+<pre><code>$ VBoxManage startvm --type vrdp f1
 </code></pre>
 
-<p>で文字コードを直す。</p>
+<h2>ゲスト OS に ssh</h2>
 
-<h2>デプロイ</h2>
-
-<pre><code># ページの作成
-rake generate
-# プレビュー
-rake preview
-# デプロイ
-rake deploy
-# 作成とデプロイを同時にやる場合
-rake_gendeploy
+<pre><code>$ ssh -p 60022 localhost
 </code></pre>
 
-<h2>markdown 記法</h2>
+<h2>ゲスト OS に scp</h2>
 
-<p>記事は markdown 記法と呼ばれる記法で書くらしい。</p>
-
-<p>参考：<br/>
-<a href="http://www.kotono8.com/wiki/Markdown#.E8.A6.8B.E5.87.BA.E3.81.97">http://www.kotono8.com/wiki/Markdown#.E8.A6.8B.E5.87.BA.E3.81.97</a>
-<a href="http://nakama.cc.sophia.ac.jp/help.php?file=advanced_markdown.html">http://nakama.cc.sophia.ac.jp/help.php?file=advanced_markdown.html</a></p>
-
-<p>見た目の変更とかは後々やろうと思います。<br/>
-とりあえず、前に書いた記事のうちいくつかを移してみよう。</p>
+<pre><code>$ scp -P 60022 file username@localhost:/home/uername/path
+</code></pre>
 </div>
 
 
@@ -164,12 +159,12 @@ rake_gendeploy
   
 
 
-<time datetime="2012-01-09T18:03:00+09:00" pubdate data-updated="true">Jan 9<span>th</span>, 2012</time>
+<time datetime="2012-01-25T23:51:00+09:00" pubdate data-updated="true">Jan 25<span>th</span>, 2012</time>
       
 
 <span class="categories">
   
-    <a class='category' href='/blog/categories/octopress/'>octopress</a>
+    <a class='category' href='/blog/categories/unix/'>unix</a>, <a class='category' href='/blog/categories/virtualbox/'>virtualbox</a>
   
 </span>
 
@@ -178,7 +173,7 @@ rake_gendeploy
     
       <div class="sharing">
   
-  <a href="http://twitter.com/share" class="twitter-share-button" data-url="http://kentaktwo.github.com/blog/2012/01/09/octopress/" data-via="" data-counturl="http://kentaktwo.github.com/blog/2012/01/09/octopress/" >Tweet</a>
+  <a href="http://twitter.com/share" class="twitter-share-button" data-url="http://kentaktwo.github.com/blog/2012/01/25/vbox-portforwarding/" data-via="" data-counturl="http://kentaktwo.github.com/blog/2012/01/25/vbox-portforwarding/" >Tweet</a>
   
   
   
@@ -187,8 +182,10 @@ rake_gendeploy
     
     <p class="meta">
       
+        <a class="basic-alignment left" href="/blog/2012/01/15/apue-chapter-3-part-2/" title="Previous Post: Advanced Programming in the UNIX Environment - Chapter 3, Part 2">&laquo; Advanced Programming in the UNIX Environment - Chapter 3, Part 2</a>
       
-        <a class="basic-alignment right" href="/blog/2012/01/09/apue-chapter-1/" title="next Post: Advanced Programming in the UNIX Environment - Chapter 1">Advanced Programming in the UNIX Environment - Chapter 1 &raquo;</a>
+      
+        <a class="basic-alignment right" href="/blog/2012/01/26/freebsd-setup/" title="next Post: FreeBSD のセットアップ">FreeBSD のセットアップ &raquo;</a>
       
     </p>
   </footer>
@@ -255,8 +252,8 @@ rake_gendeploy
       
         
         // var disqus_developer = 1;
-        var disqus_identifier = 'http://kentaktwo.github.com/blog/2012/01/09/octopress/';
-        var disqus_url = 'http://kentaktwo.github.com/blog/2012/01/09/octopress/';
+        var disqus_identifier = 'http://kentaktwo.github.com/blog/2012/01/25/vbox-portforwarding/';
+        var disqus_url = 'http://kentaktwo.github.com/blog/2012/01/25/vbox-portforwarding/';
         var disqus_script = 'embed.js';
       
     (function () {

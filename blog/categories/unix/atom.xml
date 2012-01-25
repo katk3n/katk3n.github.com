@@ -4,7 +4,7 @@
   <title><![CDATA[Category: unix | ApprEngineer.log]]></title>
   <link href="http://kentaktwo.github.com/blog/categories/unix/atom.xml" rel="self"/>
   <link href="http://kentaktwo.github.com/"/>
-  <updated>2012-01-15T22:45:33+09:00</updated>
+  <updated>2012-01-26T02:22:52+09:00</updated>
   <id>http://kentaktwo.github.com/</id>
   <author>
     <name><![CDATA[kentaktwo]]></name>
@@ -12,6 +12,165 @@
   </author>
   <generator uri="http://octopress.org/">Octopress</generator>
 
+  
+  <entry>
+    <title type="html"><![CDATA[FreeBSD のセットアップ]]></title>
+    <link href="http://kentaktwo.github.com/blog/2012/01/26/freebsd-setup/"/>
+    <updated>2012-01-26T00:16:00+09:00</updated>
+    <id>http://kentaktwo.github.com/blog/2012/01/26/freebsd-setup</id>
+    <content type="html"><![CDATA[<p>FreeBSD 9.0 のインストールとか設定とか</p>
+
+<!--more-->
+
+
+<h2>FreeBSD 9.0 のインストール</h2>
+
+<p>FreeBSD 9.x 以降では bsdinstall と呼ばれるインストールプログラムを使う。<br/>
+以下を見ながらインストール<br/>
+<a href="http://www.freebsd.org/doc/ja_JP.eucJP/books/handbook/bsdinstall.html">http://www.freebsd.org/doc/ja_JP.eucJP/books/handbook/bsdinstall.html</a></p>
+
+<h2>ホスト名の変更</h2>
+
+<pre><code>$ hostname "ホスト名"
+</code></pre>
+
+<p>で一時的に変更できるが、OS を再起動すると元に戻ってしまうため、<br/>
+<code>/etc/hosts</code>, <code>/etc/resolv.conf</code>, <code>/etc/rc.conf</code> の設定も直しておく (Linux の場合は <code>/etc/sysconfig/network</code>)</p>
+
+<h2>ports からパッケージのインストール</h2>
+
+<h3>ports ツリーの構成</h3>
+
+<pre><code>$ pkg_add -r portsnap  # portsnap が無い場合まず package からインストールする
+$ portsnap fetch
+$ portsnap extract
+$ portsnap update
+</code></pre>
+
+<p>ports にあるパッケージは <code>/usr/ports/</code> 以下にカテゴリ別に置かれている。<br/>
+<a href="http://www.freebsd.org/cgi/ports.cgi">http://www.freebsd.org/cgi/ports.cgi</a><br/>
+からパッケージの検索ができる。<br/>
+また、</p>
+
+<pre><code>$ whereis &lt;package name&gt;
+</code></pre>
+
+<p>でどこのパッケージがあるか探すことができる。</p>
+
+<h3>sudo</h3>
+
+<p>FreeBSD には デフォルトで sudo は入っていない</p>
+
+<pre><code>$ su root
+# cd /usr/ports/security/sudo
+# make install clean
+</code></pre>
+
+<p>インストール後 visudo で sudoers を編集</p>
+
+<h3>portaudit</h3>
+
+<p>パッケージのセキュリティに関する脆弱性を調べる</p>
+
+<pre><code>$ cd /usr/ports/ports-mgmt/portaudit
+$ sudo make install clean
+$ portaudit -F
+</code></pre>
+
+<h3>portupgrade</h3>
+
+<p>portinstall, portupgrade 等が使えるようになる</p>
+
+<pre><code>$ cd /usr/ports/ports-mgmt/portsupgrade
+$ sudo make install clean
+</code></pre>
+
+<h3>ports package の設定をやり直す</h3>
+
+<pre><code>$ sudo make config
+</code></pre>
+
+<h3>ports package のアンインストール</h3>
+
+<pre><code>$ sudo make deinstall
+</code></pre>
+
+<h3>ports package の再インストール</h3>
+
+<pre><code>$ sudo make reinstall
+</code></pre>
+
+<h2>login 時の shell の設定</h2>
+
+<pre><code>$ chsh -s /usr/local/bin/zsh
+</code></pre>
+
+<h2>apache 起動のための設定</h2>
+
+<p>accept filter を使うために <code>accf_http.ko</code> というカーネルモジュールを読み込む必要がある。</p>
+
+<pre><code>$ sudo kldload accf_http.ko
+</code></pre>
+
+<p>OS 起動時に読み込ませるには、<code>/boot/loader.conf</code> に</p>
+
+<pre><code>accf_http_load="YES"
+</code></pre>
+
+<p>を追加する。</p>
+]]></content>
+  </entry>
+  
+  <entry>
+    <title type="html"><![CDATA[VirtualBox に入れたゲスト OS に ssh login]]></title>
+    <link href="http://kentaktwo.github.com/blog/2012/01/25/vbox-portforwarding/"/>
+    <updated>2012-01-25T23:51:00+09:00</updated>
+    <id>http://kentaktwo.github.com/blog/2012/01/25/vbox-portforwarding</id>
+    <content type="html"><![CDATA[<p>家の Mac OS X の VirtualBox に FreeBSD 9.0 を入れました。<br/>
+Host から Guest に ssh する設定をしました。</p>
+
+<!-- more -->
+
+
+<h2>ゲスト OS のポートフォワーディング設定</h2>
+
+<pre><code># ssh の設定
+$ VBoxManage setextradata "f1" "VBoxInternal/Devices/e1000/0/LUN#0/Config/guestssh/Protocol" TCP
+$ VBoxManage setextradata "f1" "VBoxInternal/Devices/e1000/0/LUN#0/Config/guestssh/GuestPort" 22
+$ VBoxManage setextradata "f1" "VBoxInternal/Devices/e1000/0/LUN#0/Config/guestssh/HostPort" 60022
+
+# http の設定
+$ VBoxManage setextradata "f1" "VBoxInternal/Devices/e1000/0/LUN#0/Config/guesthttp/Protocol" TCP
+$ VBoxManage setextradata "f1" "VBoxInternal/Devices/e1000/0/LUN#0/Config/guesthttp/GuestPort" 80
+$ VBoxManage setextradata "f1" "VBoxInternal/Devices/e1000/0/LUN#0/Config/guesthttp/HostPort" 60080
+</code></pre>
+
+<ul>
+<li>Guest の 22 番ポートを Host の 60022 番ポートへ</li>
+<li>Guest の 80 番ポートを Host の 60080 番ポートへ</li>
+</ul>
+
+
+<p>転送する。f1 は VM の名前。<br/>
+自由に使用できるポート番号は 49152 〜 65535 らしい。
+50000 番台は CentOS が使っているので、FreeBSD は 60000 番台に割り当てました。</p>
+
+<h2>ゲスト OS の起動</h2>
+
+<pre><code>$ VBoxManage startvm --type vrdp f1
+</code></pre>
+
+<h2>ゲスト OS に ssh</h2>
+
+<pre><code>$ ssh -p 60022 localhost
+</code></pre>
+
+<h2>ゲスト OS に scp</h2>
+
+<pre><code>$ scp -P 60022 file username@localhost:/home/uername/path
+</code></pre>
+]]></content>
+  </entry>
   
   <entry>
     <title type="html"><![CDATA[Advanced Programming in the UNIX Environment - Chapter 3, Part 2]]></title>
@@ -450,158 +609,6 @@ Compile-time limits を使うときはヘッダから読んでくればいいが
 </span></code></pre></td></tr></table></div></figure></notextile></div></p>
 
 <p><code>sys/types.h</code> には <code>clock_t</code> や <code>size_t</code> など、実装依存のデータ型が定義されている。</p>
-]]></content>
-  </entry>
-  
-  <entry>
-    <title type="html"><![CDATA[Advanced Programming in the UNIX Environment - Chapter 1]]></title>
-    <link href="http://kentaktwo.github.com/blog/2012/01/09/apue-chapter-1/"/>
-    <updated>2012-01-09T21:02:00+09:00</updated>
-    <id>http://kentaktwo.github.com/blog/2012/01/09/apue-chapter-1</id>
-    <content type="html"><![CDATA[<p>unix プログラミングを知っておく必要があるので、勉強することにしました。<br/>
-翻訳版が古いので原書を読むことにしました。</p>
-
-<p><a href="http://www.amazon.com/Advanced-Programming-UNIX-Environment-2nd/dp/0201433079">Amazon: Advanced Programming in the UNIX Environment</a></p>
-
-<p>Chapter 1 は UNIX システムについての概要。</p>
-
-<!--more-->
-
-
-<h2>UNIX アーキテクチャ</h2>
-
-<p>Operating System (OS) とは、コンピュータのハードウェアを抽象化したインターフェースをアプリケーションに提供するソフトウェアのこと。
-その中でコンピュータのハードウェアリソースを管理し、その下でプログラムが動く環境を提供する中核部分のことを kernel と呼ぶ。
-それ以外の部分はユーザランドと呼ぶ。</p>
-
-<p>kernel とのインターフェースとなるソフトウェアのことを system call と呼ぶ。
-関数ライブラリ群は system call の上に作られるが、アプリケーションは両方呼ぶことができる。</p>
-
-<p>こんな感じ？</p>
-
-<pre><code>applications
-｜　　｜
-｜　　library routines
-｜　　｜
-system calls
-｜
-kernel
-</code></pre>
-
-<p>shell は他のアプリケーションを動かすための特別なアプリケーションのこと。</p>
-
-<h2>ログイン</h2>
-
-<p>ユーザが UNIX システムにログインするために、 login name と password を入れると、 システムはパスワードファイル（通常は /etc/passwd）を見に行く。
-パスワードファイルには、</p>
-
-<ul>
-<li>login name</li>
-<li>暗号化されたパスワード</li>
-<li>user ID（数値）</li>
-<li>group ID（数値）</li>
-<li>コメント</li>
-<li>home directory</li>
-<li>使う shell のパス</li>
-</ul>
-
-
-<p>がコロン (:) で区切られて書かれている。</p>
-
-<pre><code>sar:x:205:105:Stephen Rago:/home/sar:/bin/ksh
-</code></pre>
-
-<p>パスワードは最近のシステムではここではなく、別のファイルに書かれている (Chapter 6) 。</p>
-
-<h2>ファイル・ディレクトリ</h2>
-
-<p>UNIX ファイルシステムは directory と file からなる階層構造になっている。
-directory とは、directory entry を含んだ file のこと。
-directory entry には、file の属性や filename が格納されている。
-file の属性とは file の種類 (file, directory) 、ファイルサイズ、ファイル所有者、アクセス権などのこと。
-<code>stat</code> や <code>fstat</code> 関数を用いて属性を取得することができる。詳しくは Chapter 4 で。</p>
-
-<p>filename に使える文字はスラッシュ (<code>/</code>) と null 文字以外。スラッシュは pathname に使われ、 null 文字は終端記号に使われる。
-新しく directory が作られると、<code>.</code> と <code>..</code> の2つの filename が自動的に作られる。 root directory では、<code>..</code> は <code>.</code> と同じ。</p>
-
-<p><code>opendir()</code> 関数は、 <code>DIR</code> 構造体のポインタを返す。<code>readdir()</code> 関数は <code>DIR</code> 構造体のポインタを引数に取り、 <code>dirent</code> 構造体のポインタを返す。
-もう読むエントリが無い場合は null ポインタを返す。
-<code>dirent</code> 構造体には directory entry に関する情報が入っており、<code>d_name</code> で directory entry の名前が取れる。</p>
-
-<p>プログラムを終了するとき、<code>exit()</code> 関数を呼ぶが、慣例により、正常終了のときは 0 、エラーのときは 1 から 255 のいずれかを引数に渡す。</p>
-
-<h2>インプット・アウトプット</h2>
-
-<p>File descriptor とは、 kernel が file にアクセスするために用いる識別子で、普通は非負の小さい整数を用いる。
-慣例により、標準入力には 0 (<code>STDIN_FILENO</code>)、標準出力には 1 (<code>STDOUT_FILENO</code>)、標準エラー出力には 2 (<code>STDERR_FILENO</code>) が既に割り当てられている。
-これらのマクロは <code>unistd.h</code> に定義されている。詳しくは Chapter 3 で。</p>
-
-<h2>プログラム・プロセス</h2>
-
-<p>program とは、実行可能な file のこと。プログラムはメモリに読み込まれ、kernel によって実行される。詳しくは Chapter 8 で。</p>
-
-<p>実行中のプログラムのインスタンスのことを process という。OS によっては task ということもある。
-UNIX システムでは、すべてのプロセスにはユニークな番号 (process ID) が振られる。プロセス ID は非負整数。</p>
-
-<h2>エラー</h2>
-
-<p>UNIX システム関数では、エラーが起こると大抵は負の値を返し、<code>errno</code> という整数型の変数に追加の情報が格納される。
-<code>errno</code> にセットされる値は <code>errno.h</code> に定義されている。
-<code>errno</code> の値が勝手にクリアされることは無いので、<code>errno</code> の値を調べるときは、エラーが起きた直後でなければならない。
-また、<code>errno</code> の値が 0 にセットされることは無く、<code>errno.h</code> には 0 に設定されている定数も存在しない。</p>
-
-<h2>ユーザ管理</h2>
-
-<p>user ID は各ユーザに固有の値であり、 login name が作られるときにシステム管理者によって割り当てられる。
-user ID が 0 のユーザは root あるいは superuser とよばれる。</p>
-
-<p>group ID はユーザをグループ化して、リソースを共有したりするのに用いられ、login name が作られるときに割り当てられる。
-group name と group ID の紐付けは group file という file に書かれている。group file は大抵の場合 <code>/etc/group</code> である。</p>
-
-<p>user ID と group ID は <code>getuid()</code> 関数と <code>getgid()</code> 関数で取得できる。</p>
-
-<h2>シグナル</h2>
-
-<p>Signal はプロセスにある状態になったことを通知するのに用いられる。例えば 0 除算が発生した場合、プロセスに <code>SIGFPE</code> シグナルが送られる。
-シグナルが送られた場合、プロセスは</p>
-
-<ul>
-<li>シグナルを無視する</li>
-<li>シグナルに割り当てられたデフォルトの動作を行う</li>
-<li>関数を割り当てる</li>
-</ul>
-
-
-<p>のいずれかを行うことになる。</p>
-
-<p>シグナルは <code>kill()</code> 関数を使って発生させることもできる。詳しくは Chapter 10 で。</p>
-
-<h2>時間管理</h2>
-
-<p>UNIX システムは二種類の時間を管理している:</p>
-
-<ul>
-<li>Calendar time: 1970 年 1 月 1 日 00:00:00 からの経過時間</li>
-<li>Process time: プロセスによって消費されるプロセッサのリソースを測る時間。CPU time とも呼ばれる</li>
-</ul>
-
-
-<p>プログラムの実行時間を測ると、以下の3つの値が取得できる:</p>
-
-<ul>
-<li>Clock time: プロセスが実行するのにかかった時間。この時間はシステム上で走っている他のプロセスの数に依存する。</li>
-<li>User CPU time: プログラム中のループ等、ユーザの命令を行うのにかかった時間。</li>
-<li>System CPU time: システムコールを行うのにかかった時間</li>
-</ul>
-
-
-<p>user CPU time と system CPU time の合計が大体 CPU time と同じ。</p>
-
-<h2>システムコール</h2>
-
-<p>UNIX Programmer's Manual の Section 2 には、システムコールのドキュメントが書かれている。
-Section 3 には <code>printf()</code> の標準関数のドキュメントが書かれている。
-標準関数は内部でシステムコールを呼んだりしているものもある。例えば、<code>malloc(3)</code> は <code>sbrk(2)</code> を呼んでいる</p>
 ]]></content>
   </entry>
   
