@@ -4,7 +4,7 @@
   <title><![CDATA[ApprEngineer.log]]></title>
   <link href="http://kentaktwo.github.com/atom.xml" rel="self"/>
   <link href="http://kentaktwo.github.com/"/>
-  <updated>2012-01-26T02:22:52+09:00</updated>
+  <updated>2012-01-26T02:24:43+09:00</updated>
   <id>http://kentaktwo.github.com/</id>
   <author>
     <name><![CDATA[kentaktwo]]></name>
@@ -105,7 +105,7 @@ $ sudo make install clean
 <pre><code>$ chsh -s /usr/local/bin/zsh
 </code></pre>
 
-<h2>apache 起動のための設定</h2>
+<h2>httpd 起動のための設定</h2>
 
 <p>accept filter を使うために <code>accf_http.ko</code> というカーネルモジュールを読み込む必要がある。</p>
 
