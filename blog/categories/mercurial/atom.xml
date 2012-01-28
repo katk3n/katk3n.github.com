@@ -1,0 +1,104 @@
+<?xml version="1.0" encoding="utf-8"?>
+<feed xmlns="http://www.w3.org/2005/Atom">
+
+  <title><![CDATA[Category: mercurial | ApprEngineer.log]]></title>
+  <link href="http://kentaktwo.github.com/blog/categories/mercurial/atom.xml" rel="self"/>
+  <link href="http://kentaktwo.github.com/"/>
+  <updated>2012-01-28T19:36:08+09:00</updated>
+  <id>http://kentaktwo.github.com/</id>
+  <author>
+    <name><![CDATA[kentaktwo]]></name>
+    
+  </author>
+  <generator uri="http://octopress.org/">Octopress</generator>
+
+  
+  <entry>
+    <title type="html"><![CDATA[mercurial & bitbucket で version 管理]]></title>
+    <link href="http://kentaktwo.github.com/blog/2012/01/28/mercurial-bitbucket/"/>
+    <updated>2012-01-28T18:35:00+09:00</updated>
+    <id>http://kentaktwo.github.com/blog/2012/01/28/mercurial-bitbucket</id>
+    <content type="html"><![CDATA[<p>Bitbucket は Mercurial と呼ばれる分散型のバージョン管理システムを使ったホスティングサービスです。
+分散型で有名なものには Git を使った Github などがあります。<br/>
+Github はプライベートリポジトリが有料ですが、
+Bitbucket は無料で無制限にプライベートリポジトリが使えます。</p>
+
+<!--more-->
+
+
+<h2>Mercurial とは</h2>
+
+<ul>
+<li>分散型バージョン管理システム</li>
+<li>Python で実装</li>
+<li>コマンドは <code>hg</code>  (mercury が水銀を意味し、その元素記号 Hg に由来するらしい)</li>
+<li>コマンドが subversion に似ており、Git より分かりやすい</li>
+<li>Google Code とかに使われてる</li>
+</ul>
+
+
+<h2>Bitbucket とは</h2>
+
+<ul>
+<li><a href="https://bitbucket.org/">https://bitbucket.org/</a></li>
+<li>Mercurial を使ったウェブホスティングサービス</li>
+<li>公開リポジトリ、プライベートリポジトリともに無料、容量無制限</li>
+<li>無料で使えるプライベートリポジトリのユーザ数は5人まで。それ以降は有料</li>
+</ul>
+
+
+<h2>使ってみる</h2>
+
+<p>Mac OS X で Mercurial と Bitbucket を使ってみました。</p>
+
+<h3>Mercurial のインストール</h3>
+
+<pre><code>$ brew install mercurial
+</code></pre>
+
+<h3>Bitbucket を使ったリポジトリの新規作成</h3>
+
+<ul>
+<li>Bitbucket 上にリポジトリを作成</li>
+<li>ローカルにリポジトリを clone</li>
+</ul>
+
+
+<pre><code>$ hg clone ssh://hg@bitbucket.org/username/repositoryname</code></pre>
+
+
+<ul>
+<li>ファイルを追加・変更</li>
+<li>リポジトリにファイルを追加</li>
+</ul>
+
+
+<pre><code>$ hg add * </code></pre>
+
+
+<ul>
+<li>ステータス確認</li>
+</ul>
+
+
+<pre><code>$ hg stat</code></pre>
+
+
+<ul>
+<li>コミット</li>
+</ul>
+
+
+<pre><code>$ hg commit -m "initial commit"</code></pre>
+
+
+<h2>参考</h2>
+
+<ul>
+<li><a href="http://www.slideshare.net/kenjis/mercurialbitbucket">http://www.slideshare.net/kenjis/mercurialbitbucket</a></li>
+</ul>
+
+]]></content>
+  </entry>
+  
+</feed>

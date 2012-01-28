@@ -5,13 +5,14 @@
 <!--[if (gt IE 8)|(gt IEMobile 7)|!(IEMobile)|!(IE)]><!--><html class="no-js" lang="en"><!--<![endif]-->
 <head>
   <meta charset="utf-8">
-  <title>VirtualBox に入れたゲスト OS に ssh login - ApprEngineer.log</title>
+  <title>mercurial & bitbucket で version 管理 - ApprEngineer.log</title>
   <meta name="author" content="kentaktwo">
 
   
-  <meta name="description" content="家の Mac OS X の VirtualBox に FreeBSD 9.0 を入れました。
-Host から Guest に ssh する設定をしました。 ゲスト OS のポートフォワーディング設定 # ssh の設定
-$ VBoxManage setextradata "f1" " &hellip;">
+  <meta name="description" content="Bitbucket は Mercurial と呼ばれる分散型のバージョン管理システムを使ったホスティングサービスです。
+分散型で有名なものには Git を使った Github などがあります。
+Github はプライベートリポジトリが有料ですが、
+Bitbucket &hellip;">
   
 
   <!-- http://t.co/dKP3o1e -->
@@ -20,7 +21,7 @@ $ VBoxManage setextradata "f1" " &hellip;">
   <meta name="viewport" content="width=device-width, initial-scale=1">
 
   
-  <link rel="canonical" href="http://kentaktwo.github.com/blog/2012/01/25/vbox-portforwarding">
+  <link rel="canonical" href="http://kentaktwo.github.com/blog/2012/01/28/mercurial-bitbucket">
   <link href="/favicon.png" rel="icon">
   <link href="/stylesheets/screen.css" media="screen, projection" rel="stylesheet" type="text/css">
   <script src="/javascripts/modernizr-2.0.js"></script>
@@ -69,7 +70,7 @@ $ VBoxManage setextradata "f1" " &hellip;">
   
   <header>
     
-      <h1 class="entry-title">VirtualBox に入れたゲスト OS に Ssh Login</h1>
+      <h1 class="entry-title">Mercurial & Bitbucket で Version 管理</h1>
     
     
       <p class="meta">
@@ -85,7 +86,7 @@ $ VBoxManage setextradata "f1" " &hellip;">
   
 
 
-<time datetime="2012-01-25T23:51:00+09:00" pubdate data-updated="true">Jan 25<span>th</span>, 2012</time>
+<time datetime="2012-01-28T18:35:00+09:00" pubdate data-updated="true">Jan 28<span>th</span>, 2012</time>
         
          | <a href="#disqus_thread">Comments</a>
         
@@ -94,49 +95,86 @@ $ VBoxManage setextradata "f1" " &hellip;">
   </header>
 
 
-<div class="entry-content"><p>家の Mac OS X の VirtualBox に FreeBSD 9.0 を入れました。<br/>
-Host から Guest に ssh する設定をしました。</p>
+<div class="entry-content"><p>Bitbucket は Mercurial と呼ばれる分散型のバージョン管理システムを使ったホスティングサービスです。
+分散型で有名なものには Git を使った Github などがあります。<br/>
+Github はプライベートリポジトリが有料ですが、
+Bitbucket は無料で無制限にプライベートリポジトリが使えます。</p>
 
-<!-- more -->
+<!--more-->
 
 
-<h2>ゲスト OS のポートフォワーディング設定</h2>
-
-<pre><code># ssh の設定
-$ VBoxManage setextradata "f1" "VBoxInternal/Devices/e1000/0/LUN#0/Config/guestssh/Protocol" TCP
-$ VBoxManage setextradata "f1" "VBoxInternal/Devices/e1000/0/LUN#0/Config/guestssh/GuestPort" 22
-$ VBoxManage setextradata "f1" "VBoxInternal/Devices/e1000/0/LUN#0/Config/guestssh/HostPort" 60022
-
-# http の設定
-$ VBoxManage setextradata "f1" "VBoxInternal/Devices/e1000/0/LUN#0/Config/guesthttp/Protocol" TCP
-$ VBoxManage setextradata "f1" "VBoxInternal/Devices/e1000/0/LUN#0/Config/guesthttp/GuestPort" 80
-$ VBoxManage setextradata "f1" "VBoxInternal/Devices/e1000/0/LUN#0/Config/guesthttp/HostPort" 60080
-</code></pre>
+<h2>Mercurial とは</h2>
 
 <ul>
-<li>Guest の 22 番ポートを Host の 60022 番ポートへ</li>
-<li>Guest の 80 番ポートを Host の 60080 番ポートへ</li>
+<li>分散型バージョン管理システム</li>
+<li>Python で実装</li>
+<li>コマンドは <code>hg</code>  (mercury が水銀を意味し、その元素記号 Hg に由来するらしい)</li>
+<li>コマンドが subversion に似ており、Git より分かりやすい</li>
+<li>Google Code とかに使われてる</li>
 </ul>
 
 
-<p>転送する。f1 は VM の名前。<br/>
-自由に使用できるポート番号は 49152 〜 65535 らしい。
-50000 番台は CentOS が使っているので、FreeBSD は 60000 番台に割り当てました。</p>
+<h2>Bitbucket とは</h2>
 
-<h2>ゲスト OS の起動</h2>
+<ul>
+<li><a href="https://bitbucket.org/">https://bitbucket.org/</a></li>
+<li>Mercurial を使ったウェブホスティングサービス</li>
+<li>公開リポジトリ、プライベートリポジトリともに無料、容量無制限</li>
+<li>無料で使えるプライベートリポジトリのユーザ数は5人まで。それ以降は有料</li>
+</ul>
 
-<pre><code>$ VBoxManage startvm --type vrdp f1
+
+<h2>使ってみる</h2>
+
+<p>Mac OS X で Mercurial と Bitbucket を使ってみました。</p>
+
+<h3>Mercurial のインストール</h3>
+
+<pre><code>$ brew install mercurial
 </code></pre>
 
-<h2>ゲスト OS に ssh</h2>
+<h3>Bitbucket を使ったリポジトリの新規作成</h3>
 
-<pre><code>$ ssh -p 60022 localhost
-</code></pre>
+<ul>
+<li>Bitbucket 上にリポジトリを作成</li>
+<li>ローカルにリポジトリを clone</li>
+</ul>
 
-<h2>ゲスト OS に scp</h2>
 
-<pre><code>$ scp -P 60022 file username@localhost:/home/uername/path
-</code></pre>
+<pre><code>$ hg clone ssh://hg@bitbucket.org/username/repositoryname</code></pre>
+
+
+<ul>
+<li>ファイルを追加・変更</li>
+<li>リポジトリにファイルを追加</li>
+</ul>
+
+
+<pre><code>$ hg add * </code></pre>
+
+
+<ul>
+<li>ステータス確認</li>
+</ul>
+
+
+<pre><code>$ hg stat</code></pre>
+
+
+<ul>
+<li>コミット</li>
+</ul>
+
+
+<pre><code>$ hg commit -m "initial commit"</code></pre>
+
+
+<h2>参考</h2>
+
+<ul>
+<li><a href="http://www.slideshare.net/kenjis/mercurialbitbucket">http://www.slideshare.net/kenjis/mercurialbitbucket</a></li>
+</ul>
+
 </div>
 
 
@@ -159,12 +197,12 @@ $ VBoxManage setextradata "f1" "VBoxInternal/Devices/e1000/0/LUN#0/Config/guesth
   
 
 
-<time datetime="2012-01-25T23:51:00+09:00" pubdate data-updated="true">Jan 25<span>th</span>, 2012</time>
+<time datetime="2012-01-28T18:35:00+09:00" pubdate data-updated="true">Jan 28<span>th</span>, 2012</time>
       
 
 <span class="categories">
   
-    <a class='category' href='/blog/categories/unix/'>unix</a>, <a class='category' href='/blog/categories/virtualbox/'>virtualbox</a>
+    <a class='category' href='/blog/categories/bitbucket/'>bitbucket</a>, <a class='category' href='/blog/categories/mercurial/'>mercurial</a>
   
 </span>
 
@@ -173,7 +211,7 @@ $ VBoxManage setextradata "f1" "VBoxInternal/Devices/e1000/0/LUN#0/Config/guesth
     
       <div class="sharing">
   
-  <a href="http://twitter.com/share" class="twitter-share-button" data-url="http://kentaktwo.github.com/blog/2012/01/25/vbox-portforwarding/" data-via="" data-counturl="http://kentaktwo.github.com/blog/2012/01/25/vbox-portforwarding/" >Tweet</a>
+  <a href="http://twitter.com/share" class="twitter-share-button" data-url="http://kentaktwo.github.com/blog/2012/01/28/mercurial-bitbucket/" data-via="" data-counturl="http://kentaktwo.github.com/blog/2012/01/28/mercurial-bitbucket/" >Tweet</a>
   
   
   
@@ -182,10 +220,8 @@ $ VBoxManage setextradata "f1" "VBoxInternal/Devices/e1000/0/LUN#0/Config/guesth
     
     <p class="meta">
       
-        <a class="basic-alignment left" href="/blog/2012/01/15/apue-chapter-3-part-2/" title="Previous Post: Advanced Programming in the UNIX Environment - Chapter 3, Part 2">&laquo; Advanced Programming in the UNIX Environment - Chapter 3, Part 2</a>
+        <a class="basic-alignment left" href="/blog/2012/01/26/freebsd-setup/" title="Previous Post: FreeBSD のセットアップ">&laquo; FreeBSD のセットアップ</a>
       
-      
-        <a class="basic-alignment right" href="/blog/2012/01/26/freebsd-setup/" title="next Post: FreeBSD のセットアップ">FreeBSD のセットアップ &raquo;</a>
       
     </p>
   </footer>
@@ -252,8 +288,8 @@ $ VBoxManage setextradata "f1" "VBoxInternal/Devices/e1000/0/LUN#0/Config/guesth
       
         
         // var disqus_developer = 1;
-        var disqus_identifier = 'http://kentaktwo.github.com/blog/2012/01/25/vbox-portforwarding/';
-        var disqus_url = 'http://kentaktwo.github.com/blog/2012/01/25/vbox-portforwarding/';
+        var disqus_identifier = 'http://kentaktwo.github.com/blog/2012/01/28/mercurial-bitbucket/';
+        var disqus_url = 'http://kentaktwo.github.com/blog/2012/01/28/mercurial-bitbucket/';
         var disqus_script = 'embed.js';
       
     (function () {
