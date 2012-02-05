@@ -4,7 +4,7 @@
   <title><![CDATA[Category: unix | ApprEngineer.log]]></title>
   <link href="http://kentaktwo.github.com/blog/categories/unix/atom.xml" rel="self"/>
   <link href="http://kentaktwo.github.com/"/>
-  <updated>2012-01-28T21:09:26+09:00</updated>
+  <updated>2012-02-05T16:32:15+09:00</updated>
   <id>http://kentaktwo.github.com/</id>
   <author>
     <name><![CDATA[kentaktwo]]></name>
@@ -12,6 +12,152 @@
   </author>
   <generator uri="http://octopress.org/">Octopress</generator>
 
+  
+  <entry>
+    <title type="html"><![CDATA[Unix Network Programming Chapter 1]]></title>
+    <link href="http://kentaktwo.github.com/blog/2012/02/05/unp-chapter-1/"/>
+    <updated>2012-02-05T16:32:00+09:00</updated>
+    <id>http://kentaktwo.github.com/blog/2012/02/05/unp-chapter-1</id>
+    <content type="html"><![CDATA[<p>Unix Network Programming, Volume 1 という本を読み始めました。<br/>
+<a href="http://www.unpbook.com/">http://www.unpbook.com/</a></p>
+
+<!--more-->
+
+
+<p>勉強を始めるにあたって、先日入れた FreeBSD に IP を割り当てました。</p>
+
+<p><code>/etc/rc.conf</code> に以下を追記</p>
+
+<pre><code>ifconfig_em1="inet 192.168.56.111 netmask 255.255.255.0"
+</code></pre>
+
+<p>サーバの再起動</p>
+
+<pre><code>$ sudo /etc/netstart
+</code></pre>
+
+<h2>Unix Network Programming Volume 1 について</h2>
+
+<p>このテキストでは、TCP/IP プロトコルについて扱う。<br/>
+ウェブクライアントとサーバは、TCP (Transmission Control Protocol) に従ってやり取りをし、
+TCP は IP (Internet Protocol) に従う。
+IP はある datalink layer を使ってやり取りを行う。<br/>
+Protocol とは、ネットワーク上でコンピュータがやり取りする際の決まり事。</p>
+
+<h2>unp.h</h2>
+
+<p>このテキストでは、サンプルプログラムで <code>unp.h</code> というヘッダファイルを使用する。<br/>
+例えば、<code>SA</code> は <code>struct sockaddr</code> に define されている。</p>
+
+<h2>データの受信</h2>
+
+<p>サーバからデータを受け取る時は、データサイズが大きい場合、1回の <code>read</code> 全てのデータを受信できない場合がある。
+そのため、データを受信し終わるまで <code>read</code> をループさせる必要がある。<br/>
+どこで終わりになるのかは、プロトコルによる。<br/>
+コネクションが close されるまで (daytime server (13番ポート) や、HTTP など) や、<br/>
+<code>&lt;CR&gt;&lt;LF&gt;</code> を受け取るまで (SMTP) や、<br/>
+レコードの先頭に長さが書かれているもの (DNS) などがある。</p>
+
+<h2>Wrapper Functions</h2>
+
+<p>エラー処理をするのは重要だが、毎回処理を書くのはめんどくさいので、
+エラーが起きたらプログラムを終了する等、よく行うエラー処理については wrapper 関数を用意すると良い。
+このテキストでは、関数名は wrap する関数の名前の先頭を大文字にしたものとしている。</p>
+
+<p><div class='bogus-wrapper'><notextile><figure class='code'> <div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+<span class='line-number'>7</span>
+<span class='line-number'>8</span>
+<span class='line-number'>9</span>
+<span class='line-number'>10</span>
+<span class='line-number'>11</span>
+<span class='line-number'>12</span>
+</pre></td><td class='code'><pre><code class='c'><span class='line'><span class="kt">int</span>
+</span><span class='line'><span class="nf">Socket</span><span class="p">(</span><span class="kt">int</span> <span class="n">family</span><span class="p">,</span> <span class="kt">int</span> <span class="n">type</span><span class="p">,</span> <span class="kt">int</span> <span class="n">protocol</span><span class="p">)</span>
+</span><span class='line'><span class="p">{</span><span class="o">&lt;/</span><span class="n">p</span><span class="o">&gt;</span>
+</span><span class='line'>
+</span><span class='line'><span class="o">&lt;</span><span class="n">pre</span><span class="o">&gt;&lt;</span><span class="n">code</span><span class="o">&gt;</span><span class="kt">int</span> <span class="n">n</span><span class="p">;</span>
+</span><span class='line'><span class="k">if</span> <span class="p">((</span><span class="n">n</span> <span class="o">=</span> <span class="n">socket</span><span class="p">(</span><span class="n">family</span><span class="p">,</span> <span class="n">type</span><span class="p">,</span> <span class="n">protocol</span><span class="p">))</span> <span class="o">&amp;</span><span class="n">lt</span><span class="p">;</span> <span class="mi">0</span><span class="p">)</span>
+</span><span class='line'>    <span class="n">err_sys</span><span class="p">(</span><span class="s">&quot;socket error&quot;</span><span class="p">);</span>
+</span><span class='line'>
+</span><span class='line'><span class="k">return</span> <span class="p">(</span><span class="n">n</span><span class="p">);</span>
+</span><span class='line'><span class="o">&lt;/</span><span class="n">code</span><span class="o">&gt;&lt;/</span><span class="n">pre</span><span class="o">&gt;</span>
+</span><span class='line'>
+</span><span class='line'><span class="o">&lt;</span><span class="n">p</span><span class="o">&gt;</span><span class="p">}</span>
+</span></code></pre></td></tr></table></div></figure></notextile></div></p>
+
+<h2>errno</h2>
+
+<p>Unix 関数では、エラーが起こると、グローバル変数 <code>errno</code> にエラーの種類を示す正の値がセットされ、
+関数は大抵の場合 <code>-1</code> を返す。<br/>
+エラーが起きなかったときの <code>errno</code> の値は未定義である。また、<code>errno</code> の値に 0 が入ることはない。</p>
+
+<h2>snprintf</h2>
+
+<p><code>sprintf()</code> はオーバーフローをチェックしないため、<code>snprintf()</code> を使うことが推奨されている。
+<code>snprintf()</code> は第2引数でバッファのサイズを制限しているため、オーバーフローが起きない。<br/>
+同様に、<code>gets()</code>, <code>strcat()</code>, <code>strcpy()</code> などの代わりに <code>fgets()</code>, <code>strncat()</code>, <code>strncpy()</code> を使う方が良い。</p>
+
+<h2>OSI Model</h2>
+
+<p>ネットワークの階層モデルには OSI (open systems interconnection) モデルがよく使われる。</p>
+
+<pre><code>  ----------------     ---------------
+7 | application  |     |             |
+  ----------------     |             |
+6 | presentation |     | application |
+  ----------------     |             |
+5 | session      |     |             |
+  ================     ===============
+4 | transport    |     | TCP | | UDP |
+  ----------------     ---------------
+3 | network      |     | IPv4,  IPv6 |
+  ----------------     ---------------
+2 | datalink     |     | device      |
+  ----------------     | driver      |
+1 | physical     |     | hardware    |
+  ----------------     ---------------
+     OSI Model      Internet protocol suite
+</code></pre>
+
+<p>上の3つの層はアプリケーション (FTP, HTTP, telnet など) の詳細を扱う部分であるのに対し、
+下の4つの層は通信に関する全ての事を扱う。<br/>
+また、上の3つの層が user process を形成するのに対し、
+下の4つの層は OS の kernel の一部分として提供される。<br/>
+Unix は user process と kernel の間を分けており、
+そのため Layer 4 と 5 のインターフェースとして API が提供されている。</p>
+
+<h2>netstat</h2>
+
+<p><code>netstat -i</code> でネットワークインターフェースの情報を見ることができる。
+<code>-n</code> フラグを付けるとネットワークアドレスを数字で表示する。
+ループバックインターフェースは <code>lo</code>、イーサネットは <code>eth0</code> と表示される。<br/>
+<code>netstat -r</code> でルーティングテーブルを表示する。</p>
+
+<h2>ifconfig</h2>
+
+<p><code>ifconfig &lt;interface name&gt;</code> で各インターフェースの詳細を表示する。</p>
+
+<h2>64-Bit Architectures</h2>
+
+<p>32-bit と 64-bit の Unix モデルでは、<code>long</code> とポインタの扱いが異なる。
+32-bit ではそれらの長さは 32-bit だが (ILP32)、64-bit では 64-bit である(LP64)。
+LP64 モデルでは、ポインタが integer として扱われることは無いため注意する必要がある。</p>
+
+<p>ANSI C が開発した <code>size_t</code> 型は 32-bit システムでは 32-bit の値だが、64-bit システムでは 64-bit の値になる。
+多くの場合 64-bit システムでは <code>typedef unsigned long size_t</code> されている。<br/>
+ネットワーク API で問題となるのは、ソケットのアドレス構造体が <code>size_t</code> 型を持っていることである。
+またXTI で定義される構造体の中には <code>long</code> 型で定義されているものがある。
+よって 32-bit と 64-bit の間で値の変換が発生する可能性があり、ソケット層を破壊されてしまう可能性がある。</p>
+
+<p>この対策としてはソケット API ではソケットアドレス構造体の長さを表すのに <code>socklen_t</code> 型を使い、
+XTI では <code>t_scalar_t</code> や <code>t_uscalar_t</code> 型を使うことである。</p>
+]]></content>
+  </entry>
   
   <entry>
     <title type="html"><![CDATA[FreeBSD のセットアップ]]></title>
@@ -504,111 +650,6 @@ ssize_t write(int filedes, const void *buf, size_t nbytes);
 </code></pre>
 
 <p><code>write()</code> も <code>read()</code> 同様現在の offset から書き込みを始めるが、 <code>open()</code> で <code>O_APPEND</code> が設定されていると、write を行う前に offset がファイルの終端にセットされる。</p>
-]]></content>
-  </entry>
-  
-  <entry>
-    <title type="html"><![CDATA[Advanced Programming in the UNIX Environment - Chapter 2]]></title>
-    <link href="http://kentaktwo.github.com/blog/2012/01/15/apue-chapter-2/"/>
-    <updated>2012-01-15T20:57:00+09:00</updated>
-    <id>http://kentaktwo.github.com/blog/2012/01/15/apue-chapter-2</id>
-    <content type="html"><![CDATA[<p>Chapter 2 は UNIX の標準化や実装について。</p>
-
-<!-- more -->
-
-
-<h2>UNIX 標準</h2>
-
-<p>現在 C 言語の標準化は ISO / IEC によって行われている。
-ISO は International Organization for Standardization, IEC は International Electrotechnical Commission 。
-ISO C library に <code>stdio.h</code> や <code>stdlib.h</code> など 24 種類が含まれている。</p>
-
-<p>POSIX (Portable Operating System Interface) は IEEE (Institute of Electrical and Electronics Engineers) によって管理される標準化の1つ。
-POSIX によって定義されるヘッダはには <code>unistd.h</code> や <code>sys/types.h</code> などがある。</p>
-
-<h2>UNIX の実装</h2>
-
-<p>UNIX の実装には、Sytem V, 4.4BSD, FreeBSD, Linux, Mac OS X, Solaris などがある。
-各実装は多くの定数などの定義を行なっている。</p>
-
-<p>limits については、Compile-time limits と Runtime limits の二種類に分かれる。
-Compile-time limits はコンパイル時にヘッダに定義されている定数で、例えば short integer の最大値など。
-Runtime limits プロセス呼び出し時に要求され、filename の文字数などがある。
-Compile-time limits を使うときはヘッダから読んでくればいいが、Runtime limits はプログラム実行時まで値が分からないため、 <code>sysconf()</code>, <code>pathconf()</code>, <code>fpathconf()</code> などの関数を利用する。</p>
-
-<p>実装によって、ヘッダに定義されていたり、されていなかったりする定数がある。 そのような場合は定義されていればその値を使い、されていなかったら、関数を利用して取ってくる。</p>
-
-<p><div class='bogus-wrapper'><notextile><figure class='code'> <div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
-<span class='line-number'>2</span>
-<span class='line-number'>3</span>
-<span class='line-number'>4</span>
-<span class='line-number'>5</span>
-<span class='line-number'>6</span>
-<span class='line-number'>7</span>
-<span class='line-number'>8</span>
-<span class='line-number'>9</span>
-<span class='line-number'>10</span>
-<span class='line-number'>11</span>
-<span class='line-number'>12</span>
-<span class='line-number'>13</span>
-<span class='line-number'>14</span>
-<span class='line-number'>15</span>
-<span class='line-number'>16</span>
-<span class='line-number'>17</span>
-<span class='line-number'>18</span>
-<span class='line-number'>19</span>
-<span class='line-number'>20</span>
-<span class='line-number'>21</span>
-<span class='line-number'>22</span>
-<span class='line-number'>23</span>
-<span class='line-number'>24</span>
-<span class='line-number'>25</span>
-<span class='line-number'>26</span>
-<span class='line-number'>27</span>
-<span class='line-number'>28</span>
-<span class='line-number'>29</span>
-<span class='line-number'>30</span>
-<span class='line-number'>31</span>
-<span class='line-number'>32</span>
-<span class='line-number'>33</span>
-<span class='line-number'>34</span>
-</pre></td><td class='code'><pre><code class='c'><span class='line'><span class="o">&lt;/</span><span class="n">p</span><span class="o">&gt;</span>
-</span><span class='line'>
-</span><span class='line'><span class="o">&lt;</span><span class="n">h1</span><span class="o">&gt;</span><span class="n">include</span><span class="o">&lt;/</span><span class="n">h1</span><span class="o">&gt;</span>
-</span><span class='line'>
-</span><span class='line'><span class="o">&lt;</span><span class="n">h1</span><span class="o">&gt;</span><span class="n">ifdef</span> <span class="n">OPEN_MAX</span><span class="o">&lt;/</span><span class="n">h1</span><span class="o">&gt;</span>
-</span><span class='line'>
-</span><span class='line'><span class="o">&lt;</span><span class="n">p</span><span class="o">&gt;</span><span class="k">static</span> <span class="kt">long</span> <span class="n">openmax</span> <span class="o">=</span> <span class="n">OPEN_MAX</span><span class="p">;</span><span class="o">&lt;/</span><span class="n">p</span><span class="o">&gt;</span>
-</span><span class='line'>
-</span><span class='line'><span class="o">&lt;</span><span class="n">h1</span><span class="o">&gt;</span><span class="k">else</span><span class="o">&lt;/</span><span class="n">h1</span><span class="o">&gt;</span>
-</span><span class='line'>
-</span><span class='line'><span class="o">&lt;</span><span class="n">p</span><span class="o">&gt;</span><span class="k">static</span> <span class="kt">long</span> <span class="n">openmax</span> <span class="o">=</span> <span class="mi">0</span><span class="p">;</span><span class="o">&lt;/</span><span class="n">p</span><span class="o">&gt;</span>
-</span><span class='line'>
-</span><span class='line'><span class="o">&lt;</span><span class="n">h1</span><span class="o">&gt;</span><span class="n">endif</span><span class="o">&lt;/</span><span class="n">h1</span><span class="o">&gt;</span>
-</span><span class='line'>
-</span><span class='line'><span class="o">&lt;</span><span class="n">h1</span><span class="o">&gt;</span><span class="n">define</span> <span class="n">OPEN_MAX_GUESS</span> <span class="mi">256</span><span class="o">&lt;/</span><span class="n">h1</span><span class="o">&gt;</span>
-</span><span class='line'>
-</span><span class='line'><span class="o">&lt;</span><span class="n">p</span><span class="o">&gt;</span><span class="kt">long</span>
-</span><span class='line'><span class="n">open_max</span><span class="p">(</span><span class="kt">void</span><span class="p">)</span>
-</span><span class='line'><span class="p">{</span><span class="o">&lt;/</span><span class="n">p</span><span class="o">&gt;</span>
-</span><span class='line'>
-</span><span class='line'><span class="o">&lt;</span><span class="n">pre</span><span class="o">&gt;&lt;</span><span class="n">code</span><span class="o">&gt;</span><span class="p">...</span>
-</span><span class='line'><span class="k">if</span> <span class="p">(</span><span class="n">openmax</span> <span class="o">==</span> <span class="mi">0</span><span class="p">)</span> <span class="p">{</span>
-</span><span class='line'>    <span class="n">errno</span> <span class="o">=</span> <span class="mi">0</span><span class="p">;</span>
-</span><span class='line'>    <span class="k">if</span> <span class="p">((</span><span class="n">openmax</span> <span class="o">=</span> <span class="n">sysconf</span><span class="p">(</span><span class="n">_SC_OPEN_MAX</span><span class="p">))</span> <span class="o">&amp;</span><span class="n">lt</span><span class="p">;</span> <span class="mi">0</span><span class="p">)</span> <span class="p">{</span>
-</span><span class='line'>        <span class="k">if</span> <span class="p">(</span><span class="n">errno</span> <span class="o">==</span> <span class="mi">0</span><span class="p">)</span>
-</span><span class='line'>            <span class="n">open_max</span> <span class="o">=</span> <span class="n">OPEN_MAX_GUESS</span><span class="p">;</span>  <span class="cm">/* 未定義 */</span>
-</span><span class='line'>        <span class="k">else</span>
-</span><span class='line'>            <span class="n">err_sys</span><span class="p">(</span><span class="s">&quot;sysconf error for _SC_OPEN_MAX&quot;</span><span class="p">);</span>
-</span><span class='line'>    <span class="p">}</span>
-</span><span class='line'><span class="p">}</span>
-</span><span class='line'><span class="p">...</span>
-</span><span class='line'><span class="o">&lt;/</span><span class="n">code</span><span class="o">&gt;&lt;/</span><span class="n">pre</span><span class="o">&gt;</span>
-</span><span class='line'>
-</span><span class='line'><span class="o">&lt;</span><span class="n">p</span><span class="o">&gt;</span><span class="p">}</span>
-</span></code></pre></td></tr></table></div></figure></notextile></div></p>
-
-<p><code>sys/types.h</code> には <code>clock_t</code> や <code>size_t</code> など、実装依存のデータ型が定義されている。</p>
 ]]></content>
   </entry>
   
