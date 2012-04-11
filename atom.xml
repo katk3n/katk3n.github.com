@@ -4,7 +4,7 @@
   <title><![CDATA[ApprEngineer.log]]></title>
   <link href="http://kentaktwo.github.com/atom.xml" rel="self"/>
   <link href="http://kentaktwo.github.com/"/>
-  <updated>2012-04-11T21:30:20+09:00</updated>
+  <updated>2012-04-11T23:15:04+09:00</updated>
   <id>http://kentaktwo.github.com/</id>
   <author>
     <name><![CDATA[kentaktwo]]></name>
@@ -12,6 +12,63 @@
   </author>
   <generator uri="http://octopress.org/">Octopress</generator>
 
+  
+  <entry>
+    <title type="html"><![CDATA[Mojito のインストール]]></title>
+    <link href="http://kentaktwo.github.com/blog/2012/04/11/install-mojito/"/>
+    <updated>2012-04-11T21:37:00+09:00</updated>
+    <id>http://kentaktwo.github.com/blog/2012/04/11/install-mojito</id>
+    <content type="html"><![CDATA[<p>Yahoo! Inc. がリリースした Web アプリケーションフレームワーク、Mojito をインストールしてみました。</p>
+
+<p><a href="http://developer.yahoo.com/cocktails/mojito/">http://developer.yahoo.com/cocktails/mojito/</a></p>
+
+<!--More-->
+
+
+<h2>Mojito とは</h2>
+
+<ul>
+<li>MVC モデルな Web アプリケーションフレームワーク</li>
+<li>YUI3 を使ってる</li>
+<li>JavaScript で記述</li>
+<li>1つのコードで複数のデバイス (PC, Android, iOS, etc.) での表示が可能</li>
+<li>Xcode に渡せば iOS アプリも作れる</li>
+</ul>
+
+
+<h2>インストール</h2>
+
+<h3>Node.js のインストール</h3>
+
+<p>Mojito を動かすためには Node.js が必要。<br/>
+Node.js の環境管理ツールには nvm などがあるが、<br/>
+nvm は zsh だとうまく動かないようなので、nodebrew を使う。</p>
+
+<p>参考： <a href="http://d.hatena.ne.jp/Jxck/20120224/1330035058">http://d.hatena.ne.jp/Jxck/20120224/1330035058</a></p>
+
+<p>nodebrew のインストール</p>
+
+<pre><code>$ curl https://raw.github.com/hokaccha/nodebrew/master/nodebrew | perl - setup
+$ wget https://raw.github.com/hokaccha/nodebrew/master/nodebrew
+$ perl nodebrew setup
+</code></pre>
+
+<p>.zshrc のパスの設定</p>
+
+<pre><code>export PATH=$HOME/.nodebrew/current/bin:/usr/local/bin:$PATH
+</code></pre>
+
+<p>Node.js のインストール</p>
+
+<pre><code>$ nodebrew install v0.6.14
+$ nodebrew use v0.6.14
+</code></pre>
+
+<h3>Mojito のインストール</h3>
+
+<p><a href="http://developer.yahoo.com/cocktails/mojito/docs/quickstart/">http://developer.yahoo.com/cocktails/mojito/docs/quickstart/</a></p>
+]]></content>
+  </entry>
   
   <entry>
     <title type="html"><![CDATA[mercurial & bitbucket で version 管理]]></title>
