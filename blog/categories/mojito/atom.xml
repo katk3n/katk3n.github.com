@@ -4,7 +4,7 @@
   <title><![CDATA[Category: mojito | ApprEngineer.log]]></title>
   <link href="http://kentaktwo.github.com/blog/categories/mojito/atom.xml" rel="self"/>
   <link href="http://kentaktwo.github.com/"/>
-  <updated>2012-04-11T23:22:15+09:00</updated>
+  <updated>2012-04-12T01:48:40+09:00</updated>
   <id>http://kentaktwo.github.com/</id>
   <author>
     <name><![CDATA[kentaktwo]]></name>
@@ -14,11 +14,137 @@
 
   
   <entry>
-    <title type="html"><![CDATA[Mojito コードサンプル]]></title>
-    <link href="http://kentaktwo.github.com/blog/2012/04/11/mojito-simple-view/"/>
+    <title type="html"><![CDATA[Mojito チュートリアル]]></title>
+    <link href="http://kentaktwo.github.com/blog/2012/04/11/mojito-tutorial/"/>
     <updated>2012-04-11T23:20:00+09:00</updated>
-    <id>http://kentaktwo.github.com/blog/2012/04/11/mojito-simple-view</id>
-    <content type="html"><![CDATA[
+    <id>http://kentaktwo.github.com/blog/2012/04/11/mojito-tutorial</id>
+    <content type="html"><![CDATA[<p><a href="http://developer.yahoo.com/cocktails/mojito/docs/getting_started/mojito_getting_started_tutorial.html">Tutorial: Creating Your First Application</a></p>
+
+<!--more-->
+
+
+<h2>アプリケーションの作成</h2>
+
+<p>アプリケーション用ディレクトリを作って移動する</p>
+
+<pre><code>$ mkdir mojito_apps
+$ cd mojito_apps
+</code></pre>
+
+<p>Mojito アプリケーションの作成</p>
+
+<pre><code>$ mojito create app minty_app
+</code></pre>
+
+<h2>サンプル Mojit の作成</h2>
+
+<p>Mojito アプリケーションの構成要素を <em>mojit</em> (module + widget) と呼ぶ。<br/>
+Mojit は MVC の構造をしており、definition と instance configuration の2つの部分からなる。</p>
+
+<p>definition は mojit の controller と model を含む。
+また definition にはユニットテストも含まれている。</p>
+
+<p>instance configuration は mojit の各インスタンスの設定を定義する。</p>
+
+<p>mojit の作成</p>
+
+<pre><code>$ mojito create mojit HelloMojit
+</code></pre>
+
+<p>application.json の中でポートや使う mojit の設定などを行う。
+<div class='bogus-wrapper'><notextile><figure class='code'><figcaption><span> (application.json)</span> <a href='/downloads/code/application.json'>download</a></figcaption>
+ <div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+<span class='line-number'>7</span>
+<span class='line-number'>8</span>
+<span class='line-number'>9</span>
+<span class='line-number'>10</span>
+<span class='line-number'>11</span>
+</pre></td><td class='code'><pre><code class='js'><span class='line'><span class="p">[</span>
+</span><span class='line'>    <span class="p">{</span>
+</span><span class='line'>        <span class="s2">&quot;settings&quot;</span><span class="o">:</span> <span class="p">[</span> <span class="s2">&quot;master&quot;</span> <span class="p">],</span>
+</span><span class='line'>        <span class="s2">&quot;appPort&quot;</span><span class="o">:</span> <span class="mi">8666</span><span class="p">,</span>
+</span><span class='line'>        <span class="s2">&quot;specs&quot;</span><span class="o">:</span> <span class="p">{</span>
+</span><span class='line'>            <span class="s2">&quot;hello&quot;</span><span class="o">:</span> <span class="p">{</span>
+</span><span class='line'>                <span class="s2">&quot;type&quot;</span><span class="o">:</span> <span class="s2">&quot;HelloMojit&quot;</span>
+</span><span class='line'>            <span class="p">}</span>
+</span><span class='line'>        <span class="p">}</span>
+</span><span class='line'>    <span class="p">}</span>
+</span><span class='line'><span class="p">]</span>
+</span></code></pre></td></tr></table></div></figure></notextile></div></p>
+
+<p>routes.json の中で実行する mojit のルーティングの設定を行う。
+<div class='bogus-wrapper'><notextile><figure class='code'><figcaption><span> (routes.json)</span> <a href='/downloads/code/routes.json'>download</a></figcaption>
+ <div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+<span class='line-number'>7</span>
+<span class='line-number'>8</span>
+<span class='line-number'>9</span>
+<span class='line-number'>10</span>
+</pre></td><td class='code'><pre><code class='js'><span class='line'><span class="p">[</span>
+</span><span class='line'>    <span class="p">{</span>
+</span><span class='line'>        <span class="s2">&quot;settings&quot;</span><span class="o">:</span> <span class="p">[</span> <span class="s2">&quot;master&quot;</span> <span class="p">],</span>
+</span><span class='line'>        <span class="s2">&quot;hello index&quot;</span><span class="o">:</span> <span class="p">{</span>
+</span><span class='line'>            <span class="s2">&quot;verbs&quot;</span><span class="o">:</span> <span class="p">[</span><span class="s2">&quot;get&quot;</span><span class="p">],</span>
+</span><span class='line'>            <span class="s2">&quot;path&quot;</span><span class="o">:</span> <span class="s2">&quot;/&quot;</span><span class="p">,</span>
+</span><span class='line'>            <span class="s2">&quot;call&quot;</span><span class="o">:</span> <span class="s2">&quot;hello.index&quot;</span>
+</span><span class='line'>        <span class="p">}</span>
+</span><span class='line'>    <span class="p">}</span>
+</span><span class='line'><span class="p">]</span>
+</span></code></pre></td></tr></table></div></figure></notextile></div>
+上の設定だと、ポート 8666 で <code>/</code> が get メソッドで叩かれると、
+HelloMojit のインスタンス hello の index メソッドが呼ばれる。</p>
+
+<p>HelloMojit の動作の定義は <code>mojits/HelloMojit/controller.server.js</code> で行う。
+``` js mojits/HelloMojit/controller.server.js
+YUI.add('HelloMojit', function(Y) {</p>
+
+<pre><code>/**
+ * The HelloMojit module.
+ *
+ * @module HelloMojit
+ */
+
+/**
+ * Constructor for the Controller class.
+ *
+ * @class Controller
+ * @constructor
+ */
+Y.mojito.controller = {
+    init: function(config) {
+        this.config = config;
+    },
+
+    /**
+     * Method corresponding to the 'index' action.
+     *
+     * @param ac {Object} The action context that
+     * provides access to the Mojito API.
+     */
+    index: function(actionContext) {
+       actionContext.done('Hello World!');
+   }
+};
+</code></pre>
+
+<p>}, '0.0.1', {requires: []});
+```</p>
+
+<h2>サーバの起動</h2>
+
+<pre><code>$ mojito start
+</code></pre>
+
+<p><code>http://localhost:8666/</code> にアクセスするとアプリケーションの出力を見ることができる。</p>
 ]]></content>
   </entry>
   
