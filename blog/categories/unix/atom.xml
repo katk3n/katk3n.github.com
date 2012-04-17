@@ -4,7 +4,7 @@
   <title><![CDATA[Category: unix | ApprEngineer.log]]></title>
   <link href="http://kentaktwo.github.com/blog/categories/unix/atom.xml" rel="self"/>
   <link href="http://kentaktwo.github.com/"/>
-  <updated>2012-04-12T01:48:40+09:00</updated>
+  <updated>2012-04-17T22:25:02+09:00</updated>
   <id>http://kentaktwo.github.com/</id>
   <author>
     <name><![CDATA[kentaktwo]]></name>
@@ -12,6 +12,112 @@
   </author>
   <generator uri="http://octopress.org/">Octopress</generator>
 
+  
+  <entry>
+    <title type="html"><![CDATA[BackTrack 5 RC2 をインストール]]></title>
+    <link href="http://kentaktwo.github.com/blog/2012/04/17/install-backtrack/"/>
+    <updated>2012-04-17T21:49:00+09:00</updated>
+    <id>http://kentaktwo.github.com/blog/2012/04/17/install-backtrack</id>
+    <content type="html"><![CDATA[<p>ペネトレーションテストに特化した Linux ディストリビューションの BackTrack をインストールしました。</p>
+
+<p><a href="http://www.backtrack-linux.org/">http://www.backtrack-linux.org/</a></p>
+
+<!--more-->
+
+
+<h2>BackTrack とは</h2>
+
+<ul>
+<li>Ubuntu がベース (BackTrack4 以降)</li>
+<li>様々なセキュリティツールが入っている</li>
+</ul>
+
+
+<h2>インストール</h2>
+
+<p>Virtual Box にインストールした。</p>
+
+<ul>
+<li>OS タイプは Ubuntu 64 bit</li>
+<li>NAT + ホストオンリーアダプタ</li>
+</ul>
+
+
+<p>起動したら root/toor で root にログインして、</p>
+
+<pre><code>$ startx
+</code></pre>
+
+<p>で GUI を起動する。</p>
+
+<h2>設定</h2>
+
+<h3>ユーザの追加</h3>
+
+<pre><code>$ adduser &lt;username&gt;
+</code></pre>
+
+<p>useradd だとホームディレクトリの作成や設定のコピー等をやってくれない</p>
+
+<h3>sudo の設定</h3>
+
+<pre><code>$ visudo
+</code></pre>
+
+<p>エディタは vi でないので注意。</p>
+
+<pre><code>%&lt;username&gt; ALL=(ALL) ALL
+</code></pre>
+
+<p>を追加。</p>
+
+<h3>host 名の変更</h3>
+
+<pre><code>$ sudo vi /etc/hostname
+$ sudo vi /etc/hosts
+</code></pre>
+
+<h3>IP の設定</h3>
+
+<p>eth1 の部分を以下のように編集
+``` sh /etc/network/interfaces
+auto eth1
+iface eth1 inet static</p>
+
+<pre><code>address 192.168.56.121
+netmask 255.255.255.0
+network 192.168.56.0
+broadcast 192.168.56.255
+</code></pre>
+
+<p>```</p>
+
+<h3>ssh の設定</h3>
+
+<pre><code>$ sudo apt-get --purge remove openssh-server
+$ sudo apt-get install openssh-server
+</code></pre>
+
+<p>``` sh /etc/ssh/sshd_config</p>
+
+<h1>root でのログインを無効にする</h1>
+
+<p>PermitRootLogin no</p>
+
+<h1>パスワード認証を一時的に有効にする</h1>
+
+<p>PasswordAuthentication yes
+```</p>
+
+<p>sshd 再起動</p>
+
+<pre><code>$ sudo /etc/init.d/ssh restart
+$ sudo lsof -nPi:22  # 確認
+</code></pre>
+
+<p>鍵の設定が終わったら、PasswordAuthentication を no に戻しておく。</p>
+]]></content>
+  </entry>
   
   <entry>
     <title type="html"><![CDATA[FreeBSD のセットアップ]]></title>

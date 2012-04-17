@@ -5,11 +5,11 @@
 <!--[if (gt IE 8)|(gt IEMobile 7)|!(IEMobile)|!(IE)]><!--><html class="no-js" lang="en"><!--<![endif]-->
 <head>
   <meta charset="utf-8">
-  <title>Mojito のインストール - ApprEngineer.log</title>
+  <title>BackTrack 5 RC2 をインストール - ApprEngineer.log</title>
   <meta name="author" content="kentaktwo">
 
   
-  <meta name="description" content="Yahoo! Inc. がリリースした Web アプリケーションフレームワーク、Mojito をインストールしてみました。 http://developer.yahoo.com/cocktails/mojito/ Mojito とは MVC モデルな Web アプリケーションフレームワーク &hellip;">
+  <meta name="description" content="ペネトレーションテストに特化した Linux ディストリビューションの BackTrack をインストールしました。 http://www.backtrack-linux.org/ BackTrack とは Ubuntu がベース (BackTrack4 以降) &hellip;">
   
 
   <!-- http://t.co/dKP3o1e -->
@@ -18,7 +18,7 @@
   <meta name="viewport" content="width=device-width, initial-scale=1">
 
   
-  <link rel="canonical" href="http://kentaktwo.github.com/blog/2012/04/11/install-mojito">
+  <link rel="canonical" href="http://kentaktwo.github.com/blog/2012/04/17/install-backtrack">
   <link href="/favicon.png" rel="icon">
   <link href="/stylesheets/screen.css" media="screen, projection" rel="stylesheet" type="text/css">
   <script src="/javascripts/modernizr-2.0.js"></script>
@@ -68,7 +68,7 @@
   
   <header>
     
-      <h1 class="entry-title">Mojito のインストール</h1>
+      <h1 class="entry-title">BackTrack 5 RC2 をインストール</h1>
     
     
       <p class="meta">
@@ -84,7 +84,7 @@
   
 
 
-<time datetime="2012-04-11T21:37:00+09:00" pubdate data-updated="true">Apr 11<span>th</span>, 2012</time>
+<time datetime="2012-04-17T21:49:00+09:00" pubdate data-updated="true">Apr 17<span>th</span>, 2012</time>
         
          | <a href="#disqus_thread">Comments</a>
         
@@ -93,55 +93,110 @@
   </header>
 
 
-<div class="entry-content"><p>Yahoo! Inc. がリリースした Web アプリケーションフレームワーク、Mojito をインストールしてみました。</p>
+<div class="entry-content"><p>ペネトレーションテストに特化した Linux ディストリビューションの BackTrack をインストールしました。</p>
 
-<p><a href="http://developer.yahoo.com/cocktails/mojito/">http://developer.yahoo.com/cocktails/mojito/</a></p>
+<p><a href="http://www.backtrack-linux.org/">http://www.backtrack-linux.org/</a></p>
 
-<!--More-->
+<!--more-->
 
 
-<h2>Mojito とは</h2>
+<h2>BackTrack とは</h2>
 
 <ul>
-<li>MVC モデルな Web アプリケーションフレームワーク</li>
-<li>YUI3 を使ってる</li>
-<li>JavaScript で記述</li>
-<li>1つのコードで複数のデバイス (PC, Android, iOS, etc.) での表示が可能</li>
-<li>Xcode に渡せば iOS アプリも作れる</li>
+<li>Ubuntu がベース (BackTrack4 以降)</li>
+<li>様々なセキュリティツールが入っている</li>
 </ul>
 
 
 <h2>インストール</h2>
 
-<h3>Node.js のインストール</h3>
+<p>Virtual Box にインストールした。</p>
 
-<p>Mojito を動かすためには Node.js が必要。<br/>
-Node.js の環境管理ツールには nvm などがあるが、<br/>
-nvm は zsh だとうまく動かないようなので、nodebrew を使う。</p>
+<ul>
+<li>OS タイプは Ubuntu 64 bit</li>
+<li>NAT + ホストオンリーアダプタ</li>
+</ul>
 
-<p>参考： <a href="http://d.hatena.ne.jp/Jxck/20120224/1330035058">http://d.hatena.ne.jp/Jxck/20120224/1330035058</a></p>
 
-<p>nodebrew のインストール</p>
+<p>起動したら root/toor で root にログインして、</p>
 
-<pre><code>$ curl https://raw.github.com/hokaccha/nodebrew/master/nodebrew | perl - setup
-$ wget https://raw.github.com/hokaccha/nodebrew/master/nodebrew
-$ perl nodebrew setup
+<pre><code>$ startx
 </code></pre>
 
-<p>.zshrc のパスの設定</p>
+<p>で GUI を起動する。</p>
 
-<pre><code>export PATH=$HOME/.nodebrew/current/bin:/usr/local/bin:$PATH
+<h2>設定</h2>
+
+<h3>ユーザの追加</h3>
+
+<pre><code>$ adduser &lt;username&gt;
 </code></pre>
 
-<p>Node.js のインストール</p>
+<p>useradd だとホームディレクトリの作成や設定のコピー等をやってくれない</p>
 
-<pre><code>$ nodebrew install v0.6.14
-$ nodebrew use v0.6.14
+<h3>sudo の設定</h3>
+
+<pre><code>$ visudo
 </code></pre>
 
-<h3>Mojito のインストール</h3>
+<p>エディタは vi でないので注意。</p>
 
-<p><a href="http://developer.yahoo.com/cocktails/mojito/docs/quickstart/">http://developer.yahoo.com/cocktails/mojito/docs/quickstart/</a></p>
+<pre><code>%&lt;username&gt; ALL=(ALL) ALL
+</code></pre>
+
+<p>を追加。</p>
+
+<h3>host 名の変更</h3>
+
+<pre><code>$ sudo vi /etc/hostname
+$ sudo vi /etc/hosts
+</code></pre>
+
+<h3>IP の設定</h3>
+
+<p>eth1 の部分を以下のように編集</p>
+
+<figure class='code'><figcaption><span>/etc/network/interfaces</span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+</pre></td><td class='code'><pre><code class='sh'><span class='line'>auto eth1
+</span><span class='line'>iface eth1 inet static
+</span><span class='line'>    address 192.168.56.121
+</span><span class='line'>    netmask 255.255.255.0
+</span><span class='line'>    network 192.168.56.0
+</span><span class='line'>    broadcast 192.168.56.255
+</span></code></pre></td></tr></table></div></figure>
+
+
+<h3>ssh の設定</h3>
+
+<pre><code>$ sudo apt-get --purge remove openssh-server
+$ sudo apt-get install openssh-server
+</code></pre>
+
+<figure class='code'><figcaption><span>/etc/ssh/sshd_config</span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+</pre></td><td class='code'><pre><code class='sh'><span class='line'><span class="c"># root でのログインを無効にする</span>
+</span><span class='line'>PermitRootLogin no
+</span><span class='line'>
+</span><span class='line'><span class="c"># パスワード認証を一時的に有効にする</span>
+</span><span class='line'>PasswordAuthentication yes
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p>sshd 再起動</p>
+
+<pre><code>$ sudo /etc/init.d/ssh restart
+$ sudo lsof -nPi:22  # 確認
+</code></pre>
+
+<p>鍵の設定が終わったら、PasswordAuthentication を no に戻しておく。</p>
 </div>
 
 
@@ -164,12 +219,12 @@ $ nodebrew use v0.6.14
   
 
 
-<time datetime="2012-04-11T21:37:00+09:00" pubdate data-updated="true">Apr 11<span>th</span>, 2012</time>
+<time datetime="2012-04-17T21:49:00+09:00" pubdate data-updated="true">Apr 17<span>th</span>, 2012</time>
       
 
 <span class="categories">
   
-    <a class='category' href='/blog/categories/mojito/'>mojito</a>
+    <a class='category' href='/blog/categories/linux/'>linux</a>, <a class='category' href='/blog/categories/unix/'>unix</a>
   
 </span>
 
@@ -178,7 +233,7 @@ $ nodebrew use v0.6.14
     
       <div class="sharing">
   
-  <a href="http://twitter.com/share" class="twitter-share-button" data-url="http://kentaktwo.github.com/blog/2012/04/11/install-mojito/" data-via="" data-counturl="http://kentaktwo.github.com/blog/2012/04/11/install-mojito/" >Tweet</a>
+  <a href="http://twitter.com/share" class="twitter-share-button" data-url="http://kentaktwo.github.com/blog/2012/04/17/install-backtrack/" data-via="" data-counturl="http://kentaktwo.github.com/blog/2012/04/17/install-backtrack/" >Tweet</a>
   
   
   
@@ -187,10 +242,8 @@ $ nodebrew use v0.6.14
     
     <p class="meta">
       
-        <a class="basic-alignment left" href="/blog/2012/01/28/mercurial-bitbucket/" title="Previous Post: mercurial & bitbucket で version 管理">&laquo; mercurial & bitbucket で version 管理</a>
+        <a class="basic-alignment left" href="/blog/2012/04/11/mojito-tutorial/" title="Previous Post: Mojito チュートリアル">&laquo; Mojito チュートリアル</a>
       
-      
-        <a class="basic-alignment right" href="/blog/2012/04/11/mojito-tutorial/" title="Next Post: Mojito チュートリアル">Mojito チュートリアル &raquo;</a>
       
     </p>
   </footer>
@@ -257,8 +310,8 @@ $ nodebrew use v0.6.14
       
         
         // var disqus_developer = 1;
-        var disqus_identifier = 'http://kentaktwo.github.com/blog/2012/04/11/install-mojito/';
-        var disqus_url = 'http://kentaktwo.github.com/blog/2012/04/11/install-mojito/';
+        var disqus_identifier = 'http://kentaktwo.github.com/blog/2012/04/17/install-backtrack/';
+        var disqus_url = 'http://kentaktwo.github.com/blog/2012/04/17/install-backtrack/';
         var disqus_script = 'embed.js';
       
     (function () {
