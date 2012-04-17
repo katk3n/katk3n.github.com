@@ -1,0 +1,78 @@
+<?xml version="1.0" encoding="utf-8"?>
+<feed xmlns="http://www.w3.org/2005/Atom">
+
+  <title><![CDATA[Category: vim | ApprEngineer.log]]></title>
+  <link href="http://kentaktwo.github.com/blog/categories/vim/atom.xml" rel="self"/>
+  <link href="http://kentaktwo.github.com/"/>
+  <updated>2012-04-17T22:47:16+09:00</updated>
+  <id>http://kentaktwo.github.com/</id>
+  <author>
+    <name><![CDATA[kentaktwo]]></name>
+    
+  </author>
+  <generator uri="http://octopress.org/">Octopress</generator>
+
+  
+  <entry>
+    <title type="html"><![CDATA[neobundle.vim を使ってみる]]></title>
+    <link href="http://kentaktwo.github.com/blog/2012/04/17/neobundle/"/>
+    <updated>2012-04-17T22:38:00+09:00</updated>
+    <id>http://kentaktwo.github.com/blog/2012/04/17/neobundle</id>
+    <content type="html"><![CDATA[<p>vundle.vim の後釜である、neobundle を入れてみました。</p>
+
+<p><a href="http://vim-users.jp/2011/10/hack238/">Hack #238: neobundle.vim で plugin をモダンに管理する</a></p>
+
+<!--more-->
+
+
+<h2>インストール</h2>
+
+<pre><code>$ git clone https://github.com/Shougo/neobundle.vim ~/.vim/bundle/neobundle
+</code></pre>
+
+<h2>plugin の管理</h2>
+
+<p>最初の方に追加
+``` sh .vimrc
+""" neobundle
+filetype plugin indent off
+if has('vim_starting')</p>
+
+<pre><code>"set rtp+=~/.vim/bundle/vundle/
+set rtp+=~/.vim/bundle/neobundle/
+"call vundle#rc()
+call neobundle#rc(expand('~/.vim/bundle'))
+</code></pre>
+
+<p>endif</p>
+
+<p>NeoBundle 'Shougo/neobundle'
+NeoBundle 'houtsnip/vim-emacscommandline'
+NeoBundle 'buftabs'
+NeoBundle 'Shougo/unite'
+NeoBundle 'YankRing'
+NeoBundle 'Shougo/neocomplcache'
+NeoBundle 'Shougo/vimshell'
+NeoBundle 'Shougo/vimproc'
+NeoBundle 'gtags'
+NeoBundle 'sudo'
+NeoBundle 'autodate'
+NeoBundle 'tangledhelix/vim-octopress'</p>
+
+<p>filetype plugin indent on
+"""
+```</p>
+
+<h2>plugin のインストール</h2>
+
+<pre><code>:NeoBundleInstall
+</code></pre>
+
+<h2>plugin のクリーン</h2>
+
+<pre><code>:NeoBundleClean
+</code></pre>
+]]></content>
+  </entry>
+  
+</feed>

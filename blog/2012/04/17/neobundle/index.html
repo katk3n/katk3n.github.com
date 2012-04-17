@@ -5,11 +5,11 @@
 <!--[if (gt IE 8)|(gt IEMobile 7)|!(IEMobile)|!(IE)]><!--><html class="no-js" lang="en"><!--<![endif]-->
 <head>
   <meta charset="utf-8">
-  <title>Mojito のインストール - ApprEngineer.log</title>
+  <title>neobundle.vim を使ってみる - ApprEngineer.log</title>
   <meta name="author" content="kentaktwo">
 
   
-  <meta name="description" content="Yahoo! Inc. がリリースした Web アプリケーションフレームワーク、Mojito をインストールしてみました。 http://developer.yahoo.com/cocktails/mojito/ Mojito とは MVC モデルな Web アプリケーションフレームワーク &hellip;">
+  <meta name="description" content="vundle.vim の後釜である、neobundle を入れてみました。 Hack #238: neobundle.vim で plugin をモダンに管理する インストール $ git clone https://github.com/Shougo/neobundle.vim ~/.vim/ &hellip;">
   
 
   <!-- http://t.co/dKP3o1e -->
@@ -18,7 +18,7 @@
   <meta name="viewport" content="width=device-width, initial-scale=1">
 
   
-  <link rel="canonical" href="http://kentaktwo.github.com/blog/2012/04/11/install-mojito">
+  <link rel="canonical" href="http://kentaktwo.github.com/blog/2012/04/17/neobundle">
   <link href="/favicon.png" rel="icon">
   <link href="/stylesheets/screen.css" media="screen, projection" rel="stylesheet" type="text/css">
   <script src="/javascripts/modernizr-2.0.js"></script>
@@ -68,7 +68,7 @@
   
   <header>
     
-      <h1 class="entry-title">Mojito のインストール</h1>
+      <h1 class="entry-title">neobundle.vim を使ってみる</h1>
     
     
       <p class="meta">
@@ -84,7 +84,7 @@
   
 
 
-<time datetime="2012-04-11T21:37:00+09:00" pubdate data-updated="true">Apr 11<span>th</span>, 2012</time>
+<time datetime="2012-04-17T22:38:00+09:00" pubdate data-updated="true">Apr 17<span>th</span>, 2012</time>
         
          | <a href="#disqus_thread">Comments</a>
         
@@ -93,55 +93,82 @@
   </header>
 
 
-<div class="entry-content"><p>Yahoo! Inc. がリリースした Web アプリケーションフレームワーク、Mojito をインストールしてみました。</p>
+<div class="entry-content"><p>vundle.vim の後釜である、neobundle を入れてみました。</p>
 
-<p><a href="http://developer.yahoo.com/cocktails/mojito/">http://developer.yahoo.com/cocktails/mojito/</a></p>
+<p><a href="http://vim-users.jp/2011/10/hack238/">Hack #238: neobundle.vim で plugin をモダンに管理する</a></p>
 
-<!--More-->
-
-
-<h2>Mojito とは</h2>
-
-<ul>
-<li>MVC モデルな Web アプリケーションフレームワーク</li>
-<li>YUI3 を使ってる</li>
-<li>JavaScript で記述</li>
-<li>1つのコードで複数のデバイス (PC, Android, iOS, etc.) での表示が可能</li>
-<li>Xcode に渡せば iOS アプリも作れる</li>
-</ul>
+<!--more-->
 
 
 <h2>インストール</h2>
 
-<h3>Node.js のインストール</h3>
-
-<p>Mojito を動かすためには Node.js が必要。<br/>
-Node.js の環境管理ツールには nvm などがあるが、<br/>
-nvm は zsh だとうまく動かないようなので、nodebrew を使う。</p>
-
-<p>参考： <a href="http://d.hatena.ne.jp/Jxck/20120224/1330035058">http://d.hatena.ne.jp/Jxck/20120224/1330035058</a></p>
-
-<p>nodebrew のインストール</p>
-
-<pre><code>$ curl https://raw.github.com/hokaccha/nodebrew/master/nodebrew | perl - setup
-$ wget https://raw.github.com/hokaccha/nodebrew/master/nodebrew
-$ perl nodebrew setup
+<pre><code>$ git clone https://github.com/Shougo/neobundle.vim ~/.vim/bundle/neobundle
 </code></pre>
 
-<p>.zshrc のパスの設定</p>
+<h2>plugin の管理</h2>
 
-<pre><code>export PATH=$HOME/.nodebrew/current/bin:/usr/local/bin:$PATH
+<p>最初の方に追加</p>
+
+<figure class='code'><figcaption><span>.vimrc</span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+<span class='line-number'>7</span>
+<span class='line-number'>8</span>
+<span class='line-number'>9</span>
+<span class='line-number'>10</span>
+<span class='line-number'>11</span>
+<span class='line-number'>12</span>
+<span class='line-number'>13</span>
+<span class='line-number'>14</span>
+<span class='line-number'>15</span>
+<span class='line-number'>16</span>
+<span class='line-number'>17</span>
+<span class='line-number'>18</span>
+<span class='line-number'>19</span>
+<span class='line-number'>20</span>
+<span class='line-number'>21</span>
+<span class='line-number'>22</span>
+<span class='line-number'>23</span>
+<span class='line-number'>24</span>
+</pre></td><td class='code'><pre><code class='sh'><span class='line'><span class="s2">&quot;&quot;&quot; neobundle</span>
+</span><span class='line'><span class="s2">filetype plugin indent off</span>
+</span><span class='line'><span class="s2">if has(&#39;vim_starting&#39;)</span>
+</span><span class='line'><span class="s2">    &quot;</span><span class="nb">set </span>rtp+<span class="o">=</span>~/.vim/bundle/vundle/
+</span><span class='line'>    <span class="nb">set </span>rtp+<span class="o">=</span>~/.vim/bundle/neobundle/
+</span><span class='line'>    <span class="s2">&quot;call vundle#rc()</span>
+</span><span class='line'><span class="s2">    call neobundle#rc(expand(&#39;~/.vim/bundle&#39;))</span>
+</span><span class='line'><span class="s2">endif</span>
+</span><span class='line'>
+</span><span class='line'><span class="s2">NeoBundle &#39;Shougo/neobundle&#39;</span>
+</span><span class='line'><span class="s2">NeoBundle &#39;houtsnip/vim-emacscommandline&#39;</span>
+</span><span class='line'><span class="s2">NeoBundle &#39;buftabs&#39;</span>
+</span><span class='line'><span class="s2">NeoBundle &#39;Shougo/unite&#39;</span>
+</span><span class='line'><span class="s2">NeoBundle &#39;YankRing&#39;</span>
+</span><span class='line'><span class="s2">NeoBundle &#39;Shougo/neocomplcache&#39;</span>
+</span><span class='line'><span class="s2">NeoBundle &#39;Shougo/vimshell&#39;</span>
+</span><span class='line'><span class="s2">NeoBundle &#39;Shougo/vimproc&#39;</span>
+</span><span class='line'><span class="s2">NeoBundle &#39;gtags&#39;</span>
+</span><span class='line'><span class="s2">NeoBundle &#39;sudo&#39;</span>
+</span><span class='line'><span class="s2">NeoBundle &#39;autodate&#39;</span>
+</span><span class='line'><span class="s2">NeoBundle &#39;tangledhelix/vim-octopress&#39;</span>
+</span><span class='line'>
+</span><span class='line'><span class="s2">filetype plugin indent on</span>
+</span><span class='line'><span class="s2">&quot;&quot;&quot;</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<h2>plugin のインストール</h2>
+
+<pre><code>:NeoBundleInstall
 </code></pre>
 
-<p>Node.js のインストール</p>
+<h2>plugin のクリーン</h2>
 
-<pre><code>$ nodebrew install v0.6.14
-$ nodebrew use v0.6.14
+<pre><code>:NeoBundleClean
 </code></pre>
-
-<h3>Mojito のインストール</h3>
-
-<p><a href="http://developer.yahoo.com/cocktails/mojito/docs/quickstart/">http://developer.yahoo.com/cocktails/mojito/docs/quickstart/</a></p>
 </div>
 
 
@@ -164,12 +191,12 @@ $ nodebrew use v0.6.14
   
 
 
-<time datetime="2012-04-11T21:37:00+09:00" pubdate data-updated="true">Apr 11<span>th</span>, 2012</time>
+<time datetime="2012-04-17T22:38:00+09:00" pubdate data-updated="true">Apr 17<span>th</span>, 2012</time>
       
 
 <span class="categories">
   
-    <a class='category' href='/blog/categories/mojito/'>mojito</a>
+    <a class='category' href='/blog/categories/vim/'>vim</a>
   
 </span>
 
@@ -178,7 +205,7 @@ $ nodebrew use v0.6.14
     
       <div class="sharing">
   
-  <a href="http://twitter.com/share" class="twitter-share-button" data-url="http://kentaktwo.github.com/blog/2012/04/11/install-mojito/" data-via="" data-counturl="http://kentaktwo.github.com/blog/2012/04/11/install-mojito/" >Tweet</a>
+  <a href="http://twitter.com/share" class="twitter-share-button" data-url="http://kentaktwo.github.com/blog/2012/04/17/neobundle/" data-via="" data-counturl="http://kentaktwo.github.com/blog/2012/04/17/neobundle/" >Tweet</a>
   
   
   
@@ -187,10 +214,8 @@ $ nodebrew use v0.6.14
     
     <p class="meta">
       
-        <a class="basic-alignment left" href="/blog/2012/01/28/mercurial-bitbucket/" title="Previous Post: mercurial & bitbucket で version 管理">&laquo; mercurial & bitbucket で version 管理</a>
+        <a class="basic-alignment left" href="/blog/2012/04/17/install-backtrack/" title="Previous Post: BackTrack 5 RC2 をインストール">&laquo; BackTrack 5 RC2 をインストール</a>
       
-      
-        <a class="basic-alignment right" href="/blog/2012/04/11/mojito-tutorial/" title="Next Post: Mojito チュートリアル">Mojito チュートリアル &raquo;</a>
       
     </p>
   </footer>
@@ -257,8 +282,8 @@ $ nodebrew use v0.6.14
       
         
         // var disqus_developer = 1;
-        var disqus_identifier = 'http://kentaktwo.github.com/blog/2012/04/11/install-mojito/';
-        var disqus_url = 'http://kentaktwo.github.com/blog/2012/04/11/install-mojito/';
+        var disqus_identifier = 'http://kentaktwo.github.com/blog/2012/04/17/neobundle/';
+        var disqus_url = 'http://kentaktwo.github.com/blog/2012/04/17/neobundle/';
         var disqus_script = 'embed.js';
       
     (function () {
