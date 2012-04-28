@@ -4,7 +4,7 @@
   <title><![CDATA[Category: unix | ApprEngineer.log]]></title>
   <link href="http://kentaktwo.github.com/blog/categories/unix/atom.xml" rel="self"/>
   <link href="http://kentaktwo.github.com/"/>
-  <updated>2012-04-17T22:47:16+09:00</updated>
+  <updated>2012-04-29T01:29:47+09:00</updated>
   <id>http://kentaktwo.github.com/</id>
   <author>
     <name><![CDATA[kentaktwo]]></name>
@@ -12,6 +12,230 @@
   </author>
   <generator uri="http://octopress.org/">Octopress</generator>
 
+  
+  <entry>
+    <title type="html"><![CDATA[Advanced Programming in the UNIX environment Chapter 1]]></title>
+    <link href="http://kentaktwo.github.com/blog/2012/04/28/apue-chapter-1/"/>
+    <updated>2012-04-28T22:45:00+09:00</updated>
+    <id>http://kentaktwo.github.com/blog/2012/04/28/apue-chapter-1</id>
+    <content type="html"><![CDATA[<h1>UNIX System Overview</h1>
+
+<!--more-->
+
+
+<h2>UNIX Architecture</h2>
+
+<ul>
+<li>OS (Operating System) とは、コンピュータのハードウェアを制御し、プログラムが動作する環境を提供するソフトウェアのこと</li>
+<li>このソフトウェアのことを <em>kernel</em> と呼ぶ</li>
+<li>kernel とのインターフェースとなるソフトウェア群を <em>system calls</em> と呼ぶ</li>
+<li>shell は他のアプリケーションを動かすためのインターフェースとなるアプリケーション</li>
+</ul>
+
+
+<h2>Logging In</h2>
+
+<ul>
+<li>ログイン名は たいてい <code>/etc/passwd</code> に書かれている
+``` sh
+
+<h1>最近はパスワードは別ファイルになっていることが多い</h1>
+
+<p><loginName>:<encryptedPassword>:<userID>:<groupID>:<comment>:<homeDirectory>:<shellProgram>
+```</p></li>
+</ul>
+
+
+<h2>Files and Directories</h2>
+
+<ul>
+<li><em>directory</em> とは directory entries を含んだファイルのこと</li>
+<li>directory の中にある名前を <em>filename</em> という
+
+<ul>
+<li>filename には <code>/</code> と null 文字以外の全ての文字が使える</li>
+</ul>
+</li>
+<li>UNIX のマニュアルは section 1 から 8 まである
+
+<ul>
+<li>ls は Section 1 にある</li>
+</ul>
+</li>
+</ul>
+
+
+<h2>Input and Output</h2>
+
+<ul>
+<li>File descriptors とは、カーネルがプロセスからアクセスされるファイルを識別するための non-negative な整数のこと</li>
+<li>Unbuffered I/O は <code>open</code>, <code>read</code>, <code>write</code>, <code>lseek</code>, <code>close</code> によって提供される</li>
+<li>Standard I/O は unbuffered I/O にバッファインターフェースを提供する
+
+<ul>
+<li>バッファサイズを気にする必要がない</li>
+<li>行ごとの処理が楽 (<code>fgets</code> etc.)</li>
+</ul>
+</li>
+</ul>
+
+
+<h2>Programs and Processes</h2>
+
+<ul>
+<li><em>program</em> とは、ディレクトリにある実行可能なファイルのこと</li>
+<li>program はメモリに読み込まれ、カーネルによって実行される</li>
+<li>実行中のプログラムのことを <em>process</em> と呼ぶ
+
+<ul>
+<li><em>task</em> と呼んだりする OS もある</li>
+</ul>
+</li>
+<li>UNIX は全てのプロセスにユニークな <em>process ID</em> を割り振る
+
+<ul>
+<li>process ID は non-negative な整数</li>
+</ul>
+</li>
+<li>プロセス内で動いているスレッドは同じアドレス空間、ファイルディスクリプタ、スタック等のプロセスに関する属性を共有する
+
+<ul>
+<li>そのため、矛盾を起こさないように同期をとる必要がある</li>
+</ul>
+</li>
+<li>スレッドは thread ID で管理される
+
+<ul>
+<li>thread ID はプロセスごとに閉じている</li>
+</ul>
+</li>
+</ul>
+
+
+<h2>Error Handling</h2>
+
+<ul>
+<li>UNIX システム関数でエラーが起こると、たいてい負の値が返り、<code>errno</code> と呼ばれる整数がセットされる
+
+<ul>
+<li><code>errno</code> が取りうる値は <code>&lt;errno.h&gt;</code> に定義されている</li>
+<li>UNIX マニュアルの Section 2 の始め (<code>intro(2)</code>) で <code>errno</code> の説明が見れる
+
+<ul>
+<li>Linux では <code>errno(3)</code></li>
+</ul>
+</li>
+</ul>
+</li>
+<li><code>errno</code> はエラーが起こらない限りクリアされないので、関数の戻り値を見てから <code>errno</code> を調べる必要がある</li>
+<li><code>errno</code> に 0 がセットされることはない</li>
+<li><code>strerror()</code> で <code>errno</code> に対応するエラーメッセージが取得できる</li>
+<li><code>perror()</code> で引数に渡したメッセージと現在の <code>errno</code> に対応するエラーメッセージを standard error に出力できる</li>
+<li><code>&lt;errno.h&gt;</code> に定義されたエラーは fatal なものと nonfatal なものに分かれる
+
+<ul>
+<li>fatal なエラーが起きた場合はエラーメッセージを出してプログラムを終了すべきである</li>
+<li>リソース不足で起きるエラーなどが nonfatal なエラーに分類される</li>
+<li>リソース関連の nonfatal エラーは <code>EAGAIN</code>, <code>ENFILE</code>, <code>ENOBUFS</code>, <code>ENOLCK</code>, <code>ENOSPC</code>, <code>ENOSR</code>, <code>EWOULDBLOCK</code>, <code>ENOMEM</code> など</li>
+<li>リソース関連のエラーが起きた場合は少し待ってやり直すことで対応できることがある</li>
+</ul>
+</li>
+</ul>
+
+
+<h2>User Identification</h2>
+
+<ul>
+<li><em>user ID</em> はログイン名が作られたときに割り振られ、変更することはできない</li>
+<li>user ID が 0 のユーザは <em>root</em> または <em>superuser</em> と呼ばれる</li>
+<li><em>group ID</em> もログイン名が作られた時に割り振られる。</li>
+<li>group name を group ID にマップするファイルが <code>/etc/group</code> にあり、group file と呼ばれる</li>
+<li><code>getuid()</code> や <code>getgid()</code> で user ID や group ID が取れる</li>
+<li>group ID の他に追加でグループに所属させることもできる (<em>supplementary group ID</em>)
+
+<ul>
+<li>16 個まで</li>
+</ul>
+</li>
+</ul>
+
+
+<h2>Signals</h2>
+
+<ul>
+<li>signal は何かが起きたことをプロセスに伝える手段
+
+<ul>
+<li>例えばゼロ除算が発生すると、<code>SIGFPE</code> がプロセスに送られる</li>
+</ul>
+</li>
+<li>プロセスのシグナルの処理の仕方は 3 通りある
+
+<ol>
+<li>シグナルを無視する</li>
+<li>デフォルトの動作を実行させる</li>
+<li>シグナルが起きた時に呼ぶ関数を与える</li>
+</ol>
+</li>
+<li>DELETE または Ctrl-C は <em>interrupt key</em>, Ctrl-backslash は <em>quit key</em> と呼ばれ、実行中のプロセスを終了させるのに使う</li>
+<li><code>kill()</code> を呼ぶとシグナルを送ることができる</li>
+<li>シグナルを送るためには、そのプロセスのオーナーでなければならない</li>
+</ul>
+
+
+<h2>Time Values</h2>
+
+<ul>
+<li>UNIX は2種類の時間を管理している
+
+<ol>
+<li>Calendar time: Epoch (UTC 1970 1/1 00:00:00) からの秒数
+
+<ul>
+<li><code>time_t</code> 型はこの値を持っている</li>
+</ul>
+</li>
+<li>Process time: clock によって計測される
+
+<ul>
+<li>プロセスによって使われたリソースを計測するのに使う</li>
+<li>CPU time ともいう</li>
+<li><code>clock_t</code> 型がこの値を持っている</li>
+</ul>
+</li>
+</ol>
+</li>
+<li>プロセスの実行時間を計測すると、3種類の値が得られる
+
+<ul>
+<li>Clock time: プロセスを実行するのにかかった時間
+
+<ul>
+<li>システム上で動いている他のプロセスの影響を受ける</li>
+</ul>
+</li>
+<li>User CPU time: ユーザの命令が実行された時間（ループ処理など）</li>
+<li>System CPU time: システムコールを行うのにかかった時間</li>
+</ul>
+</li>
+<li>user CPU time と system CPU time を合わせて <em>CPU time</em> と呼ぶ</li>
+</ul>
+
+
+<h2>System Calls and Library Functions</h2>
+
+<ul>
+<li>system call のドキュメントは <em>UNIX Programmer's Manual</em> の Section 2 にある</li>
+<li>Section 3 にはプログラマが普段使うであろう関数 (Library functions) の説明が書かれている (<code>printf()</code> etc.)
+
+<ul>
+<li>ライブラリ関数は複数のシステムコールの組み合わせでできている</li>
+</ul>
+</li>
+</ul>
+
+]]></content>
+  </entry>
   
   <entry>
     <title type="html"><![CDATA[BackTrack 5 RC2 をインストール]]></title>
