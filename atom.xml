@@ -4,7 +4,7 @@
   <title><![CDATA[ApprEngineer.log]]></title>
   <link href="http://kentaktwo.github.com/atom.xml" rel="self"/>
   <link href="http://kentaktwo.github.com/"/>
-  <updated>2012-04-29T01:29:47+09:00</updated>
+  <updated>2012-04-29T20:56:17+09:00</updated>
   <id>http://kentaktwo.github.com/</id>
   <author>
     <name><![CDATA[kentaktwo]]></name>
@@ -12,6 +12,178 @@
   </author>
   <generator uri="http://octopress.org/">Octopress</generator>
 
+  
+  <entry>
+    <title type="html"><![CDATA[Unix Network Programming Chapter 1]]></title>
+    <link href="http://kentaktwo.github.com/blog/2012/04/29/unp-chapter-1/"/>
+    <updated>2012-04-29T17:30:00+09:00</updated>
+    <id>http://kentaktwo.github.com/blog/2012/04/29/unp-chapter-1</id>
+    <content type="html"><![CDATA[<h1>Introduction</h1>
+
+<!--more-->
+
+
+<h2>Introduction</h2>
+
+<ul>
+<li><em>protocol</em> とは、プログラムが通信する際の約束事</li>
+<li>クライアントとサーバはネットワークプロトコルで通信するが、ネットワークプロトコルは複数の層からなる</li>
+</ul>
+
+
+<pre>
+Web Client: Application layer
+|
+TCP (Transmission Control Protocol): Transport layer
+|
+IP (Internet Protocol): Network layer
+|
+Ethernet: Datalink layer
+</pre>
+
+
+<ul>
+<li>クライアントとサーバがユーザプロセスであっても、 TCP や IP は通常カーネル内のプロトコルスタックとして動く</li>
+<li>client と server は <em>LAN (Local Area Network)</em> や <em>WAN (Wide Area Network)</em> でつながっている</li>
+<li>router が WAN のブロックを形成している</li>
+<li>最大の WAN は <em>Internet</em> と呼ばれる</li>
+</ul>
+
+
+<h2>Error Handling: Wrapper Functions</h2>
+
+<ul>
+<li>エラーが起きた時に終了させる事はよくあるので、<em>wrapper function</em> として定義すると良い</li>
+</ul>
+
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+<span class='line-number'>7</span>
+<span class='line-number'>8</span>
+</pre></td><td class='code'><pre><code class='c'><span class='line'><span class="kt">int</span>
+</span><span class='line'><span class="nf">Socket</span><span class="p">(</span><span class="kt">int</span> <span class="n">family</span><span class="p">,</span> <span class="kt">int</span> <span class="n">type</span><span class="p">,</span> <span class="kt">int</span> <span class="n">protocol</span><span class="p">)</span>
+</span><span class='line'><span class="p">{</span>
+</span><span class='line'>    <span class="kt">int</span> <span class="n">n</span><span class="p">;</span>
+</span><span class='line'>    <span class="k">if</span> <span class="p">((</span><span class="n">n</span> <span class="o">=</span> <span class="n">socket</span><span class="p">(</span><span class="n">family</span><span class="p">,</span> <span class="n">type</span><span class="p">,</span> <span class="n">protocol</span><span class="p">))</span> <span class="o">&lt;</span> <span class="mi">0</span><span class="p">)</span>
+</span><span class='line'>        <span class="n">err_sys</span><span class="p">(</span><span class="s">&quot;socket error&quot;</span><span class="p">);</span>
+</span><span class='line'>    <span class="k">return</span> <span class="p">(</span><span class="n">n</span><span class="p">);</span>
+</span><span class='line'><span class="p">}</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<ul>
+<li>スレッド関数はエラーが起きても <code>errno</code> に値をセットしないため、自分で関数の戻り値を <code>errno</code> にセットする必要がある</li>
+</ul>
+
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+</pre></td><td class='code'><pre><code class='c'><span class='line'><span class="kt">int</span> <span class="n">n</span><span class="p">;</span>
+</span><span class='line'><span class="k">if</span> <span class="p">((</span><span class="n">n</span> <span class="o">=</span> <span class="n">pthread_mutex_lock</span><span class="p">(</span><span class="o">&amp;</span><span class="n">ndone_mutex</span><span class="p">))</span> <span class="o">!=</span> <span class="mi">0</span><span class="p">)</span>
+</span><span class='line'>    <span class="n">errno</span> <span class="o">=</span> <span class="n">n</span><span class="p">,</span> <span class="n">err_sys</span><span class="p">(</span><span class="s">&quot;pthread_mutex_lock error&quot;</span><span class="p">);</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p>wrapper function を書くと見やすくなる</p>
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+<span class='line-number'>7</span>
+<span class='line-number'>8</span>
+<span class='line-number'>9</span>
+<span class='line-number'>10</span>
+</pre></td><td class='code'><pre><code class='c'><span class='line'><span class="kt">void</span>
+</span><span class='line'><span class="nf">Pthread_mutex_lock</span><span class="p">(</span><span class="n">pthread_mutex_t</span> <span class="o">*</span><span class="n">mptr</span><span class="p">)</span>
+</span><span class='line'><span class="p">{</span>
+</span><span class='line'>    <span class="kt">int</span> <span class="n">n</span><span class="p">;</span>
+</span><span class='line'>
+</span><span class='line'>    <span class="k">if</span> <span class="p">((</span><span class="n">n</span> <span class="o">=</span> <span class="n">pthread_mutex_lock</span><span class="p">(</span><span class="n">mptr</span><span class="p">))</span> <span class="o">==</span> <span class="mi">0</span><span class="p">)</span>
+</span><span class='line'>        <span class="k">return</span><span class="p">;</span>
+</span><span class='line'>    <span class="n">errno</span> <span class="o">=</span> <span class="n">n</span><span class="p">;</span>
+</span><span class='line'>    <span class="n">err_sys</span><span class="p">(</span><span class="s">&quot;pthread_mutex_lock error&quot;</span><span class="p">);</span>
+</span><span class='line'><span class="p">}</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<h2>OSI Model</h2>
+
+<p>ネットワークの階層の有名な定義にISO (International Organization for Standardization) の <em>OSI (Open Systems Interconnecton)</em> Model がある</p>
+
+<pre>
+  +--------------+    +--------------+
+7 | application  |    |              |
+  +--------------+    |              |
+6 | presentation |    | application  |   user process
+  +--------------+    |              |        ^
+5 | session      |    |              |        |
+  +==============+    +==============+   ============
+4 | transport    |    | TCP |  | UDP |        |
+  +--------------+    +--------------+        v
+3 | network      |    |  IPv4, IPv6  |      kernel
+  +--------------+    +--------------+
+2 | datalink     |    | device       |
+  +--------------+    | driver       |
+1 | physical     |    | hardware     |
+  +--------------+    +--------------+
+</pre>
+
+
+<h2>Test Networks and Hosts</h2>
+
+<ul>
+<li><code>netstat -i</code> でネットワークインターフェースの情報が見れる
+
+<ul>
+<li><code>-n</code> オプションをつけるとアドレスを名前ではなく数字で表示する</li>
+<li>loopback interface は <code>lo</code>, Ethernet は <code>eth0</code> 等と表示される</li>
+</ul>
+</li>
+<li><code>netstat -r</code> でルーティングテーブルを表示する</li>
+<li><code>ifconfig &lt;interface name&gt;</code> でインターフェースの詳細を表示する</li>
+</ul>
+
+
+<h2>64-Bit Architectures</h2>
+
+<ul>
+<li>32-bit Unix system のプログラミングモデルは <em>ILP32</em> model と呼ばれる
+
+<ul>
+<li>I: integers</li>
+<li>L: long integers</li>
+<li>P: pointers</li>
+<li>integer も long integer も 32-bit</li>
+</ul>
+</li>
+<li>64-bit Unix system のプログラミングモデルは <em>LP64</em> model と呼ばれる
+
+<ul>
+<li>long integer と pointer のみが　64-bit であることを必要とする</li>
+<li>他は 32-bit</li>
+</ul>
+</li>
+<li><code>size_t</code> 型は 32-bit system では 32-bit だが、64-bit system では 64-bit である
+
+<ul>
+<li>socket address programming 等で <code>size_t</code> が出てくることがある</li>
+<li>しかし 64-bit も必要ない</li>
+<li>そのため 64-bit system でも 32-bit のままであるような <code>t_scalar_t</code> や <code>t_uscalar_t</code> がある</li>
+</ul>
+</li>
+</ul>
+
+]]></content>
+  </entry>
   
   <entry>
     <title type="html"><![CDATA[Advanced Programming in the UNIX environment Chapter 1]]></title>
