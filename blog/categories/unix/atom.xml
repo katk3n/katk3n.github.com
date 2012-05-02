@@ -4,7 +4,7 @@
   <title><![CDATA[Category: unix | ApprEngineer.log]]></title>
   <link href="http://kentaktwo.github.com/blog/categories/unix/atom.xml" rel="self"/>
   <link href="http://kentaktwo.github.com/"/>
-  <updated>2012-04-29T20:56:17+09:00</updated>
+  <updated>2012-05-02T15:20:35+09:00</updated>
   <id>http://kentaktwo.github.com/</id>
   <author>
     <name><![CDATA[kentaktwo]]></name>
@@ -12,6 +12,85 @@
   </author>
   <generator uri="http://octopress.org/">Octopress</generator>
 
+  
+  <entry>
+    <title type="html"><![CDATA[Advanced Programming in the UNIX environment Chapter 2]]></title>
+    <link href="http://kentaktwo.github.com/blog/2012/05/02/apue-chapter-2/"/>
+    <updated>2012-05-02T14:31:00+09:00</updated>
+    <id>http://kentaktwo.github.com/blog/2012/05/02/apue-chapter-2</id>
+    <content type="html"><![CDATA[<h1>UNIX Standardization and Implementations</h1>
+
+<!--more-->
+
+
+<h2>Limits</h2>
+
+<ul>
+<li>Compile-time limits
+
+<ul>
+<li>short integer の最大値など</li>
+<li>ヘッダに定義</li>
+<li>コンパイル時にインクルードされる</li>
+</ul>
+</li>
+<li>Runtime limits
+
+<ul>
+<li>filename の最大文字数など</li>
+<li>プロセスが関数を呼んで値を取得する必要がある</li>
+</ul>
+</li>
+<li>Runtime limits は以下の関数を呼ぶことで取得できる
+
+<ul>
+<li><code>sysconf()</code>
+
+<ul>
+<li>file や directory に関係しない limit</li>
+<li><code>_SC_</code> で始まる値を取得できる</li>
+</ul>
+</li>
+<li><code>pathconf()</code>
+
+<ul>
+<li>file や directory に関係する limit</li>
+<li><code>_PC_</code> で始まる値を取得できる</li>
+</ul>
+</li>
+<li><code>fpathconf()</code>: <code>pathconf</code> の引数がファイルディスクリプタになった版</li>
+</ul>
+</li>
+<li>limits は未定義なこともある
+
+<ul>
+<li>e.g. pathname の最大値
+
+<ol>
+<li><code>&lt;limits.h&gt;</code> に定義されていればその値を使う</li>
+<li>定義されていなければ、<code>pathconf("/", _PC_PATH_MAX)</code> して取得する</li>
+<li>取得できなければ、適当な値を推測して使う</li>
+</ol>
+</li>
+</ul>
+</li>
+</ul>
+
+
+<h2>Primitive System Data Types</h2>
+
+<ul>
+<li>C のデータ型は UNIX システムに依存することがある</li>
+<li><code>&lt;sys/types.h&gt;</code> に実装依存のデータ型 (<em>primitive system data types</em>) が定義されている
+
+<ul>
+<li><code>clock_t</code>, <code>size_t</code>, <code>time_t</code> など</li>
+</ul>
+</li>
+</ul>
+
+]]></content>
+  </entry>
   
   <entry>
     <title type="html"><![CDATA[Unix Network Programming Chapter 1]]></title>
@@ -597,57 +676,6 @@ $ sudo make install clean
 </code></pre>
 
 <p>を追加する。</p>
-]]></content>
-  </entry>
-  
-  <entry>
-    <title type="html"><![CDATA[VirtualBox に入れたゲスト OS に ssh login]]></title>
-    <link href="http://kentaktwo.github.com/blog/2012/01/25/vbox-portforwarding/"/>
-    <updated>2012-01-25T23:51:00+09:00</updated>
-    <id>http://kentaktwo.github.com/blog/2012/01/25/vbox-portforwarding</id>
-    <content type="html"><![CDATA[<p>家の Mac OS X の VirtualBox に FreeBSD 9.0 を入れました。<br/>
-Host から Guest に ssh する設定をしました。</p>
-
-<!-- more -->
-
-
-<h2>ゲスト OS のポートフォワーディング設定</h2>
-
-<pre><code># ssh の設定
-$ VBoxManage setextradata "f1" "VBoxInternal/Devices/e1000/0/LUN#0/Config/guestssh/Protocol" TCP
-$ VBoxManage setextradata "f1" "VBoxInternal/Devices/e1000/0/LUN#0/Config/guestssh/GuestPort" 22
-$ VBoxManage setextradata "f1" "VBoxInternal/Devices/e1000/0/LUN#0/Config/guestssh/HostPort" 60022
-
-# http の設定
-$ VBoxManage setextradata "f1" "VBoxInternal/Devices/e1000/0/LUN#0/Config/guesthttp/Protocol" TCP
-$ VBoxManage setextradata "f1" "VBoxInternal/Devices/e1000/0/LUN#0/Config/guesthttp/GuestPort" 80
-$ VBoxManage setextradata "f1" "VBoxInternal/Devices/e1000/0/LUN#0/Config/guesthttp/HostPort" 60080
-</code></pre>
-
-<ul>
-<li>Guest の 22 番ポートを Host の 60022 番ポートへ</li>
-<li>Guest の 80 番ポートを Host の 60080 番ポートへ</li>
-</ul>
-
-
-<p>転送する。f1 は VM の名前。<br/>
-自由に使用できるポート番号は 49152 〜 65535 らしい。
-50000 番台は CentOS が使っているので、FreeBSD は 60000 番台に割り当てました。</p>
-
-<h2>ゲスト OS の起動</h2>
-
-<pre><code>$ VBoxManage startvm --type vrdp f1
-</code></pre>
-
-<h2>ゲスト OS に ssh</h2>
-
-<pre><code>$ ssh -p 60022 localhost
-</code></pre>
-
-<h2>ゲスト OS に scp</h2>
-
-<pre><code>$ scp -P 60022 file username@localhost:/home/uername/path
-</code></pre>
 ]]></content>
   </entry>
   

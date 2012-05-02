@@ -4,7 +4,7 @@
   <title><![CDATA[Category: apue | ApprEngineer.log]]></title>
   <link href="http://kentaktwo.github.com/blog/categories/apue/atom.xml" rel="self"/>
   <link href="http://kentaktwo.github.com/"/>
-  <updated>2012-04-29T20:56:17+09:00</updated>
+  <updated>2012-05-02T15:20:35+09:00</updated>
   <id>http://kentaktwo.github.com/</id>
   <author>
     <name><![CDATA[kentaktwo]]></name>
@@ -12,6 +12,85 @@
   </author>
   <generator uri="http://octopress.org/">Octopress</generator>
 
+  
+  <entry>
+    <title type="html"><![CDATA[Advanced Programming in the UNIX environment Chapter 2]]></title>
+    <link href="http://kentaktwo.github.com/blog/2012/05/02/apue-chapter-2/"/>
+    <updated>2012-05-02T14:31:00+09:00</updated>
+    <id>http://kentaktwo.github.com/blog/2012/05/02/apue-chapter-2</id>
+    <content type="html"><![CDATA[<h1>UNIX Standardization and Implementations</h1>
+
+<!--more-->
+
+
+<h2>Limits</h2>
+
+<ul>
+<li>Compile-time limits
+
+<ul>
+<li>short integer の最大値など</li>
+<li>ヘッダに定義</li>
+<li>コンパイル時にインクルードされる</li>
+</ul>
+</li>
+<li>Runtime limits
+
+<ul>
+<li>filename の最大文字数など</li>
+<li>プロセスが関数を呼んで値を取得する必要がある</li>
+</ul>
+</li>
+<li>Runtime limits は以下の関数を呼ぶことで取得できる
+
+<ul>
+<li><code>sysconf()</code>
+
+<ul>
+<li>file や directory に関係しない limit</li>
+<li><code>_SC_</code> で始まる値を取得できる</li>
+</ul>
+</li>
+<li><code>pathconf()</code>
+
+<ul>
+<li>file や directory に関係する limit</li>
+<li><code>_PC_</code> で始まる値を取得できる</li>
+</ul>
+</li>
+<li><code>fpathconf()</code>: <code>pathconf</code> の引数がファイルディスクリプタになった版</li>
+</ul>
+</li>
+<li>limits は未定義なこともある
+
+<ul>
+<li>e.g. pathname の最大値
+
+<ol>
+<li><code>&lt;limits.h&gt;</code> に定義されていればその値を使う</li>
+<li>定義されていなければ、<code>pathconf("/", _PC_PATH_MAX)</code> して取得する</li>
+<li>取得できなければ、適当な値を推測して使う</li>
+</ol>
+</li>
+</ul>
+</li>
+</ul>
+
+
+<h2>Primitive System Data Types</h2>
+
+<ul>
+<li>C のデータ型は UNIX システムに依存することがある</li>
+<li><code>&lt;sys/types.h&gt;</code> に実装依存のデータ型 (<em>primitive system data types</em>) が定義されている
+
+<ul>
+<li><code>clock_t</code>, <code>size_t</code>, <code>time_t</code> など</li>
+</ul>
+</li>
+</ul>
+
+]]></content>
+  </entry>
   
   <entry>
     <title type="html"><![CDATA[Advanced Programming in the UNIX environment Chapter 1]]></title>
