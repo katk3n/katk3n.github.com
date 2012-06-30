@@ -4,7 +4,7 @@
   <title><![CDATA[ApprEngineer.log]]></title>
   <link href="http://kentaktwo.github.com/atom.xml" rel="self"/>
   <link href="http://kentaktwo.github.com/"/>
-  <updated>2012-05-02T15:20:35+09:00</updated>
+  <updated>2012-07-01T00:26:04+09:00</updated>
   <id>http://kentaktwo.github.com/</id>
   <author>
     <name><![CDATA[kentaktwo]]></name>
@@ -12,6 +12,560 @@
   </author>
   <generator uri="http://octopress.org/">Octopress</generator>
 
+  
+  <entry>
+    <title type="html"><![CDATA[Advanced Programming in the UNIX enviroment Chapter 3]]></title>
+    <link href="http://kentaktwo.github.com/blog/2012/06/30/apue-chapter-3/"/>
+    <updated>2012-06-30T13:49:00+09:00</updated>
+    <id>http://kentaktwo.github.com/blog/2012/06/30/apue-chapter-3</id>
+    <content type="html"><![CDATA[<h1>File I/O</h1>
+
+<!--more-->
+
+
+<h2>File Descriptors</h2>
+
+<ul>
+<li>標準入出力は <code>&lt;unistd.h&gt;</code> に定義されている
+
+<ul>
+<li><code>STDIN_FILENO</code>: 0</li>
+<li><code>STDOUT_FILENO</code>: 1</li>
+<li><code>STDERR_FILENO</code>: 2</li>
+<li>0, 1, 2 に割り当てられているのは慣習であり、UNIX の取り決めではない</li>
+</ul>
+</li>
+<li>File descriptor の範囲は 0 から <code>OPEN_MAX</code> まで
+
+<ul>
+<li>昔は 19 までだったが最近は 63 まであるシステムが多い</li>
+</ul>
+</li>
+</ul>
+
+
+<h2>open Function</h2>
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+</pre></td><td class='code'><pre><code class='c'><span class='line'><span class="cp">#include &lt;fcntl.h&gt;</span>
+</span><span class='line'><span class="kt">int</span> <span class="n">open</span><span class="p">(</span><span class="k">const</span> <span class="kt">char</span> <span class="o">*</span><span class="n">pathname</span><span class="p">,</span> <span class="kt">int</span> <span class="n">oflag</span><span class="p">,</span> <span class="p">...</span> <span class="cm">/* mode_t mode */</span> <span class="p">);</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<ul>
+<li>ファイルを開いたり作成したりする</li>
+<li>第二引数 (<em>oflag</em>) に入れるオプションは <code>&lt;fcntl.h&gt;</code> に定義されている
+
+<ul>
+<li><code>O_RDONLY</code>, <code>O_WRONLY</code>, <code>O_RDWR</code> のいずれかは必須</li>
+</ul>
+</li>
+<li>open される file descriptor は使われていないもののうち最小のものになる
+
+<ul>
+<li>なので、標準出力(1) を close して open すると 1番に割り当てられたりする</li>
+</ul>
+</li>
+<li>ファイル名が長すぎた (<code>NAME_MAX</code>以上) ときどうするかは OS 依存
+
+<ul>
+<li>System V 系だと勝手にはみ出た分を切り捨てる</li>
+<li>BSD 系だとエラー (<code>ENAMETOOLONG</code>) を出す</li>
+<li>POSIX.1 なら <code>_POSIX_NO_TRUNC</code> を定義すればエラーを出すようにできる</li>
+</ul>
+</li>
+</ul>
+
+
+<h2>creat Function</h2>
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+</pre></td><td class='code'><pre><code class='c'><span class='line'><span class="cp">#include &lt;fcntl.h&gt;</span>
+</span><span class='line'><span class="kt">int</span> <span class="n">creat</span><span class="p">(</span><span class="k">const</span> <span class="kt">char</span> <span class="o">*</span><span class="n">pathname</span><span class="p">,</span> <span class="n">mode_t</span> <span class="n">mode</span><span class="p">);</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<ul>
+<li><code>open(pathname, O_WRONLY | O_CREAT | O_TRUNC, mode);</code> と同じ</li>
+</ul>
+
+
+<h2>close Function</h2>
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+</pre></td><td class='code'><pre><code class='c'><span class='line'><span class="cp">#include &lt;unistd.h&gt;</span>
+</span><span class='line'><span class="kt">int</span> <span class="n">close</span><span class="p">(</span><span class="kt">int</span> <span class="n">filedes</span><span class="p">);</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<ul>
+<li>プロセスが終了するときにはカーネルによって自動的に close される</li>
+</ul>
+
+
+<h2>lseek Function</h2>
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+</pre></td><td class='code'><pre><code class='c'><span class='line'><span class="cp">#include &lt;unistd.h&gt;</span>
+</span><span class='line'><span class="kt">off_t</span> <span class="n">lseek</span><span class="p">(</span><span class="kt">int</span> <span class="n">filedes</span><span class="p">,</span> <span class="kt">off_t</span> <span class="n">offset</span><span class="p">,</span> <span class="kt">int</span> <span class="n">whence</span><span class="p">);</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<ul>
+<li>オフセットの位置を指定する</li>
+<li>open されたファイルは現在のファイルの始めからのオフセットを非負整数で持っている</li>
+<li>デフォルトでは open されたときオフセットは 0 に設定される (<code>O_APPEND</code> を設定している場合を除く)</li>
+<li><em>offset</em> の値の適用の仕方は <em>whence</em> の値による
+
+<ul>
+<li><code>SEEK_SET</code>: ファイルの始めから <em>offset</em> 進めたところ</li>
+<li><code>SEEK_CUR</code>: 現在のオフセットから <em>offset</em> 進めたところ</li>
+<li><code>SEEK_END</code>: ファイルの終わり（正確には現在のファイルサイズ）から <em>offset</em> 進めたところ</li>
+</ul>
+</li>
+<li><code>lseek</code> は新しいファイルオフセットを返すので、これを利用して現在のオフセットを取得することができる</li>
+</ul>
+
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+</pre></td><td class='code'><pre><code class='c'><span class='line'><span class="kt">off_t</span> <span class="n">currpos</span> <span class="o">=</span> <span class="n">lseek</span><span class="p">(</span><span class="n">fd</span><span class="p">,</span> <span class="mi">0</span><span class="p">,</span> <span class="n">SEEK_CUR</span><span class="p">);</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<ul>
+<li>ファイルオフセットをファイルサイズより大きくして write すると、その間は 0 で埋められるが、ディスクブロックは割り当てられない</li>
+</ul>
+
+
+<h2>od command</h2>
+
+<ul>
+<li>ファイルコンテンツを見る</li>
+<li><code>-c</code> オプションをつけるとコンテンツを文字として表示する</li>
+</ul>
+
+
+<h2>read Function</h2>
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+</pre></td><td class='code'><pre><code class='c'><span class='line'><span class="cp">#include &lt;unistd.h&gt;</span>
+</span><span class='line'><span class="kt">ssize_t</span> <span class="n">read</span><span class="p">(</span><span class="kt">int</span> <span class="n">filedes</span><span class="p">,</span> <span class="kt">void</span> <span class="o">*</span><span class="n">buf</span><span class="p">,</span> <span class="kt">size_t</span> <span class="n">nbytes</span><span class="p">);</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<ul>
+<li>戻り値は実際に読み込んだバイト数
+
+<ul>
+<li>EOF のときは 0</li>
+</ul>
+</li>
+</ul>
+
+
+<h2>write Function</h2>
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+</pre></td><td class='code'><pre><code class='c'><span class='line'><span class="cp">#include &lt;unistd.h&gt;</span>
+</span><span class='line'><span class="kt">ssize_t</span> <span class="n">write</span><span class="p">(</span><span class="kt">int</span> <span class="n">filedes</span><span class="p">,</span> <span class="k">const</span> <span class="kt">void</span> <span class="o">*</span><span class="n">buf</span><span class="p">,</span> <span class="kt">size_t</span> <span class="n">nbytes</span><span class="p">);</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<ul>
+<li>ディスクがいっぱいで書き込めなくなったときはエラー (-1) を返す</li>
+</ul>
+
+
+<h2>File Sharing</h2>
+
+<ul>
+<li>カーネルは open されたファイルを3種類のデータ構造で管理している
+
+<ul>
+<li>process table
+
+<ul>
+<li>各プロセスが持つ</li>
+<li>open された file descriptor のテーブル</li>
+<li>各 descriptor は file table へのポインタを持つ</li>
+</ul>
+</li>
+<li>file table
+
+<ul>
+<li>ファイルステータス (read, write, append, sync など)、現在のファイルオフセットを持つ</li>
+<li>v-node table へのポインタを持つ</li>
+</ul>
+</li>
+<li>v-node table
+
+<ul>
+<li>ファイルタイプ、i-node 情報を持つ</li>
+<li>i-node はファイルのオーナー、サイズ、実データの格納場所へのポインタなどを持っている</li>
+</ul>
+</li>
+</ul>
+</li>
+<li>Linux には v-node は無いが、その代わりに generic i-node が使われる</li>
+<li>2つのプロセスが同じファイルを open すると、file table は2つできるが、それらが同じ v-node table を指す</li>
+</ul>
+
+
+<h2>Atomic Operations</h2>
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+</pre></td><td class='code'><pre><code class='c'><span class='line'><span class="cp">#include &lt;unistd.h&gt;</span>
+</span><span class='line'><span class="kt">ssize_t</span> <span class="n">pread</span><span class="p">(</span><span class="kt">int</span> <span class="n">filedes</span><span class="p">,</span> <span class="kt">void</span> <span class="o">*</span><span class="n">buf</span><span class="p">,</span> <span class="kt">size_t</span> <span class="n">nbytes</span><span class="p">,</span> <span class="kt">off_t</span> <span class="n">offset</span><span class="p">);</span>
+</span><span class='line'><span class="kt">ssize_t</span> <span class="n">pwrite</span><span class="p">(</span><span class="kt">int</span> <span class="n">filedes</span><span class="p">,</span> <span class="k">const</span> <span class="kt">void</span> <span class="o">*</span><span class="n">buf</span><span class="p">,</span> <span class="kt">size_t</span> <span class="n">nbytes</span><span class="p">,</span> <span class="kt">off_t</span> <span class="n">offset</span><span class="p">);</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p><code>lseek</code> と <code>read</code> または <code>write</code> を atomic に行なってくれる</p>
+
+<h2>dup and dup2 Functions</h2>
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+</pre></td><td class='code'><pre><code class='c'><span class='line'><span class="cp">#include &lt;unistd.h&gt;</span>
+</span><span class='line'><span class="kt">int</span> <span class="n">dup</span><span class="p">(</span><span class="kt">int</span> <span class="n">filedes</span><span class="p">);</span>
+</span><span class='line'><span class="kt">int</span> <span class="n">dup2</span><span class="p">(</span><span class="kt">int</span> <span class="n">filedes</span><span class="p">,</span> <span class="kt">int</span> <span class="n">filedes2</span><span class="p">);</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<ul>
+<li>file descriptor を複製する
+
+<ul>
+<li>dup では複製されたディスクリプタは使用可能なディスクリプタのうち最小のものとなる</li>
+<li>dup2 では複製されたディスクリプタの番号を <em>filedes2</em> で指定する</li>
+</ul>
+</li>
+<li>元のディスクリプタと複製されたディスクリプタは同じ file table を指す
+
+<ul>
+<li>なので、ファイルステータスやファイルオフセットなどが共有される</li>
+</ul>
+</li>
+</ul>
+
+
+<h2>sync, fsync, and fdatasync Functions</h2>
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+</pre></td><td class='code'><pre><code class='c'><span class='line'><span class="cp">#include &lt;unistd.h&gt;</span>
+</span><span class='line'><span class="kt">int</span> <span class="n">fsync</span><span class="p">(</span><span class="kt">int</span> <span class="n">filedes</span><span class="p">);</span>
+</span><span class='line'><span class="kt">int</span> <span class="n">fdatasync</span><span class="p">(</span><span class="kt">int</span> <span class="n">filedes</span><span class="p">);</span>
+</span><span class='line'><span class="kt">int</span> <span class="n">sync</span><span class="p">(</span><span class="kt">void</span><span class="p">);</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<ul>
+<li>UNIX の実装では、write されたデータはカーネルによって一旦バッファにコピーされ、少し後にディスクに書き込まれる</li>
+<li><code>sync</code> を呼ぶと、すべての変更されたブロックを書き込む
+
+<ul>
+<li>通常デーモンによって30秒に1回 <code>sync</code> が呼ばれている</li>
+<li>ディスクの書き込みが終わるのを待たずに return する</li>
+</ul>
+</li>
+<li><code>fsync</code> は特定のファイルディスクリプタに対して行う
+
+<ul>
+<li>ディスクへの書き込みが終わるのを待つ</li>
+</ul>
+</li>
+<li><code>fdatasync</code> はデータの更新のみを行う
+
+<ul>
+<li><code>fsync</code> はファイル属性の更新も行う</li>
+</ul>
+</li>
+</ul>
+
+
+<h2>fcntl Function</h2>
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+</pre></td><td class='code'><pre><code class='c'><span class='line'><span class="cp">#include &lt;fcntl.h&gt;</span>
+</span><span class='line'><span class="kt">int</span> <span class="n">fcntl</span><span class="p">(</span><span class="kt">int</span> <span class="n">filedes</span><span class="p">,</span> <span class="kt">int</span> <span class="n">cmd</span><span class="p">,</span> <span class="p">...</span> <span class="cm">/* int arg */</span> <span class="p">);</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<ul>
+<li>open されたファイルのプロパティを変更する</li>
+<li>以下のようなことができる (<em>cmd</em> で指定)
+
+<ul>
+<li>descriptor の複製</li>
+<li>descriptor flag の取得・設定</li>
+<li>file status flag の取得・設定</li>
+<li>オーナーシップ (process ID, group ID) の取得・設定</li>
+<li>record lock の取得・設定（詳しくは14章）</li>
+</ul>
+</li>
+</ul>
+
+
+<h2>/dev/fd</h2>
+
+<ul>
+<li><code>/dev/fd</code> に 0, 1, 2 と呼ばれるファイルがあり、それぞれ file descriptor 0, 1, 2 に対応している</li>
+<li><code>/dev/fd/n</code> を open する際、<em>mode</em> の値は無視される。 <code>/dev/fd/0</code> は read only であり、</li>
+</ul>
+
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+</pre></td><td class='code'><pre><code class='c'><span class='line'><span class="n">fd</span> <span class="o">=</span> <span class="n">open</span><span class="p">(</span><span class="s">&quot;/dev/fd/0&quot;</span><span class="p">,</span> <span class="n">O_RDWR</span><span class="p">);</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p>としても fd に書き込むことはできない
+- shell で使われることが多い</p>
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+</pre></td><td class='code'><pre><code class='sh'><span class='line'>filter file2 | cat file1 - file3 | lpr
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p>は file1, filter file2, file3 を cat しているが (<code>-</code> は標準入力)、
+<code>-</code> は場合によって標準入力だったり出力だったりわかりにくいので、</p>
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+</pre></td><td class='code'><pre><code class='sh'><span class='line'>filter file2 | cat file1 /dev/fd/0 file3 | lpr
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p>として明確に書くことができる。</p>
+]]></content>
+  </entry>
+  
+  <entry>
+    <title type="html"><![CDATA[Unix Network Programming Chapter 2]]></title>
+    <link href="http://kentaktwo.github.com/blog/2012/05/07/unp-chapter-2/"/>
+    <updated>2012-05-07T23:41:00+09:00</updated>
+    <id>http://kentaktwo.github.com/blog/2012/05/07/unp-chapter-2</id>
+    <content type="html"><![CDATA[<h1>The Transport Layer: TCP, UDP, and SCTP</h1>
+
+<!--more-->
+
+
+<h2>User Datagram Protocol (UDP)</h2>
+
+<ul>
+<li>シンプルなプロトコル
+
+<ol>
+<li>アプリケーションがメッセージを UDP socket に書く</li>
+<li>UDP socket は UDP datagram にカプセル化される</li>
+<li>UDP datagram は IP datagram にカプセル化される</li>
+<li>IP datagram が目的地に送信される</li>
+</ol>
+</li>
+<li>UDP datagram が目的地に届けられる補償は無い</li>
+<li>UDP datagram は長さを持つ
+
+<ul>
+<li>datagram の長さの情報はデータと一緒に受信者に届けられる</li>
+</ul>
+</li>
+<li>UDP は <em>connectionless</em> service とも言われる
+
+<ul>
+<li>client - server 間に長期間の依存を持たないため</li>
+<li>例えば UDP client が socket を作って datagram を server に送り、その後すぐに別の datagram を別の servevr に同じ socket で送ることが可能</li>
+</ul>
+</li>
+</ul>
+
+
+<h2>Transmission Control Protocol (TCP)</h2>
+
+<ul>
+<li>クライアント・サーバ間でコネクションを張る</li>
+<li>信頼性 <em>(reliability)</em> がある
+
+<ul>
+<li>TCP がデータを送信すると、応答 (acknowledgment) が来るのを待つ</li>
+<li>応答が来ない場合、TCP は自動的にデータを再送信し、さらに待つ</li>
+<li>しばらく繰り返しても来ない場合は諦める</li>
+</ul>
+</li>
+<li>RTT <em>(round trip time)</em> を推測するアルゴリズムを含んでいる
+
+<ul>
+<li>応答にどれだけ時間がかかりそうかを推測する</li>
+</ul>
+</li>
+<li>TCP が送信するデータには各 byte に連番 <em>(sequence numbers)</em> が振られている
+
+<ul>
+<li>到着したセグメント（TCP が IP に渡すデータの単位）が壊れていた場合、セグメントを再要求する</li>
+<li>データが重複していた場合、番号を見て重複しているデータを削除する</li>
+</ul>
+</li>
+<li><em>flow control</em> を提供する
+
+<ul>
+<li>peer に対して何バイトのサイズのデータを受け入れられるか <em>(advertised window)</em> 伝える</li>
+<li>送信者が受信バッファを超えるデータを送ることを防ぐ</li>
+<li>送信者からデータを受信すると window サイズは小さくなり、受信アプリケーションがバッファからデータを読むと window サイズは大きくなる</li>
+</ul>
+</li>
+<li>TCP コネクションは <em>full-duplex</em> である
+
+<ul>
+<li>アプリケーションはいつでもデータの送信と受信ができる</li>
+<li>sequence number や window size の状態の経過を追い続ける</li>
+</ul>
+</li>
+</ul>
+
+
+<h2>Stream Control Transmission Protocol (SCTP)</h2>
+
+<ul>
+<li>クライアント・サーバ間の接続は connection ではなく、 <em>association</em> と呼ばれる
+
+<ul>
+<li>2システム間の通信が2つ以上のアドレスを使用することができる</li>
+</ul>
+</li>
+<li><em>message-oriented</em> である
+
+<ul>
+<li>TCP は byte 指向</li>
+</ul>
+</li>
+<li>接続間で複数のストリーム (multiple stream) を提供する
+
+<ul>
+<li>ストリームの1つに含まれる message が失われても、他のストリームの message の配信に影響しない</li>
+</ul>
+</li>
+<li>マルチホーミング (multihoming) を提供する
+
+<ul>
+<li>1つの SCTP エンドポイントが複数の IP アドレスをサポートする</li>
+<li>ネットワークの不安定さに対するロバスト性を向上させる</li>
+</ul>
+</li>
+</ul>
+
+
+<h2>Three-Way Handshake</h2>
+
+<p>TCP connection を張るときには以下のような処理が行われる：</p>
+
+<ol>
+<li>サーバは <code>socket</code>, <code>bind</code>, <code>listen</code> を呼び、接続を受け入れる準備をする <em>(passive open)</em></li>
+<li>クライアントは <code>connect</code> を呼び <em>active open</em> を発行する。
+クライアント TCP は SYN (synchronize) segment を送信して、サーバにクライアントが送る予定のデータサイズを教える。</li>
+<li>サーバはクライアントの SYN を受け入れ、ACK (acknowledge) と自分の SYN を送る。
+SYN にはサーバが送る予定のデータサイズが含まれている。
+サーバの SYN とクライアントの SYN に対する ACK は1つのセグメントで送られる。</li>
+<li>クライアントはサーバの SYN を受け入れる (ACK)</li>
+</ol>
+
+
+<h2>TCP Connection Termination</h2>
+
+<p>接続を切るときは以下のような処理で行われる：</p>
+
+<ol>
+<li>片方のアプリケーションが <code>close</code> を呼び <em>(active close)</em>、TCP は FIN segment を送る。</li>
+<li>もう片方の TCP が FIN を受け入れる <em>(passive close)</em>。FIN は end-of-file としてアプリケーションに通知される。</li>
+<li>しばらくして、end-of-file を受信したアプリケーションはソケットを <code>close</code> し、FIN を送る。</li>
+<li>active close を行った側の TCP が FIN を受け入れる。</li>
+</ol>
+
+
+<p>2 から 3 の間で passive close を行った側から active close を行った側にデータが送られることがある <em>(half-close)</em>。</p>
+
+<h2>TIME_WAIT State</h2>
+
+<ul>
+<li>active close を行った側が close を受け取ったあとのタイムアウト待ち状態
+
+<ul>
+<li>タイムアウト時間は MSL <em>(maximum segment lifetime)</em> の2倍 (2MSL)</li>
+</ul>
+</li>
+<li>TCP のコネクションを確実に切断する
+
+<ul>
+<li>ルータの異常によりループが発生すると古いパケットが残り続ける</li>
+<li>そこで TCP がパケットを再送すると、ループが解消されたときに重複してパケットが送られる</li>
+</ul>
+</li>
+<li>古い重複したセグメントをネットワークから expire させる
+
+<ul>
+<li>コネクションを再接続するときに、古いパケットが残らないようにする</li>
+</ul>
+</li>
+</ul>
+
+
+<h2>Four-Way Handshake</h2>
+
+<p>SCTP connection を張るときには以下のような処理が行われる：</p>
+
+<ol>
+<li>サーバは <code>socket</code>, <code>bind</code>, <code>listen</code> を呼び、passive open を行う</li>
+<li>クライアントは <code>connect</code> を呼び、active open を行う。
+これによりクライアントは IP のリスト、初期シーケンス番号、この association での全てのパケットを識別するためのタグ、
+クライアントがリクエストするストリーム量、クライアントが受け入れることのできるストリーム量を含んだ INIT メッセージを送る。</li>
+<li>サーバはクライアントの INIT を受け取り、 INIT-ACK メッセージを送る。
+INIT-ACK には 2. で述べた INIT が持つ情報に加えて state cookie が含まれる。
+state cookie にはサーバが association が正当であることを補償するための全ての状態が含まれている。</li>
+<li>クライアントはサーバの state cookie を COOKIE-ECHO メッセージとして返す。</li>
+<li>サーバは cookie が正しいことを確かめ、COOKIE-ACK メッセージを送り association を成立させる。</li>
+</ol>
+
+
+<p>four-way handshake は SCTP が DoS 攻撃を防ぐために用いられる。</p>
+
+<h2>Association Terminate</h2>
+
+<ul>
+<li>SCTP では TCP とは違い half-closed は受け入れられず、片方が association を切断した時にはもう片方はデータの送信をやめなければならない。</li>
+<li>SCTP では verification tags があるため、TIME_WAIT state は存在しない。</li>
+</ul>
+
+
+<h2>Port Numbers</h2>
+
+<ul>
+<li>UDP, SCTP, TCP はプロセスを区別するために 16-bit integer のポート番号を使用する。</li>
+<li>ポート番号は以下の3つのレンジに分かれる
+
+<ul>
+<li><em>well-known ports</em>: 0 - 1023<br/>
+IANA によって管理されているポート</li>
+<li><em>registered ports</em>: 1024 - 49151<br/>
+IANA によって管理はされていないが、使い方を決めているポート</li>
+<li><em>dynamic (private) ports</em>: 49152 - 65535<br/>
+IANA が管理していないポート。 <em>ephemeral ports</em> （transport protocol によってクライアントに割り当てられるポート）に使われる。</li>
+</ul>
+</li>
+<li>接続先を決めるための2つの値である IP アドレスとポート番号の組は <em>socket</em> と呼ばれる</li>
+</ul>
+
+]]></content>
+  </entry>
   
   <entry>
     <title type="html"><![CDATA[Advanced Programming in the UNIX environment Chapter 2]]></title>
