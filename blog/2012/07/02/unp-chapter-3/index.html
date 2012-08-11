@@ -1,0 +1,525 @@
+
+<!DOCTYPE html>
+<!--[if IEMobile 7 ]><html class="no-js iem7"><![endif]-->
+<!--[if lt IE 9]><html class="no-js lte-ie8"><![endif]-->
+<!--[if (gt IE 8)|(gt IEMobile 7)|!(IEMobile)|!(IE)]><!--><html class="no-js" lang="en"><!--<![endif]-->
+<head>
+  <meta charset="utf-8">
+  <title>Unix Network Programming Chapter 3 - ApprEngineer.log</title>
+  <meta name="author" content="kentaktwo">
+
+  
+  <meta name="description" content="Sockets Introduction Socket Address Structures ほとんどのソケット関数は引数にソケットアドレス構造体のポインタを必要とする。 IPv4 Socket Address Structure 1
+2
+3
+4
+5
+6
+7
+8
+9
+10
+11
+12
+# &hellip;">
+  
+
+  <!-- http://t.co/dKP3o1e -->
+  <meta name="HandheldFriendly" content="True">
+  <meta name="MobileOptimized" content="320">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+
+  
+  <link rel="canonical" href="http://kentaktwo.github.com/blog/2012/07/02/unp-chapter-3">
+  <link href="/favicon.png" rel="icon">
+  <link href="/stylesheets/screen.css" media="screen, projection" rel="stylesheet" type="text/css">
+  <script src="/javascripts/modernizr-2.0.js"></script>
+  <script src="/javascripts/ender.js"></script>
+  <script src="/javascripts/octopress.js" type="text/javascript"></script>
+  <link href="/atom.xml" rel="alternate" title="ApprEngineer.log" type="application/atom+xml">
+  <!--Fonts from Google"s Web font directory at http://google.com/webfonts -->
+<link href="http://fonts.googleapis.com/css?family=PT+Serif:regular,italic,bold,bolditalic" rel="stylesheet" type="text/css">
+<link href="http://fonts.googleapis.com/css?family=PT+Sans:regular,italic,bold,bolditalic" rel="stylesheet" type="text/css">
+<link href='http://fonts.googleapis.com/css?family=Lato:400,700,400italic,700italic' rel='stylesheet' type='text/css'>
+
+  
+
+</head>
+
+<body   >
+  <header role="banner"><hgroup>
+  <h1><a href="/">ApprEngineer.log</a></h1>
+  
+    <h2>Apprentice web engineer's study log</h2>
+  
+</hgroup>
+
+</header>
+  <nav role="navigation"><ul class="subscription" data-subscription="rss">
+  <li><a href="/atom.xml" rel="subscribe-rss" title="subscribe via RSS">RSS</a></li>
+  
+</ul>
+  
+<form action="http://google.com/search" method="get">
+  <fieldset role="search">
+    <input type="hidden" name="q" value="site:kentaktwo.github.com" />
+    <input class="search" type="text" name="q" results="0" placeholder="Search"/>
+  </fieldset>
+</form>
+  
+<ul class="main-navigation">
+  <li><a href="/">Blog</a></li>
+  <li><a href="/blog/archives">Archives</a></li>
+</ul>
+
+</nav>
+  <div id="main">
+    <div id="content">
+      <div>
+<article class="hentry" role="article">
+  
+  <header>
+    
+      <h1 class="entry-title">Unix Network Programming Chapter 3</h1>
+    
+    
+      <p class="meta">
+        
+
+
+
+
+
+
+
+
+  
+
+
+<time datetime="2012-07-02T22:04:00+09:00" pubdate data-updated="true">Jul 2<span>nd</span>, 2012</time>
+        
+         | <a href="#disqus_thread">Comments</a>
+        
+      </p>
+    
+  </header>
+
+
+<div class="entry-content"><h1>Sockets Introduction</h1>
+
+<!--more-->
+
+
+<h2>Socket Address Structures</h2>
+
+<p>ほとんどのソケット関数は引数にソケットアドレス構造体のポインタを必要とする。</p>
+
+<h3>IPv4 Socket Address Structure</h3>
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+<span class='line-number'>7</span>
+<span class='line-number'>8</span>
+<span class='line-number'>9</span>
+<span class='line-number'>10</span>
+<span class='line-number'>11</span>
+<span class='line-number'>12</span>
+</pre></td><td class='code'><pre><code class='c'><span class='line'><span class="cp">#include &lt;netinet/in.h&gt;</span>
+</span><span class='line'><span class="k">struct</span> <span class="n">in_addr</span> <span class="p">{</span>
+</span><span class='line'>    <span class="n">in_addr_t</span>       <span class="n">s_addr</span><span class="p">;</span>         <span class="cm">/* 32-bit IPv4 address */</span>
+</span><span class='line'><span class="p">};</span>
+</span><span class='line'>
+</span><span class='line'><span class="k">struct</span> <span class="n">sockaddr_in</span> <span class="p">{</span>
+</span><span class='line'>    <span class="kt">uint8_t</span>         <span class="n">sin_len</span><span class="p">;</span>        <span class="cm">/* length of structure (16) */</span>
+</span><span class='line'>    <span class="n">sa_family_t</span>     <span class="n">sin_family</span><span class="p">;</span>     <span class="cm">/* AF_INET */</span>
+</span><span class='line'>    <span class="n">in_port_t</span>       <span class="n">sin_port</span><span class="p">;</span>       <span class="cm">/* 16-bit TCP or UDP port number */</span>
+</span><span class='line'>    <span class="k">struct</span> <span class="n">in_addr</span>  <span class="n">sin_addr</span><span class="p">;</span>       <span class="cm">/* 32-bit IPv4 address */</span>
+</span><span class='line'>    <span class="kt">char</span>            <span class="n">sin_zero</span><span class="p">[</span><span class="mi">8</span><span class="p">];</span>    <span class="cm">/* unused */</span>
+</span><span class='line'><span class="p">};</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<ul>
+<li><code>sin_zero</code> はソケットアドレス構造体のサイズを少なくとも 16 bytes にするため</li>
+<li>IP アドレスとポート番号は常にネットワークバイトオーダー</li>
+<li><code>sin_addr</code> が構造体になっているのは歴史的な理由から。昔は union でクラス A, B, C のアドレスを処理していたらしい。</li>
+</ul>
+
+
+<h3>Generic Socket Address Structure</h3>
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+</pre></td><td class='code'><pre><code class='c'><span class='line'><span class="cp">#include &lt;sys/socket.h&gt;</span>
+</span><span class='line'><span class="k">struct</span> <span class="n">sockaddr</span> <span class="p">{</span>
+</span><span class='line'>    <span class="kt">uint8_t</span>     <span class="n">sa_len</span><span class="p">;</span>
+</span><span class='line'>    <span class="n">sa_family_t</span> <span class="n">sa_family</span><span class="p">;</span>      <span class="cm">/* address family: AF_xxx value */</span>
+</span><span class='line'>    <span class="kt">char</span>        <span class="n">sa_data</span><span class="p">[</span><span class="mi">14</span><span class="p">];</span>    <span class="cm">/* protocol-specific address */</span>
+</span><span class='line'><span class="p">};</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<ul>
+<li>ソケット関数に渡すときは、<code>sockaddr</code> にキャストして渡す</li>
+</ul>
+
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+</pre></td><td class='code'><pre><code class='c'><span class='line'><span class="k">struct</span> <span class="n">sockaddr_in</span> <span class="n">serv</span><span class="p">;</span>  <span class="cm">/* IPv4 */</span>
+</span><span class='line'>
+</span><span class='line'><span class="cm">/* fill in serv{} */</span>
+</span><span class='line'>
+</span><span class='line'><span class="n">bind</span><span class="p">(</span><span class="n">sockfd</span><span class="p">,</span> <span class="p">(</span><span class="k">struct</span> <span class="n">sockaddr</span> <span class="o">*</span><span class="p">)</span><span class="o">&amp;</span><span class="n">serv</span><span class="p">,</span> <span class="k">sizeof</span><span class="p">(</span><span class="n">serv</span><span class="p">));</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<h3>IPv6 Socket Address Structure</h3>
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+<span class='line-number'>7</span>
+<span class='line-number'>8</span>
+<span class='line-number'>9</span>
+<span class='line-number'>10</span>
+<span class='line-number'>11</span>
+<span class='line-number'>12</span>
+<span class='line-number'>13</span>
+<span class='line-number'>14</span>
+<span class='line-number'>15</span>
+</pre></td><td class='code'><pre><code class='c'><span class='line'><span class="cp">#include &lt;netinet/in.h&gt;</span>
+</span><span class='line'><span class="k">struct</span> <span class="n">in6_addr</span> <span class="p">{</span>
+</span><span class='line'>    <span class="kt">uint8_t</span>         <span class="n">s6_addr</span><span class="p">[</span><span class="mi">16</span><span class="p">];</span>        <span class="cm">/* 128-bit IPv6 address */</span>
+</span><span class='line'><span class="p">};</span>
+</span><span class='line'>
+</span><span class='line'><span class="cp"># define SIN6_LEN  </span><span class="cm">/* required for compile-time tests */</span><span class="cp"></span>
+</span><span class='line'>
+</span><span class='line'><span class="k">struct</span> <span class="n">sockaddr_in6</span> <span class="p">{</span>
+</span><span class='line'>    <span class="kt">uint8_t</span>         <span class="n">sin6_len</span><span class="p">;</span>           <span class="cm">/* length of this struct (28) */</span>
+</span><span class='line'>    <span class="n">sa_family_t</span>     <span class="n">sin6_family</span><span class="p">;</span>        <span class="cm">/* AF_INET6 */</span>
+</span><span class='line'>    <span class="n">in_port_t</span>       <span class="n">sin6_port</span><span class="p">;</span>          <span class="cm">/* transport layer port# */</span>
+</span><span class='line'>    <span class="kt">uint32_t</span>        <span class="n">sin6_flowinfo</span><span class="p">;</span>      <span class="cm">/* flow information, undefined */</span>
+</span><span class='line'>    <span class="k">struct</span> <span class="n">in6_addr</span> <span class="n">sin6_addr</span><span class="p">;</span>          <span class="cm">/* IPv6 address */</span>
+</span><span class='line'>    <span class="kt">uint32_t</span>        <span class="n">sin6_scope_id</span><span class="p">;</span>      <span class="cm">/* set of interfaces for a scope */</span>
+</span><span class='line'><span class="p">};</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<ul>
+<li>システムがソケットアドレス構造体の長さをサポートする場合、<code>SIN6_LEN</code> を定義しなくてはならない</li>
+<li>アドレスとポート番号はネットワークバイトオーダー</li>
+</ul>
+
+
+<h3>New Generic Socket Address Structure</h3>
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+</pre></td><td class='code'><pre><code class='c'><span class='line'><span class="cp">#include &lt;netinet/in.h&gt;</span>
+</span><span class='line'><span class="k">struct</span> <span class="n">sockaddr_storage</span> <span class="p">{</span>
+</span><span class='line'>    <span class="kt">uint8_t</span>     <span class="n">ss_len</span><span class="p">;</span>     <span class="cm">/* length of this struct (implementation dependent) */</span>
+</span><span class='line'>    <span class="n">sa_family_t</span> <span class="n">ss_family</span><span class="p">;</span>  <span class="cm">/* address family: AF_xxx value */</span>
+</span><span class='line'>    <span class="cm">/* implementation-dependent elements to provide */</span>
+</span><span class='line'><span class="p">};</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<ul>
+<li>IPv6 をサポートするためにできた generic socket</li>
+<li>システムがサポートするソケットアドレス構造体をカバーできるよう十分大きいサイズが取られる</li>
+</ul>
+
+
+<h2>Value-Result Arguments</h2>
+
+<p>ソケット関数では引数にソケットアドレス構造体とそのサイズを渡すが、
+<code>accept</code>, <code>recvfrom</code>, <code>getsockname</code>, <code>getpeername</code> などのプロセスがカーネルから
+ソケットアドレス構造体を受け取る関数では、引数に入れたサイズが関数実行後に変わることがある
+(<code>sockaddr_un</code> など)。</p>
+
+<h2>Byte Ordering Functions</h2>
+
+<ul>
+<li>バイトをデータに格納する順序には2種類ある
+
+<ul>
+<li>リトルエンディアン: 下位バイトが先のアドレスにくる</li>
+<li>ビッグエンディアン: 上位バイトが先のアドレスにくる</li>
+</ul>
+</li>
+<li>システムによってバイトオーダーが異なるので、ネットワークで扱うバイトオーダーを決める必要がある
+
+<ul>
+<li>ネットワークバイトオーダーはビッグエンディアン</li>
+</ul>
+</li>
+<li>ホストバイトオーダーとネットワークバイトオーダーを変換する関数が用意されている</li>
+</ul>
+
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+</pre></td><td class='code'><pre><code class='c'><span class='line'><span class="cp">#include &lt;netinet/in.h&gt;</span>
+</span><span class='line'><span class="kt">uint16_t</span> <span class="n">htons</span><span class="p">(</span><span class="kt">uint16_t</span> <span class="n">host16bitvalue</span><span class="p">);</span>
+</span><span class='line'><span class="kt">uint32_t</span> <span class="n">htonl</span><span class="p">(</span><span class="kt">uint32_t</span> <span class="n">host32bitvalue</span><span class="p">);</span>
+</span><span class='line'>
+</span><span class='line'><span class="kt">uint16_t</span> <span class="n">ntohs</span><span class="p">(</span><span class="kt">uint16_t</span> <span class="n">net16bitvalue</span><span class="p">);</span>
+</span><span class='line'><span class="kt">uint32_t</span> <span class="n">ntohl</span><span class="p">(</span><span class="kt">uint32_t</span> <span class="n">net32bitvalue</span><span class="p">);</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<h2>Byte Manipulation Functions</h2>
+
+<ul>
+<li>バイト列を操作する関数は2つのグループに分かれる
+
+<ul>
+<li><code>b</code> で始まる関数 (4.2BSD)</li>
+<li><code>mem</code> で始まる関数 (ANSI C)</li>
+</ul>
+</li>
+</ul>
+
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+</pre></td><td class='code'><pre><code class='c'><span class='line'><span class="cp">#include &lt;strings.h&gt;</span>
+</span><span class='line'><span class="kt">void</span> <span class="n">bzero</span><span class="p">(</span><span class="kt">void</span> <span class="o">*</span><span class="n">dest</span><span class="p">,</span> <span class="kt">size_t</span> <span class="n">nbytes</span><span class="p">);</span>
+</span><span class='line'><span class="kt">void</span> <span class="n">bcopy</span><span class="p">(</span><span class="k">const</span> <span class="kt">void</span> <span class="o">*</span><span class="n">src</span><span class="p">,</span> <span class="kt">void</span> <span class="o">*</span><span class="n">dest</span><span class="p">,</span> <span class="kt">size_t</span> <span class="n">nbytes</span><span class="p">);</span>
+</span><span class='line'><span class="kt">int</span> <span class="n">bcmp</span><span class="p">(</span><span class="k">const</span> <span class="kt">void</span> <span class="o">*</span><span class="n">ptr1</span><span class="p">,</span> <span class="k">const</span> <span class="kt">void</span> <span class="o">*</span><span class="n">ptr2</span><span class="p">,</span> <span class="kt">size_t</span> <span class="n">nbytes</span><span class="p">);</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+</pre></td><td class='code'><pre><code class='c'><span class='line'><span class="cp">#include &lt;string.h&gt;</span>
+</span><span class='line'><span class="kt">void</span> <span class="o">*</span><span class="n">memset</span><span class="p">(</span><span class="kt">void</span> <span class="o">*</span><span class="n">dest</span><span class="p">,</span> <span class="kt">int</span> <span class="n">c</span><span class="p">,</span> <span class="kt">size_t</span> <span class="n">len</span><span class="p">);</span>
+</span><span class='line'><span class="kt">void</span> <span class="o">*</span><span class="n">memcpy</span><span class="p">(</span><span class="kt">void</span> <span class="o">*</span><span class="n">dest</span><span class="p">,</span> <span class="k">const</span> <span class="kt">void</span> <span class="o">*</span><span class="n">src</span><span class="p">,</span> <span class="kt">size_t</span> <span class="n">nbytes</span><span class="p">);</span>
+</span><span class='line'><span class="kt">int</span> <span class="n">memcmp</span><span class="p">(</span><span class="k">const</span> <span class="kt">void</span> <span class="o">*</span><span class="n">ptr1</span><span class="p">,</span> <span class="k">const</span> <span class="kt">void</span> <span class="o">*</span><span class="n">ptr2</span><span class="p">,</span> <span class="kt">size_t</span> <span class="n">nbytes</span><span class="p">);</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<ul>
+<li><code>bzero</code> は 0 にセットするが、<code>memset</code> は特定の値にセットできる</li>
+<li><code>bcopy</code> と <code>memcpy</code> ではコピー元とコピー先のアドレスを引数に入れる順序が逆</li>
+<li><code>bcopy</code> は領域が重なっていても動作するが、<code>memcpy</code> はダメ
+
+<ul>
+<li>重なっている場合は <code>memmove</code> を使う</li>
+<li><code>bcopy</code> は廃止予定</li>
+</ul>
+</li>
+<li><code>bcmp</code> も <code>memcmp</code> も2つのバイト列が異なっていれば nonzero を返すが、
+<code>memcmp</code> の場合、最初に異なったバイトが <em>ptr1</em> > <em>ptr2</em> のとき正、
+<em>ptr1</em> &lt; <em>ptr2</em> のとき負の値が返る</li>
+</ul>
+
+
+<h2><code>inet_pton</code> and <code>inet_ntop</code> Functions</h2>
+
+<ul>
+<li>IP アドレスの文字列表記と数値の変換を行うには <code>inet_pton</code> と <code>inet_ntop</code> を使う。</li>
+<li><code>inet_aton</code>, <code>inet_addr</code>, <code>inet_ntoa</code> は IPv4 のみでしか使えない
+
+<ul>
+<li>さらに、<code>inet_addr</code> は戻り値がアドレスを表す数値 (32-bit, ネットワークバイトオーダー) だが、
+エラー時に返す値 <code>INADDR_NONE</code> が 2<sup>32</sup> - 1 のため、255.255.255.255 が変換できない</li>
+</ul>
+</li>
+</ul>
+
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+</pre></td><td class='code'><pre><code class='c'><span class='line'><span class="cp">#include &lt;arpa/inet.h&gt;</span>
+</span><span class='line'><span class="kt">int</span> <span class="n">inet_pton</span><span class="p">(</span><span class="kt">int</span> <span class="n">family</span><span class="p">,</span> <span class="k">const</span> <span class="kt">char</span> <span class="o">*</span><span class="n">strptr</span><span class="p">,</span> <span class="kt">void</span> <span class="o">*</span><span class="n">addrptr</span><span class="p">);</span>  <span class="c1">// 文字列から数値</span>
+</span><span class='line'><span class="k">const</span> <span class="kt">char</span> <span class="o">*</span><span class="n">inet_ntop</span><span class="p">(</span><span class="kt">int</span> <span class="n">family</span><span class="p">,</span> <span class="k">const</span> <span class="kt">void</span> <span class="o">*</span><span class="n">addrptr</span><span class="p">,</span> <span class="kt">char</span> <span class="o">*</span><span class="n">strptr</span><span class="p">,</span> <span class="kt">size_t</span> <span class="n">len</span><span class="p">);</span>  <span class="c1">// 数値から文字列</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<ul>
+<li>数値はネットワークバイトオーダー</li>
+<li><em>family</em> には <code>AF_INET</code> または <code>AF_INET6</code> を入れる</li>
+<li><em>len</em> には変換後の文字列を入れるバッファ <em>strptr</em> の長さを入れる。
+<code>&lt;netinet/in.h&gt;</code> に <code>INET_ADDRSTRLEN</code> と <code>INET6_ADDRSTRLEN</code> が定義されている。</li>
+<li><em>strptr</em> に null は入れられない。メモリを確保してそのサイズを指定する必要がある。</li>
+<li><code>inet_pton()</code> に成功すると 1, 失敗すると 0 が返ってくる</li>
+<li><code>inet_ntop()</code> に成功すると、戻り値として <em>strptr</em> が返る</li>
+</ul>
+
+</div>
+
+
+  <footer>
+    <p class="meta">
+      
+  
+
+<span class="byline author vcard">Posted by <span class="fn">kentaktwo</span></span>
+
+      
+
+
+
+
+
+
+
+
+  
+
+
+<time datetime="2012-07-02T22:04:00+09:00" pubdate data-updated="true">Jul 2<span>nd</span>, 2012</time>
+      
+
+<span class="categories">
+  
+    <a class='category' href='/blog/categories/unix/'>unix</a>, <a class='category' href='/blog/categories/unp/'>unp</a>
+  
+</span>
+
+
+    </p>
+    
+      <div class="sharing">
+  
+  <a href="http://twitter.com/share" class="twitter-share-button" data-url="http://kentaktwo.github.com/blog/2012/07/02/unp-chapter-3/" data-via="" data-counturl="http://kentaktwo.github.com/blog/2012/07/02/unp-chapter-3/" >Tweet</a>
+  
+  
+  
+</div>
+
+    
+    <p class="meta">
+      
+        <a class="basic-alignment left" href="/blog/2012/06/30/apue-chapter-3/" title="Previous Post: Advanced Programming in the UNIX enviroment Chapter 3">&laquo; Advanced Programming in the UNIX enviroment Chapter 3</a>
+      
+      
+        <a class="basic-alignment right" href="/blog/2012/07/24/lua-chapter-1/" title="Next Post: Programming In Lua Chapter 1">Programming In Lua Chapter 1 &raquo;</a>
+      
+    </p>
+  </footer>
+</article>
+
+  <section>
+    <h1>Comments</h1>
+    <div id="disqus_thread" aria-live="polite"><noscript>Please enable JavaScript to view the <a href="http://disqus.com/?ref_noscript">comments powered by Disqus.</a></noscript>
+</div>
+  </section>
+
+</div>
+
+<aside class="sidebar">
+  
+    <section>
+  <h1>Recent Posts</h1>
+  <ul id="recent_posts">
+    
+      <li class="post">
+        <a href="/blog/2012/07/24/lua-chapter-1/">Programming In Lua Chapter 1</a>
+      </li>
+    
+      <li class="post">
+        <a href="/blog/2012/07/02/unp-chapter-3/">Unix Network Programming Chapter 3</a>
+      </li>
+    
+      <li class="post">
+        <a href="/blog/2012/06/30/apue-chapter-3/">Advanced Programming in the UNIX enviroment Chapter 3</a>
+      </li>
+    
+      <li class="post">
+        <a href="/blog/2012/05/07/unp-chapter-2/">Unix Network Programming Chapter 2</a>
+      </li>
+    
+      <li class="post">
+        <a href="/blog/2012/05/02/apue-chapter-2/">Advanced Programming in the UNIX environment Chapter 2</a>
+      </li>
+    
+  </ul>
+</section>
+
+
+
+
+
+
+  
+</aside>
+
+
+    </div>
+  </div>
+  <footer role="contentinfo"><p>
+  Copyright &copy; 2012 - kentaktwo -
+  <span class="credit">Powered by <a href="http://octopress.org">Octopress</a></span>
+</p>
+
+</footer>
+  
+
+<script type="text/javascript">
+      var disqus_shortname = 'apprengineerlog';
+      
+        
+        // var disqus_developer = 1;
+        var disqus_identifier = 'http://kentaktwo.github.com/blog/2012/07/02/unp-chapter-3/';
+        var disqus_url = 'http://kentaktwo.github.com/blog/2012/07/02/unp-chapter-3/';
+        var disqus_script = 'embed.js';
+      
+    (function () {
+      var dsq = document.createElement('script'); dsq.type = 'text/javascript'; dsq.async = true;
+      dsq.src = 'http://' + disqus_shortname + '.disqus.com/' + disqus_script;
+      (document.getElementsByTagName('head')[0] || document.getElementsByTagName('body')[0]).appendChild(dsq);
+    }());
+</script>
+
+
+
+
+
+
+
+  <script type="text/javascript">
+    (function(){
+      var twitterWidgets = document.createElement('script');
+      twitterWidgets.type = 'text/javascript';
+      twitterWidgets.async = true;
+      twitterWidgets.src = 'http://platform.twitter.com/widgets.js';
+      document.getElementsByTagName('head')[0].appendChild(twitterWidgets);
+    })();
+  </script>
+
+
+
+
+
+</body>
+</html>

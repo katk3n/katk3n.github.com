@@ -1,0 +1,151 @@
+<?xml version="1.0" encoding="utf-8"?>
+<feed xmlns="http://www.w3.org/2005/Atom">
+
+  <title><![CDATA[Category: lua | ApprEngineer.log]]></title>
+  <link href="http://kentaktwo.github.com/blog/categories/lua/atom.xml" rel="self"/>
+  <link href="http://kentaktwo.github.com/"/>
+  <updated>2012-08-11T20:29:39+09:00</updated>
+  <id>http://kentaktwo.github.com/</id>
+  <author>
+    <name><![CDATA[kentaktwo]]></name>
+    
+  </author>
+  <generator uri="http://octopress.org/">Octopress</generator>
+
+  
+  <entry>
+    <title type="html"><![CDATA[Programming In Lua Chapter 1]]></title>
+    <link href="http://kentaktwo.github.com/blog/2012/07/24/lua-chapter-1/"/>
+    <updated>2012-07-24T01:05:00+09:00</updated>
+    <id>http://kentaktwo.github.com/blog/2012/07/24/lua-chapter-1</id>
+    <content type="html"><![CDATA[<h1>Getting Started</h1>
+
+<!--more-->
+
+
+<p>Lua はスクリプト言語の一つで、非常にシンプルなことが特徴です。<br/>
+組み込み系で使われることが多く、C 言語と簡単に連携することができます。<br/>
+また、nmap の拡張スクリプト(NSE, Nmap Script Engine) も Lua で記述されています。</p>
+
+<h2>Chunks</h2>
+
+<ul>
+<li>Lua を実行する1行の命令を <em>chunk</em> と呼ぶ</li>
+<li>行末のセミコロンはオプション
+<code>lua
+a = 1; b = a*2;
+a = 1  b = a*2  -- これでも OK
+</code></li>
+</ul>
+
+
+<h2>Interactive Mode</h2>
+
+<ul>
+<li>引数を与えずに lua を実行するとインタラクティブモードで起動する
+
+<ul>
+<li>終了するときは <code>EOF</code> を送る (<code>ctrl-D</code>) か、<code>exit</code> 関数を呼ぶ:
+``` lua
+
+<blockquote><p>os.exit()
+```</p></blockquote></li>
+</ul>
+</li>
+<li><code>-i</code> オプションでファイルに書いてある chunk を実行してからインタラクティブモードを起動する
+<code>sh
+$ lua -i prog
+</code></li>
+<li><code>dofile</code> 関数を使ってもできる
+``` lua
+
+<blockquote><p>dofile("lib1.lua")  -- load your library
+```</p></blockquote></li>
+</ul>
+
+
+<h2>Some Lexical Conventions</h2>
+
+<ul>
+<li>アンダースコアで始まり、大文字の変数名 (<code>_VERSION</code> など) は Lua 側で定義されているものが多いため、自分で定義するのは避けたほうがいい</li>
+<li>Lua の予約語は非常に少ない</li>
+<li><p>大文字と小文字は区別される。<code>and</code> は予約語だが、<code>And</code> や <code>AND</code> は使える</p></li>
+<li><p>ハイフン2つ (<code>--</code>) でコメント</p></li>
+<li><code>--[[</code> と <code>--]]</code> で挟むとブロックコメント
+<code>lua
+--[[
+print(10)  -- 実行されない
+--]]
+</code></li>
+<li>ハイフンを1つ付け足すだけでコメントを解除できる
+<code>lua
+---[[
+print(10)  --&gt; 10
+--]]
+</code></li>
+</ul>
+
+
+<h2>Global Variables</h2>
+
+<ul>
+<li>グローバル変数を使うのに宣言する必要はない</li>
+<li>グローバル変数は初期化しないと勝手に <code>nil</code> が入る
+<code>
+print(b)  --&gt; nil
+b = 10
+print(b)  --&gt; 10
+</code></li>
+<li>変数を消すには <code>nil</code> を代入する
+<code>lua
+b = nil
+</code>
+Lua では変数が存在するかどうかは、<code>nil</code> かどうかを調べることと同じになる</li>
+</ul>
+
+
+<h2>The Stand-Alone Interpreter</h2>
+
+<p>Lua 起動時に
+- <code>-e</code> オプションでコードを直接コマンドラインから動かせる
+<code>sh
+$ lua -e "print(math.sin(12))"
+</code>
+- <code>-l</code> オプションでライブラリを読み込む
+``` sh</p>
+
+<h1>a というライブラリを読み込み、x=10 を実行し、インタラクティブモードに入る</h1>
+
+<p>$ lua -i -l a -e "x = 10"
+<code>
+- プロンプトは `_PROMPT` に定義されているのでそれを変えればプロンプトが変えられる
+- インタラクティブモードでは、`=` を頭につけると結果を表示してくれる
+</code> lua</p>
+
+<blockquote><p>= math.sin(3)   --> math.sin(3) の値を表示
+a = 30
+= a             --> a の中身を表示
+<code>``
+- コマンドライン引数は</code>arg` というテーブルに格納される</p>
+
+<pre><code>- スクリプト名は `arg[0]` に入る
+- スクリプト名より先に引数を書くと、それらは負のインデックスに格納される
+</code></pre>
+
+<p><code>sh
+$ lua -e "sin=math.sin" script a b
+</code>
+とすると
+<code>lua
+arg[-3] = "lua"
+arg[-2] = "-e"
+arg[-1] = "sin=math.sin"
+arg[0] = "script"
+arg[1] = "a"
+arg[2] = "b"
+</code>
+になる。</p></blockquote>
+]]></content>
+  </entry>
+  
+</feed>

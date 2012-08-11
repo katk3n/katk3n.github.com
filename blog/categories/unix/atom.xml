@@ -4,7 +4,7 @@
   <title><![CDATA[Category: unix | ApprEngineer.log]]></title>
   <link href="http://kentaktwo.github.com/blog/categories/unix/atom.xml" rel="self"/>
   <link href="http://kentaktwo.github.com/"/>
-  <updated>2012-07-01T00:26:04+09:00</updated>
+  <updated>2012-08-11T20:29:39+09:00</updated>
   <id>http://kentaktwo.github.com/</id>
   <author>
     <name><![CDATA[kentaktwo]]></name>
@@ -12,6 +12,228 @@
   </author>
   <generator uri="http://octopress.org/">Octopress</generator>
 
+  
+  <entry>
+    <title type="html"><![CDATA[Unix Network Programming Chapter 3]]></title>
+    <link href="http://kentaktwo.github.com/blog/2012/07/02/unp-chapter-3/"/>
+    <updated>2012-07-02T22:04:00+09:00</updated>
+    <id>http://kentaktwo.github.com/blog/2012/07/02/unp-chapter-3</id>
+    <content type="html"><![CDATA[<h1>Sockets Introduction</h1>
+
+<!--more-->
+
+
+<h2>Socket Address Structures</h2>
+
+<p>ほとんどのソケット関数は引数にソケットアドレス構造体のポインタを必要とする。</p>
+
+<h3>IPv4 Socket Address Structure</h3>
+
+<p>``` c</p>
+
+<h1>include &lt;netinet/in.h></h1>
+
+<p>struct in_addr {</p>
+
+<pre><code>in_addr_t       s_addr;         /* 32-bit IPv4 address */
+</code></pre>
+
+<p>};</p>
+
+<p>struct sockaddr_in {</p>
+
+<pre><code>uint8_t         sin_len;        /* length of structure (16) */
+sa_family_t     sin_family;     /* AF_INET */
+in_port_t       sin_port;       /* 16-bit TCP or UDP port number */
+struct in_addr  sin_addr;       /* 32-bit IPv4 address */
+char            sin_zero[8];    /* unused */
+</code></pre>
+
+<p>};
+<code>``
+-</code>sin_zero<code>はソケットアドレス構造体のサイズを少なくとも 16 bytes にするため
+- IP アドレスとポート番号は常にネットワークバイトオーダー
+-</code>sin_addr` が構造体になっているのは歴史的な理由から。昔は union でクラス A, B, C のアドレスを処理していたらしい。</p>
+
+<h3>Generic Socket Address Structure</h3>
+
+<p>``` c</p>
+
+<h1>include &lt;sys/socket.h></h1>
+
+<p>struct sockaddr {</p>
+
+<pre><code>uint8_t     sa_len;
+sa_family_t sa_family;      /* address family: AF_xxx value */
+char        sa_data[14];    /* protocol-specific address */
+</code></pre>
+
+<p>};
+<code>
+- ソケット関数に渡すときは、`sockaddr` にキャストして渡す
+</code> c
+struct sockaddr_in serv;  /<em> IPv4 </em>/</p>
+
+<p>/<em> fill in serv{} </em>/</p>
+
+<p>bind(sockfd, (struct sockaddr *)&amp;serv, sizeof(serv));
+```</p>
+
+<h3>IPv6 Socket Address Structure</h3>
+
+<p>``` c</p>
+
+<h1>include &lt;netinet/in.h></h1>
+
+<p>struct in6_addr {</p>
+
+<pre><code>uint8_t         s6_addr[16];        /* 128-bit IPv6 address */
+</code></pre>
+
+<p>};</p>
+
+<h1>define SIN6_LEN  /<em> required for compile-time tests </em>/</h1>
+
+<p>struct sockaddr_in6 {</p>
+
+<pre><code>uint8_t         sin6_len;           /* length of this struct (28) */
+sa_family_t     sin6_family;        /* AF_INET6 */
+in_port_t       sin6_port;          /* transport layer port# */
+uint32_t        sin6_flowinfo;      /* flow information, undefined */
+struct in6_addr sin6_addr;          /* IPv6 address */
+uint32_t        sin6_scope_id;      /* set of interfaces for a scope */
+</code></pre>
+
+<p>};
+<code>``
+- システムがソケットアドレス構造体の長さをサポートする場合、</code>SIN6_LEN` を定義しなくてはならない
+- アドレスとポート番号はネットワークバイトオーダー</p>
+
+<h3>New Generic Socket Address Structure</h3>
+
+<p>``` c</p>
+
+<h1>include &lt;netinet/in.h></h1>
+
+<p>struct sockaddr_storage {</p>
+
+<pre><code>uint8_t     ss_len;     /* length of this struct (implementation dependent) */
+sa_family_t ss_family;  /* address family: AF_xxx value */
+/* implementation-dependent elements to provide */
+</code></pre>
+
+<p>};
+```
+- IPv6 をサポートするためにできた generic socket
+- システムがサポートするソケットアドレス構造体をカバーできるよう十分大きいサイズが取られる</p>
+
+<h2>Value-Result Arguments</h2>
+
+<p>ソケット関数では引数にソケットアドレス構造体とそのサイズを渡すが、
+<code>accept</code>, <code>recvfrom</code>, <code>getsockname</code>, <code>getpeername</code> などのプロセスがカーネルから
+ソケットアドレス構造体を受け取る関数では、引数に入れたサイズが関数実行後に変わることがある
+(<code>sockaddr_un</code> など)。</p>
+
+<h2>Byte Ordering Functions</h2>
+
+<ul>
+<li>バイトをデータに格納する順序には2種類ある
+
+<ul>
+<li>リトルエンディアン: 下位バイトが先のアドレスにくる</li>
+<li>ビッグエンディアン: 上位バイトが先のアドレスにくる</li>
+</ul>
+</li>
+<li>システムによってバイトオーダーが異なるので、ネットワークで扱うバイトオーダーを決める必要がある
+
+<ul>
+<li>ネットワークバイトオーダーはビッグエンディアン</li>
+</ul>
+</li>
+<li>ホストバイトオーダーとネットワークバイトオーダーを変換する関数が用意されている
+``` c
+
+<h1>include &lt;netinet/in.h></h1>
+
+<p>uint16_t htons(uint16_t host16bitvalue);
+uint32_t htonl(uint32_t host32bitvalue);</p></li>
+</ul>
+
+
+<p>uint16_t ntohs(uint16_t net16bitvalue);
+uint32_t ntohl(uint32_t net32bitvalue);
+```</p>
+
+<h2>Byte Manipulation Functions</h2>
+
+<ul>
+<li>バイト列を操作する関数は2つのグループに分かれる
+
+<ul>
+<li><code>b</code> で始まる関数 (4.2BSD)</li>
+<li><code>mem</code> で始まる関数 (ANSI C)
+``` c
+
+<h1>include &lt;strings.h></h1>
+
+void bzero(void <em>dest, size_t nbytes);
+void bcopy(const void </em>src, void <em>dest, size_t nbytes);
+int bcmp(const void </em>ptr1, const void *ptr2, size_t nbytes);
+<code>
+</code> c
+
+<h1>include &lt;string.h></h1>
+
+<p>void <em>memset(void </em>dest, int c, size_t len);
+void <em>memcpy(void </em>dest, const void <em>src, size_t nbytes);
+int memcmp(const void </em>ptr1, const void *ptr2, size_t nbytes);
+```</p></li>
+</ul>
+</li>
+<li><code>bzero</code> は 0 にセットするが、<code>memset</code> は特定の値にセットできる</li>
+<li><code>bcopy</code> と <code>memcpy</code> ではコピー元とコピー先のアドレスを引数に入れる順序が逆</li>
+<li><code>bcopy</code> は領域が重なっていても動作するが、<code>memcpy</code> はダメ
+
+<ul>
+<li>重なっている場合は <code>memmove</code> を使う</li>
+<li><code>bcopy</code> は廃止予定</li>
+</ul>
+</li>
+<li><code>bcmp</code> も <code>memcmp</code> も2つのバイト列が異なっていれば nonzero を返すが、
+<code>memcmp</code> の場合、最初に異なったバイトが <em>ptr1</em> > <em>ptr2</em> のとき正、
+<em>ptr1</em> &lt; <em>ptr2</em> のとき負の値が返る</li>
+</ul>
+
+
+<h2><code>inet_pton</code> and <code>inet_ntop</code> Functions</h2>
+
+<ul>
+<li>IP アドレスの文字列表記と数値の変換を行うには <code>inet_pton</code> と <code>inet_ntop</code> を使う。</li>
+<li><code>inet_aton</code>, <code>inet_addr</code>, <code>inet_ntoa</code> は IPv4 のみでしか使えない
+
+<ul>
+<li>さらに、<code>inet_addr</code> は戻り値がアドレスを表す数値 (32-bit, ネットワークバイトオーダー) だが、
+エラー時に返す値 <code>INADDR_NONE</code> が 2<sup>32</sup> - 1 のため、255.255.255.255 が変換できない
+``` c
+
+<h1>include &lt;arpa/inet.h></h1>
+
+<p>int inet_pton(int family, const char <em>strptr, void </em>addrptr);  // 文字列から数値
+const char <em>inet_ntop(int family, const void </em>addrptr, char *strptr, size_t len);  // 数値から文字列
+```</p></li>
+</ul>
+</li>
+<li>数値はネットワークバイトオーダー</li>
+<li><em>family</em> には <code>AF_INET</code> または <code>AF_INET6</code> を入れる</li>
+<li><em>len</em> には変換後の文字列を入れるバッファ <em>strptr</em> の長さを入れる。
+<code>&lt;netinet/in.h&gt;</code> に <code>INET_ADDRSTRLEN</code> と <code>INET6_ADDRSTRLEN</code> が定義されている。</li>
+<li><em>strptr</em> に null は入れられない。メモリを確保してそのサイズを指定する必要がある。</li>
+<li><code>inet_pton()</code> に成功すると 1, 失敗すると 0 が返ってくる</li>
+<li><code>inet_ntop()</code> に成功すると、戻り値として <em>strptr</em> が返る</li>
+</ul>
+
+]]></content>
+  </entry>
   
   <entry>
     <title type="html"><![CDATA[Advanced Programming in the UNIX enviroment Chapter 3]]></title>
@@ -736,230 +958,6 @@ Pthread_mutex_lock(pthread_mutex_t *mptr)
 <li>socket address programming 等で <code>size_t</code> が出てくることがある</li>
 <li>しかし 64-bit も必要ない</li>
 <li>そのため 64-bit system でも 32-bit のままであるような <code>t_scalar_t</code> や <code>t_uscalar_t</code> がある</li>
-</ul>
-</li>
-</ul>
-
-]]></content>
-  </entry>
-  
-  <entry>
-    <title type="html"><![CDATA[Advanced Programming in the UNIX environment Chapter 1]]></title>
-    <link href="http://kentaktwo.github.com/blog/2012/04/28/apue-chapter-1/"/>
-    <updated>2012-04-28T22:45:00+09:00</updated>
-    <id>http://kentaktwo.github.com/blog/2012/04/28/apue-chapter-1</id>
-    <content type="html"><![CDATA[<h1>UNIX System Overview</h1>
-
-<!--more-->
-
-
-<h2>UNIX Architecture</h2>
-
-<ul>
-<li>OS (Operating System) とは、コンピュータのハードウェアを制御し、プログラムが動作する環境を提供するソフトウェアのこと</li>
-<li>このソフトウェアのことを <em>kernel</em> と呼ぶ</li>
-<li>kernel とのインターフェースとなるソフトウェア群を <em>system calls</em> と呼ぶ</li>
-<li>shell は他のアプリケーションを動かすためのインターフェースとなるアプリケーション</li>
-</ul>
-
-
-<h2>Logging In</h2>
-
-<ul>
-<li>ログイン名は たいてい <code>/etc/passwd</code> に書かれている
-``` sh
-
-<h1>最近はパスワードは別ファイルになっていることが多い</h1>
-
-<p><loginName>:<encryptedPassword>:<userID>:<groupID>:<comment>:<homeDirectory>:<shellProgram>
-```</p></li>
-</ul>
-
-
-<h2>Files and Directories</h2>
-
-<ul>
-<li><em>directory</em> とは directory entries を含んだファイルのこと</li>
-<li>directory の中にある名前を <em>filename</em> という
-
-<ul>
-<li>filename には <code>/</code> と null 文字以外の全ての文字が使える</li>
-</ul>
-</li>
-<li>UNIX のマニュアルは section 1 から 8 まである
-
-<ul>
-<li>ls は Section 1 にある</li>
-</ul>
-</li>
-</ul>
-
-
-<h2>Input and Output</h2>
-
-<ul>
-<li>File descriptors とは、カーネルがプロセスからアクセスされるファイルを識別するための non-negative な整数のこと</li>
-<li>Unbuffered I/O は <code>open</code>, <code>read</code>, <code>write</code>, <code>lseek</code>, <code>close</code> によって提供される</li>
-<li>Standard I/O は unbuffered I/O にバッファインターフェースを提供する
-
-<ul>
-<li>バッファサイズを気にする必要がない</li>
-<li>行ごとの処理が楽 (<code>fgets</code> etc.)</li>
-</ul>
-</li>
-</ul>
-
-
-<h2>Programs and Processes</h2>
-
-<ul>
-<li><em>program</em> とは、ディレクトリにある実行可能なファイルのこと</li>
-<li>program はメモリに読み込まれ、カーネルによって実行される</li>
-<li>実行中のプログラムのことを <em>process</em> と呼ぶ
-
-<ul>
-<li><em>task</em> と呼んだりする OS もある</li>
-</ul>
-</li>
-<li>UNIX は全てのプロセスにユニークな <em>process ID</em> を割り振る
-
-<ul>
-<li>process ID は non-negative な整数</li>
-</ul>
-</li>
-<li>プロセス内で動いているスレッドは同じアドレス空間、ファイルディスクリプタ、スタック等のプロセスに関する属性を共有する
-
-<ul>
-<li>そのため、矛盾を起こさないように同期をとる必要がある</li>
-</ul>
-</li>
-<li>スレッドは thread ID で管理される
-
-<ul>
-<li>thread ID はプロセスごとに閉じている</li>
-</ul>
-</li>
-</ul>
-
-
-<h2>Error Handling</h2>
-
-<ul>
-<li>UNIX システム関数でエラーが起こると、たいてい負の値が返り、<code>errno</code> と呼ばれる整数がセットされる
-
-<ul>
-<li><code>errno</code> が取りうる値は <code>&lt;errno.h&gt;</code> に定義されている</li>
-<li>UNIX マニュアルの Section 2 の始め (<code>intro(2)</code>) で <code>errno</code> の説明が見れる
-
-<ul>
-<li>Linux では <code>errno(3)</code></li>
-</ul>
-</li>
-</ul>
-</li>
-<li><code>errno</code> はエラーが起こらない限りクリアされないので、関数の戻り値を見てから <code>errno</code> を調べる必要がある</li>
-<li><code>errno</code> に 0 がセットされることはない</li>
-<li><code>strerror()</code> で <code>errno</code> に対応するエラーメッセージが取得できる</li>
-<li><code>perror()</code> で引数に渡したメッセージと現在の <code>errno</code> に対応するエラーメッセージを standard error に出力できる</li>
-<li><code>&lt;errno.h&gt;</code> に定義されたエラーは fatal なものと nonfatal なものに分かれる
-
-<ul>
-<li>fatal なエラーが起きた場合はエラーメッセージを出してプログラムを終了すべきである</li>
-<li>リソース不足で起きるエラーなどが nonfatal なエラーに分類される</li>
-<li>リソース関連の nonfatal エラーは <code>EAGAIN</code>, <code>ENFILE</code>, <code>ENOBUFS</code>, <code>ENOLCK</code>, <code>ENOSPC</code>, <code>ENOSR</code>, <code>EWOULDBLOCK</code>, <code>ENOMEM</code> など</li>
-<li>リソース関連のエラーが起きた場合は少し待ってやり直すことで対応できることがある</li>
-</ul>
-</li>
-</ul>
-
-
-<h2>User Identification</h2>
-
-<ul>
-<li><em>user ID</em> はログイン名が作られたときに割り振られ、変更することはできない</li>
-<li>user ID が 0 のユーザは <em>root</em> または <em>superuser</em> と呼ばれる</li>
-<li><em>group ID</em> もログイン名が作られた時に割り振られる。</li>
-<li>group name を group ID にマップするファイルが <code>/etc/group</code> にあり、group file と呼ばれる</li>
-<li><code>getuid()</code> や <code>getgid()</code> で user ID や group ID が取れる</li>
-<li>group ID の他に追加でグループに所属させることもできる (<em>supplementary group ID</em>)
-
-<ul>
-<li>16 個まで</li>
-</ul>
-</li>
-</ul>
-
-
-<h2>Signals</h2>
-
-<ul>
-<li>signal は何かが起きたことをプロセスに伝える手段
-
-<ul>
-<li>例えばゼロ除算が発生すると、<code>SIGFPE</code> がプロセスに送られる</li>
-</ul>
-</li>
-<li>プロセスのシグナルの処理の仕方は 3 通りある
-
-<ol>
-<li>シグナルを無視する</li>
-<li>デフォルトの動作を実行させる</li>
-<li>シグナルが起きた時に呼ぶ関数を与える</li>
-</ol>
-</li>
-<li>DELETE または Ctrl-C は <em>interrupt key</em>, Ctrl-backslash は <em>quit key</em> と呼ばれ、実行中のプロセスを終了させるのに使う</li>
-<li><code>kill()</code> を呼ぶとシグナルを送ることができる</li>
-<li>シグナルを送るためには、そのプロセスのオーナーでなければならない</li>
-</ul>
-
-
-<h2>Time Values</h2>
-
-<ul>
-<li>UNIX は2種類の時間を管理している
-
-<ol>
-<li>Calendar time: Epoch (UTC 1970 1/1 00:00:00) からの秒数
-
-<ul>
-<li><code>time_t</code> 型はこの値を持っている</li>
-</ul>
-</li>
-<li>Process time: clock によって計測される
-
-<ul>
-<li>プロセスによって使われたリソースを計測するのに使う</li>
-<li>CPU time ともいう</li>
-<li><code>clock_t</code> 型がこの値を持っている</li>
-</ul>
-</li>
-</ol>
-</li>
-<li>プロセスの実行時間を計測すると、3種類の値が得られる
-
-<ul>
-<li>Clock time: プロセスを実行するのにかかった時間
-
-<ul>
-<li>システム上で動いている他のプロセスの影響を受ける</li>
-</ul>
-</li>
-<li>User CPU time: ユーザの命令が実行された時間（ループ処理など）</li>
-<li>System CPU time: システムコールを行うのにかかった時間</li>
-</ul>
-</li>
-<li>user CPU time と system CPU time を合わせて <em>CPU time</em> と呼ぶ</li>
-</ul>
-
-
-<h2>System Calls and Library Functions</h2>
-
-<ul>
-<li>system call のドキュメントは <em>UNIX Programmer's Manual</em> の Section 2 にある</li>
-<li>Section 3 にはプログラマが普段使うであろう関数 (Library functions) の説明が書かれている (<code>printf()</code> etc.)
-
-<ul>
-<li>ライブラリ関数は複数のシステムコールの組み合わせでできている</li>
 </ul>
 </li>
 </ul>

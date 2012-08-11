@@ -4,7 +4,7 @@
   <title><![CDATA[Category: unp | ApprEngineer.log]]></title>
   <link href="http://kentaktwo.github.com/blog/categories/unp/atom.xml" rel="self"/>
   <link href="http://kentaktwo.github.com/"/>
-  <updated>2012-07-01T00:26:04+09:00</updated>
+  <updated>2012-08-11T20:29:39+09:00</updated>
   <id>http://kentaktwo.github.com/</id>
   <author>
     <name><![CDATA[kentaktwo]]></name>
@@ -12,6 +12,228 @@
   </author>
   <generator uri="http://octopress.org/">Octopress</generator>
 
+  
+  <entry>
+    <title type="html"><![CDATA[Unix Network Programming Chapter 3]]></title>
+    <link href="http://kentaktwo.github.com/blog/2012/07/02/unp-chapter-3/"/>
+    <updated>2012-07-02T22:04:00+09:00</updated>
+    <id>http://kentaktwo.github.com/blog/2012/07/02/unp-chapter-3</id>
+    <content type="html"><![CDATA[<h1>Sockets Introduction</h1>
+
+<!--more-->
+
+
+<h2>Socket Address Structures</h2>
+
+<p>ほとんどのソケット関数は引数にソケットアドレス構造体のポインタを必要とする。</p>
+
+<h3>IPv4 Socket Address Structure</h3>
+
+<p>``` c</p>
+
+<h1>include &lt;netinet/in.h></h1>
+
+<p>struct in_addr {</p>
+
+<pre><code>in_addr_t       s_addr;         /* 32-bit IPv4 address */
+</code></pre>
+
+<p>};</p>
+
+<p>struct sockaddr_in {</p>
+
+<pre><code>uint8_t         sin_len;        /* length of structure (16) */
+sa_family_t     sin_family;     /* AF_INET */
+in_port_t       sin_port;       /* 16-bit TCP or UDP port number */
+struct in_addr  sin_addr;       /* 32-bit IPv4 address */
+char            sin_zero[8];    /* unused */
+</code></pre>
+
+<p>};
+<code>``
+-</code>sin_zero<code>はソケットアドレス構造体のサイズを少なくとも 16 bytes にするため
+- IP アドレスとポート番号は常にネットワークバイトオーダー
+-</code>sin_addr` が構造体になっているのは歴史的な理由から。昔は union でクラス A, B, C のアドレスを処理していたらしい。</p>
+
+<h3>Generic Socket Address Structure</h3>
+
+<p>``` c</p>
+
+<h1>include &lt;sys/socket.h></h1>
+
+<p>struct sockaddr {</p>
+
+<pre><code>uint8_t     sa_len;
+sa_family_t sa_family;      /* address family: AF_xxx value */
+char        sa_data[14];    /* protocol-specific address */
+</code></pre>
+
+<p>};
+<code>
+- ソケット関数に渡すときは、`sockaddr` にキャストして渡す
+</code> c
+struct sockaddr_in serv;  /<em> IPv4 </em>/</p>
+
+<p>/<em> fill in serv{} </em>/</p>
+
+<p>bind(sockfd, (struct sockaddr *)&amp;serv, sizeof(serv));
+```</p>
+
+<h3>IPv6 Socket Address Structure</h3>
+
+<p>``` c</p>
+
+<h1>include &lt;netinet/in.h></h1>
+
+<p>struct in6_addr {</p>
+
+<pre><code>uint8_t         s6_addr[16];        /* 128-bit IPv6 address */
+</code></pre>
+
+<p>};</p>
+
+<h1>define SIN6_LEN  /<em> required for compile-time tests </em>/</h1>
+
+<p>struct sockaddr_in6 {</p>
+
+<pre><code>uint8_t         sin6_len;           /* length of this struct (28) */
+sa_family_t     sin6_family;        /* AF_INET6 */
+in_port_t       sin6_port;          /* transport layer port# */
+uint32_t        sin6_flowinfo;      /* flow information, undefined */
+struct in6_addr sin6_addr;          /* IPv6 address */
+uint32_t        sin6_scope_id;      /* set of interfaces for a scope */
+</code></pre>
+
+<p>};
+<code>``
+- システムがソケットアドレス構造体の長さをサポートする場合、</code>SIN6_LEN` を定義しなくてはならない
+- アドレスとポート番号はネットワークバイトオーダー</p>
+
+<h3>New Generic Socket Address Structure</h3>
+
+<p>``` c</p>
+
+<h1>include &lt;netinet/in.h></h1>
+
+<p>struct sockaddr_storage {</p>
+
+<pre><code>uint8_t     ss_len;     /* length of this struct (implementation dependent) */
+sa_family_t ss_family;  /* address family: AF_xxx value */
+/* implementation-dependent elements to provide */
+</code></pre>
+
+<p>};
+```
+- IPv6 をサポートするためにできた generic socket
+- システムがサポートするソケットアドレス構造体をカバーできるよう十分大きいサイズが取られる</p>
+
+<h2>Value-Result Arguments</h2>
+
+<p>ソケット関数では引数にソケットアドレス構造体とそのサイズを渡すが、
+<code>accept</code>, <code>recvfrom</code>, <code>getsockname</code>, <code>getpeername</code> などのプロセスがカーネルから
+ソケットアドレス構造体を受け取る関数では、引数に入れたサイズが関数実行後に変わることがある
+(<code>sockaddr_un</code> など)。</p>
+
+<h2>Byte Ordering Functions</h2>
+
+<ul>
+<li>バイトをデータに格納する順序には2種類ある
+
+<ul>
+<li>リトルエンディアン: 下位バイトが先のアドレスにくる</li>
+<li>ビッグエンディアン: 上位バイトが先のアドレスにくる</li>
+</ul>
+</li>
+<li>システムによってバイトオーダーが異なるので、ネットワークで扱うバイトオーダーを決める必要がある
+
+<ul>
+<li>ネットワークバイトオーダーはビッグエンディアン</li>
+</ul>
+</li>
+<li>ホストバイトオーダーとネットワークバイトオーダーを変換する関数が用意されている
+``` c
+
+<h1>include &lt;netinet/in.h></h1>
+
+<p>uint16_t htons(uint16_t host16bitvalue);
+uint32_t htonl(uint32_t host32bitvalue);</p></li>
+</ul>
+
+
+<p>uint16_t ntohs(uint16_t net16bitvalue);
+uint32_t ntohl(uint32_t net32bitvalue);
+```</p>
+
+<h2>Byte Manipulation Functions</h2>
+
+<ul>
+<li>バイト列を操作する関数は2つのグループに分かれる
+
+<ul>
+<li><code>b</code> で始まる関数 (4.2BSD)</li>
+<li><code>mem</code> で始まる関数 (ANSI C)
+``` c
+
+<h1>include &lt;strings.h></h1>
+
+void bzero(void <em>dest, size_t nbytes);
+void bcopy(const void </em>src, void <em>dest, size_t nbytes);
+int bcmp(const void </em>ptr1, const void *ptr2, size_t nbytes);
+<code>
+</code> c
+
+<h1>include &lt;string.h></h1>
+
+<p>void <em>memset(void </em>dest, int c, size_t len);
+void <em>memcpy(void </em>dest, const void <em>src, size_t nbytes);
+int memcmp(const void </em>ptr1, const void *ptr2, size_t nbytes);
+```</p></li>
+</ul>
+</li>
+<li><code>bzero</code> は 0 にセットするが、<code>memset</code> は特定の値にセットできる</li>
+<li><code>bcopy</code> と <code>memcpy</code> ではコピー元とコピー先のアドレスを引数に入れる順序が逆</li>
+<li><code>bcopy</code> は領域が重なっていても動作するが、<code>memcpy</code> はダメ
+
+<ul>
+<li>重なっている場合は <code>memmove</code> を使う</li>
+<li><code>bcopy</code> は廃止予定</li>
+</ul>
+</li>
+<li><code>bcmp</code> も <code>memcmp</code> も2つのバイト列が異なっていれば nonzero を返すが、
+<code>memcmp</code> の場合、最初に異なったバイトが <em>ptr1</em> > <em>ptr2</em> のとき正、
+<em>ptr1</em> &lt; <em>ptr2</em> のとき負の値が返る</li>
+</ul>
+
+
+<h2><code>inet_pton</code> and <code>inet_ntop</code> Functions</h2>
+
+<ul>
+<li>IP アドレスの文字列表記と数値の変換を行うには <code>inet_pton</code> と <code>inet_ntop</code> を使う。</li>
+<li><code>inet_aton</code>, <code>inet_addr</code>, <code>inet_ntoa</code> は IPv4 のみでしか使えない
+
+<ul>
+<li>さらに、<code>inet_addr</code> は戻り値がアドレスを表す数値 (32-bit, ネットワークバイトオーダー) だが、
+エラー時に返す値 <code>INADDR_NONE</code> が 2<sup>32</sup> - 1 のため、255.255.255.255 が変換できない
+``` c
+
+<h1>include &lt;arpa/inet.h></h1>
+
+<p>int inet_pton(int family, const char <em>strptr, void </em>addrptr);  // 文字列から数値
+const char <em>inet_ntop(int family, const void </em>addrptr, char *strptr, size_t len);  // 数値から文字列
+```</p></li>
+</ul>
+</li>
+<li>数値はネットワークバイトオーダー</li>
+<li><em>family</em> には <code>AF_INET</code> または <code>AF_INET6</code> を入れる</li>
+<li><em>len</em> には変換後の文字列を入れるバッファ <em>strptr</em> の長さを入れる。
+<code>&lt;netinet/in.h&gt;</code> に <code>INET_ADDRSTRLEN</code> と <code>INET6_ADDRSTRLEN</code> が定義されている。</li>
+<li><em>strptr</em> に null は入れられない。メモリを確保してそのサイズを指定する必要がある。</li>
+<li><code>inet_pton()</code> に成功すると 1, 失敗すると 0 が返ってくる</li>
+<li><code>inet_ntop()</code> に成功すると、戻り値として <em>strptr</em> が返る</li>
+</ul>
+
+]]></content>
+  </entry>
   
   <entry>
     <title type="html"><![CDATA[Unix Network Programming Chapter 2]]></title>
