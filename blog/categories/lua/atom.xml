@@ -4,7 +4,7 @@
   <title><![CDATA[Category: lua | ApprEngineer.log]]></title>
   <link href="http://kentaktwo.github.com/blog/categories/lua/atom.xml" rel="self"/>
   <link href="http://kentaktwo.github.com/"/>
-  <updated>2012-08-11T20:30:29+09:00</updated>
+  <updated>2012-08-11T21:59:40+09:00</updated>
   <id>http://kentaktwo.github.com/</id>
   <author>
     <name><![CDATA[kentaktwo]]></name>
@@ -12,6 +12,142 @@
   </author>
   <generator uri="http://octopress.org/">Octopress</generator>
 
+  
+  <entry>
+    <title type="html"><![CDATA[Programming In Lua Chapter 2]]></title>
+    <link href="http://kentaktwo.github.com/blog/2012/08/11/lua-chapter-2/"/>
+    <updated>2012-08-11T20:50:00+09:00</updated>
+    <id>http://kentaktwo.github.com/blog/2012/08/11/lua-chapter-2</id>
+    <content type="html"><![CDATA[<h1>Types and Values</h1>
+
+<!--more-->
+
+
+<ul>
+<li>Lua は動的型付け言語</li>
+<li>Lua の基本型は以下の8つ:<br/>
+<em>nil, boolean, number, string, userdata, function, thread, table</em></li>
+<li>型を調べるには <code>type</code> 関数を使う</li>
+</ul>
+
+
+<h2>Nil</h2>
+
+<ul>
+<li>値でないことを表す</li>
+<li>グローバル変数の初期値は <em>nil</em></li>
+<li>変数を削除するには <em>nil</em> を代入する</li>
+</ul>
+
+
+<h2>Boolean</h2>
+
+<ul>
+<li><em>false</em> と <em>true</em> の2つ</li>
+<li>Lua では、<em>false</em> と <em>nil</em> のみが false, 他は true</li>
+</ul>
+
+
+<h2>Numbers</h2>
+
+<ul>
+<li>C でいう double 型</li>
+<li>Lua には integer 型は無い</li>
+<li>32-bit の整数までなら丸め誤差無しで表現できる</li>
+</ul>
+
+
+<h2>Strings</h2>
+
+<ul>
+<li>Lua では string は immutable</li>
+<li>メモリ管理は自動でやってくれる</li>
+<li>ダブルクォートとシングルクォートどちらも使える</li>
+<li>大カッコ2つで改行を含む文字列が扱える
+<code>lua
+block = [[
+This is the
+block string.
+]]
+</code></li>
+<li>カッコの間に <code>=</code> を挟むと、同じ数の <code>=</code> が挟まれたカッコのところまで文字列になる。
+<code>lua
+block = [===[
+This is the
+block string.
+a[b[i]]
+]===]
+</code></li>
+<li>コメントでも使える
+<code>lua
+--[=[
+This is
+the comment.
+a[b[i]]
+]=]
+</code></li>
+<li>numbers と strings の変換は自動的にやってくれるが、数字と文字列の比較は false になる
+<code>lua
+print(10 == "10")  --&gt; false
+</code></li>
+<li>明示的に数値や文字列にしたい場合は <code>tonumber</code> や <code>tostring</code> 関数を使う</li>
+<li><code>..</code> は文字列の連結
+<code>lua
+print(10 .. 20)  --&gt; 1020
+</code></li>
+<li>Lua 5.1 からは、'#' オペレータで文字列の長さが取れる
+<code>lua
+a = "hello"
+print(#a)  --&gt; 5
+</code></li>
+</ul>
+
+
+<h2>Tables</h2>
+
+<ul>
+<li>配列や連想配列を含む</li>
+<li>モジュールやパッケージやオブジェクトも table で表現する</li>
+<li>table は <code>{}</code> で初期化する
+<code>lua
+a = {}
+a["x"] = 10
+</code></li>
+<li>table は参照（あるいはポインタ）として扱われる
+<code>lua
+a = {}
+a["x"] = 10
+b = a
+b["x"] = 20
+print(a["x"])  --&gt; 20
+a = nil  -- b はまだ table を参照している
+</code></li>
+<li>グローバル変数と同様、定義されていないフィールドには <em>nil</em> が入っている</li>
+<li><code>a.name</code> は <code>a["name"]</code> のこと。<code>a[name]</code> ではないので注意</li>
+<li>Lua では配列のインデックスは 1 からスタート (0 ではない)</li>
+<li>Lua 5.1 以降では、'#' オペレータで数字インデックスで最後に <em>nil</em> が入っていないものを返す
+<code>lua
+a = {}
+a[10000] = 1  -- 1 から 9999 番目に nil が入る (hole)
+print(#a)  --&gt; 0
+a[1] = 1
+print(#a)  --&gt; 1
+</code></li>
+<li>hole を含めて最後のインデックスを返したいときは <code>table.maxn</code> 関数を使う</li>
+</ul>
+
+
+<h2>Functions, Userdata, and Threads</h2>
+
+<ul>
+<li>Lua では関数も値として扱える。つまり変数に関数を入れられる。</li>
+<li>userdata は C で書かれた新しい型を表現するのに使う</li>
+<li>thread は coroutine を扱うのに使う</li>
+<li>functions, userdata, threads は今後の章で詳しく扱う</li>
+</ul>
+
+]]></content>
+  </entry>
   
   <entry>
     <title type="html"><![CDATA[Programming In Lua Chapter 1]]></title>

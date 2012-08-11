@@ -1,0 +1,444 @@
+
+<!DOCTYPE html>
+<!--[if IEMobile 7 ]><html class="no-js iem7"><![endif]-->
+<!--[if lt IE 9]><html class="no-js lte-ie8"><![endif]-->
+<!--[if (gt IE 8)|(gt IEMobile 7)|!(IEMobile)|!(IE)]><!--><html class="no-js" lang="en"><!--<![endif]-->
+<head>
+  <meta charset="utf-8">
+  <title>Programming In Lua Chapter 2 - ApprEngineer.log</title>
+  <meta name="author" content="kentaktwo">
+
+  
+  <meta name="description" content="Types and Values Lua は動的型付け言語
+Lua の基本型は以下の8つ:
+nil, boolean, number, string, userdata, function, thread, table
+型を調べるには type 関数を使う Nil 値でないことを表す &hellip;">
+  
+
+  <!-- http://t.co/dKP3o1e -->
+  <meta name="HandheldFriendly" content="True">
+  <meta name="MobileOptimized" content="320">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+
+  
+  <link rel="canonical" href="http://kentaktwo.github.com/blog/2012/08/11/lua-chapter-2">
+  <link href="/favicon.png" rel="icon">
+  <link href="/stylesheets/screen.css" media="screen, projection" rel="stylesheet" type="text/css">
+  <script src="/javascripts/modernizr-2.0.js"></script>
+  <script src="/javascripts/ender.js"></script>
+  <script src="/javascripts/octopress.js" type="text/javascript"></script>
+  <link href="/atom.xml" rel="alternate" title="ApprEngineer.log" type="application/atom+xml">
+  <!--Fonts from Google"s Web font directory at http://google.com/webfonts -->
+<link href="http://fonts.googleapis.com/css?family=PT+Serif:regular,italic,bold,bolditalic" rel="stylesheet" type="text/css">
+<link href="http://fonts.googleapis.com/css?family=PT+Sans:regular,italic,bold,bolditalic" rel="stylesheet" type="text/css">
+<link href='http://fonts.googleapis.com/css?family=Lato:400,700,400italic,700italic' rel='stylesheet' type='text/css'>
+
+  
+
+</head>
+
+<body   >
+  <header role="banner"><hgroup>
+  <h1><a href="/">ApprEngineer.log</a></h1>
+  
+    <h2>Apprentice web engineer's study log</h2>
+  
+</hgroup>
+
+</header>
+  <nav role="navigation"><ul class="subscription" data-subscription="rss">
+  <li><a href="/atom.xml" rel="subscribe-rss" title="subscribe via RSS">RSS</a></li>
+  
+</ul>
+  
+<form action="http://google.com/search" method="get">
+  <fieldset role="search">
+    <input type="hidden" name="q" value="site:kentaktwo.github.com" />
+    <input class="search" type="text" name="q" results="0" placeholder="Search"/>
+  </fieldset>
+</form>
+  
+<ul class="main-navigation">
+  <li><a href="/">Blog</a></li>
+  <li><a href="/blog/archives">Archives</a></li>
+</ul>
+
+</nav>
+  <div id="main">
+    <div id="content">
+      <div>
+<article class="hentry" role="article">
+  
+  <header>
+    
+      <h1 class="entry-title">Programming in Lua Chapter 2</h1>
+    
+    
+      <p class="meta">
+        
+
+
+
+
+
+
+
+
+  
+
+
+<time datetime="2012-08-11T20:50:00+09:00" pubdate data-updated="true">Aug 11<span>th</span>, 2012</time>
+        
+         | <a href="#disqus_thread">Comments</a>
+        
+      </p>
+    
+  </header>
+
+
+<div class="entry-content"><h1>Types and Values</h1>
+
+<!--more-->
+
+
+<ul>
+<li>Lua は動的型付け言語</li>
+<li>Lua の基本型は以下の8つ:<br/>
+<em>nil, boolean, number, string, userdata, function, thread, table</em></li>
+<li>型を調べるには <code>type</code> 関数を使う</li>
+</ul>
+
+
+<h2>Nil</h2>
+
+<ul>
+<li>値でないことを表す</li>
+<li>グローバル変数の初期値は <em>nil</em></li>
+<li>変数を削除するには <em>nil</em> を代入する</li>
+</ul>
+
+
+<h2>Boolean</h2>
+
+<ul>
+<li><em>false</em> と <em>true</em> の2つ</li>
+<li>Lua では、<em>false</em> と <em>nil</em> のみが false, 他は true</li>
+</ul>
+
+
+<h2>Numbers</h2>
+
+<ul>
+<li>C でいう double 型</li>
+<li>Lua には integer 型は無い</li>
+<li>32-bit の整数までなら丸め誤差無しで表現できる</li>
+</ul>
+
+
+<h2>Strings</h2>
+
+<ul>
+<li>Lua では string は immutable</li>
+<li>メモリ管理は自動でやってくれる</li>
+<li>ダブルクォートとシングルクォートどちらも使える</li>
+<li>大カッコ2つで改行を含む文字列が扱える</li>
+</ul>
+
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+</pre></td><td class='code'><pre><code class='lua'><span class='line'><span class="n">block</span> <span class="o">=</span> <span class="s">[[</span>
+</span><span class='line'><span class="s">This is the</span>
+</span><span class='line'><span class="s">block string.</span>
+</span><span class='line'><span class="s">]]</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<ul>
+<li>カッコの間に <code>=</code> を挟むと、同じ数の <code>=</code> が挟まれたカッコのところまで文字列になる。</li>
+</ul>
+
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+</pre></td><td class='code'><pre><code class='lua'><span class='line'><span class="n">block</span> <span class="o">=</span> <span class="s">[===[</span>
+</span><span class='line'><span class="s">This is the </span>
+</span><span class='line'><span class="s">block string.</span>
+</span><span class='line'><span class="s">a[b[i]]</span>
+</span><span class='line'><span class="s">]===]</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<ul>
+<li>コメントでも使える</li>
+</ul>
+
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+</pre></td><td class='code'><pre><code class='lua'><span class='line'><span class="cm">--[=[</span>
+</span><span class='line'><span class="cm">This is</span>
+</span><span class='line'><span class="cm">the comment.</span>
+</span><span class='line'><span class="cm">a[b[i]]</span>
+</span><span class='line'><span class="cm">]=]</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<ul>
+<li>numbers と strings の変換は自動的にやってくれるが、数字と文字列の比較は false になる</li>
+</ul>
+
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+</pre></td><td class='code'><pre><code class='lua'><span class='line'><span class="nb">print</span><span class="p">(</span><span class="mi">10</span> <span class="o">==</span> <span class="s2">&quot;</span><span class="s">10&quot;</span><span class="p">)</span>  <span class="c1">--&gt; false</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<ul>
+<li>明示的に数値や文字列にしたい場合は <code>tonumber</code> や <code>tostring</code> 関数を使う</li>
+<li><code>..</code> は文字列の連結</li>
+</ul>
+
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+</pre></td><td class='code'><pre><code class='lua'><span class='line'><span class="nb">print</span><span class="p">(</span><span class="mi">10</span> <span class="o">..</span> <span class="mi">20</span><span class="p">)</span>  <span class="c1">--&gt; 1020</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<ul>
+<li>Lua 5.1 からは、&#8217;#&#8217; オペレータで文字列の長さが取れる</li>
+</ul>
+
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+</pre></td><td class='code'><pre><code class='lua'><span class='line'><span class="n">a</span> <span class="o">=</span> <span class="s2">&quot;</span><span class="s">hello&quot;</span>
+</span><span class='line'><span class="nb">print</span><span class="p">(</span><span class="o">#</span><span class="n">a</span><span class="p">)</span>  <span class="c1">--&gt; 5</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<h2>Tables</h2>
+
+<ul>
+<li>配列や連想配列を含む</li>
+<li>モジュールやパッケージやオブジェクトも table で表現する</li>
+<li>table は <code>{}</code> で初期化する</li>
+</ul>
+
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+</pre></td><td class='code'><pre><code class='lua'><span class='line'><span class="n">a</span> <span class="o">=</span> <span class="p">{}</span>
+</span><span class='line'><span class="n">a</span><span class="p">[</span><span class="s2">&quot;</span><span class="s">x&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="mi">10</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<ul>
+<li>table は参照（あるいはポインタ）として扱われる</li>
+</ul>
+
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+</pre></td><td class='code'><pre><code class='lua'><span class='line'><span class="n">a</span> <span class="o">=</span> <span class="p">{}</span>
+</span><span class='line'><span class="n">a</span><span class="p">[</span><span class="s2">&quot;</span><span class="s">x&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="mi">10</span>
+</span><span class='line'><span class="n">b</span> <span class="o">=</span> <span class="n">a</span>
+</span><span class='line'><span class="n">b</span><span class="p">[</span><span class="s2">&quot;</span><span class="s">x&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="mi">20</span>
+</span><span class='line'><span class="nb">print</span><span class="p">(</span><span class="n">a</span><span class="p">[</span><span class="s2">&quot;</span><span class="s">x&quot;</span><span class="p">])</span>  <span class="c1">--&gt; 20</span>
+</span><span class='line'><span class="n">a</span> <span class="o">=</span> <span class="kc">nil</span>  <span class="c1">-- b はまだ table を参照している</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<ul>
+<li>グローバル変数と同様、定義されていないフィールドには <em>nil</em> が入っている</li>
+<li><code>a.name</code> は <code>a["name"]</code> のこと。<code>a[name]</code> ではないので注意</li>
+<li>Lua では配列のインデックスは 1 からスタート (0 ではない)</li>
+<li>Lua 5.1 以降では、&#8217;#&#8217; オペレータで数字インデックスで最後に <em>nil</em> が入っていないものを返す</li>
+</ul>
+
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+</pre></td><td class='code'><pre><code class='lua'><span class='line'><span class="n">a</span> <span class="o">=</span> <span class="p">{}</span>
+</span><span class='line'><span class="n">a</span><span class="p">[</span><span class="mi">10000</span><span class="p">]</span> <span class="o">=</span> <span class="mi">1</span>  <span class="c1">-- 1 から 9999 番目に nil が入る (hole)</span>
+</span><span class='line'><span class="nb">print</span><span class="p">(</span><span class="o">#</span><span class="n">a</span><span class="p">)</span>  <span class="c1">--&gt; 0</span>
+</span><span class='line'><span class="n">a</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span> <span class="o">=</span> <span class="mi">1</span>
+</span><span class='line'><span class="nb">print</span><span class="p">(</span><span class="o">#</span><span class="n">a</span><span class="p">)</span>  <span class="c1">--&gt; 1</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<ul>
+<li>hole を含めて最後のインデックスを返したいときは <code>table.maxn</code> 関数を使う</li>
+</ul>
+
+
+<h2>Functions, Userdata, and Threads</h2>
+
+<ul>
+<li>Lua では関数も値として扱える。つまり変数に関数を入れられる。</li>
+<li>userdata は C で書かれた新しい型を表現するのに使う</li>
+<li>thread は coroutine を扱うのに使う</li>
+<li>functions, userdata, threads は今後の章で詳しく扱う</li>
+</ul>
+
+</div>
+
+
+  <footer>
+    <p class="meta">
+      
+  
+
+<span class="byline author vcard">Posted by <span class="fn">kentaktwo</span></span>
+
+      
+
+
+
+
+
+
+
+
+  
+
+
+<time datetime="2012-08-11T20:50:00+09:00" pubdate data-updated="true">Aug 11<span>th</span>, 2012</time>
+      
+
+<span class="categories">
+  
+    <a class='category' href='/blog/categories/lua/'>lua</a>
+  
+</span>
+
+
+    </p>
+    
+      <div class="sharing">
+  
+  <a href="http://twitter.com/share" class="twitter-share-button" data-url="http://kentaktwo.github.com/blog/2012/08/11/lua-chapter-2/" data-via="" data-counturl="http://kentaktwo.github.com/blog/2012/08/11/lua-chapter-2/" >Tweet</a>
+  
+  
+  
+</div>
+
+    
+    <p class="meta">
+      
+        <a class="basic-alignment left" href="/blog/2012/07/24/lua-chapter-1/" title="Previous Post: Programming In Lua Chapter 1">&laquo; Programming In Lua Chapter 1</a>
+      
+      
+    </p>
+  </footer>
+</article>
+
+  <section>
+    <h1>Comments</h1>
+    <div id="disqus_thread" aria-live="polite"><noscript>Please enable JavaScript to view the <a href="http://disqus.com/?ref_noscript">comments powered by Disqus.</a></noscript>
+</div>
+  </section>
+
+</div>
+
+<aside class="sidebar">
+  
+    <section>
+  <h1>Recent Posts</h1>
+  <ul id="recent_posts">
+    
+      <li class="post">
+        <a href="/blog/2012/08/11/lua-chapter-2/">Programming In Lua Chapter 2</a>
+      </li>
+    
+      <li class="post">
+        <a href="/blog/2012/07/24/lua-chapter-1/">Programming In Lua Chapter 1</a>
+      </li>
+    
+      <li class="post">
+        <a href="/blog/2012/07/02/unp-chapter-3/">Unix Network Programming Chapter 3</a>
+      </li>
+    
+      <li class="post">
+        <a href="/blog/2012/06/30/apue-chapter-3/">Advanced Programming in the UNIX enviroment Chapter 3</a>
+      </li>
+    
+      <li class="post">
+        <a href="/blog/2012/05/07/unp-chapter-2/">Unix Network Programming Chapter 2</a>
+      </li>
+    
+  </ul>
+</section>
+
+
+
+
+
+
+  
+</aside>
+
+
+    </div>
+  </div>
+  <footer role="contentinfo"><p>
+  Copyright &copy; 2012 - kentaktwo -
+  <span class="credit">Powered by <a href="http://octopress.org">Octopress</a></span>
+</p>
+
+</footer>
+  
+
+<script type="text/javascript">
+      var disqus_shortname = 'apprengineerlog';
+      
+        
+        // var disqus_developer = 1;
+        var disqus_identifier = 'http://kentaktwo.github.com/blog/2012/08/11/lua-chapter-2/';
+        var disqus_url = 'http://kentaktwo.github.com/blog/2012/08/11/lua-chapter-2/';
+        var disqus_script = 'embed.js';
+      
+    (function () {
+      var dsq = document.createElement('script'); dsq.type = 'text/javascript'; dsq.async = true;
+      dsq.src = 'http://' + disqus_shortname + '.disqus.com/' + disqus_script;
+      (document.getElementsByTagName('head')[0] || document.getElementsByTagName('body')[0]).appendChild(dsq);
+    }());
+</script>
+
+
+
+
+
+
+
+  <script type="text/javascript">
+    (function(){
+      var twitterWidgets = document.createElement('script');
+      twitterWidgets.type = 'text/javascript';
+      twitterWidgets.async = true;
+      twitterWidgets.src = 'http://platform.twitter.com/widgets.js';
+      document.getElementsByTagName('head')[0].appendChild(twitterWidgets);
+    })();
+  </script>
+
+
+
+
+
+</body>
+</html>
