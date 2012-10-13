@@ -4,7 +4,7 @@
   <title><![CDATA[ApprEngineer.log]]></title>
   <link href="http://kentaktwo.github.com/atom.xml" rel="self"/>
   <link href="http://kentaktwo.github.com/"/>
-  <updated>2012-10-14T00:42:33+09:00</updated>
+  <updated>2012-10-14T00:51:05+09:00</updated>
   <id>http://kentaktwo.github.com/</id>
   <author>
     <name><![CDATA[kentaktwo]]></name>
@@ -25,6 +25,8 @@
 </code></pre>
 
 <p>で iptables を無効にできる。</p>
+
+<p>参考: <a href="http://www.server-world.info/query?os=CentOS_6&amp;p=initial_conf&amp;f=2">http://www.server-world.info/query?os=CentOS_6&amp;p=initial_conf&amp;f=2</a></p>
 ]]></content>
   </entry>
   
