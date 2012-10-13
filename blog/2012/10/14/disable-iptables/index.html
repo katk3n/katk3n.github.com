@@ -5,11 +5,12 @@
 <!--[if (gt IE 8)|(gt IEMobile 7)|!(IEMobile)|!(IE)]><!--><html class="no-js" lang="en"><!--<![endif]-->
 <head>
   <meta charset="utf-8">
-  <title>Category: apue - ApprEngineer.log</title>
+  <title>iptables を無効にする - ApprEngineer.log</title>
   <meta name="author" content="kentaktwo">
 
   
-  <meta name="description" content="Category: apue">
+  <meta name="description" content="家でネットワークの勉強するために、VM に Cent OS 入れたのだが、外からアクセスできない。
+どうもインストール時には iptables が動いてて、外からのアクセスを拒否してるらしい。 $ sudo /etc/rc.d/init.d/iptables stop で iptables &hellip;">
   
 
   <!-- http://t.co/dKP3o1e -->
@@ -18,7 +19,7 @@
   <meta name="viewport" content="width=device-width, initial-scale=1">
 
   
-  <link rel="canonical" href="http://kentaktwo.github.comblog/categories/apue">
+  <link rel="canonical" href="http://kentaktwo.github.com/blog/2012/10/14/disable-iptables">
   <link href="/favicon.png" rel="icon">
   <link href="/stylesheets/screen.css" media="screen, projection" rel="stylesheet" type="text/css">
   <script src="/javascripts/modernizr-2.0.js"></script>
@@ -64,64 +65,99 @@
   <div id="main">
     <div id="content">
       <div>
-<article role="article">
+<article class="hentry" role="article">
   
   <header>
-    <h1 class="entry-title">Category: Apue</h1>
+    
+      <h1 class="entry-title">Iptables を無効にする</h1>
+    
+    
+      <p class="meta">
+        
+
+
+
+
+
+
+
+
+  
+
+
+<time datetime="2012-10-14T00:37:00+09:00" pubdate data-updated="true">Oct 14<span>th</span>, 2012</time>
+        
+         | <a href="#disqus_thread">Comments</a>
+        
+      </p>
     
   </header>
-  
-  <div id="blog-archives" class="category">
 
 
+<div class="entry-content"><p>家でネットワークの勉強するために、VM に Cent OS 入れたのだが、外からアクセスできない。
+どうもインストール時には iptables が動いてて、外からのアクセスを拒否してるらしい。</p>
 
-  
-  <h2>2012</h2>
+<pre><code>$ sudo /etc/rc.d/init.d/iptables stop
+</code></pre>
 
-<article>
-  
-<h1><a href="/blog/2012/06/30/apue-chapter-3/">Advanced Programming in the UNIX enviroment Chapter 3</a></h1>
-<time datetime="2012-06-30T13:49:00+09:00" pubdate><span class='month'>Jun</span> <span class='day'>30</span> <span class='year'>2012</span></time>
-
-<footer>
-  <span class="categories">posted in <a class='category' href='/blog/categories/apue/'>apue</a>, <a class='category' href='/blog/categories/unix/'>unix</a></span>
-</footer>
-
-
-</article>
-
-
-
-<article>
-  
-<h1><a href="/blog/2012/05/02/apue-chapter-2/">Advanced Programming in the UNIX environment Chapter 2</a></h1>
-<time datetime="2012-05-02T14:31:00+09:00" pubdate><span class='month'>May</span> <span class='day'>02</span> <span class='year'>2012</span></time>
-
-<footer>
-  <span class="categories">posted in <a class='category' href='/blog/categories/apue/'>apue</a>, <a class='category' href='/blog/categories/unix/'>unix</a></span>
-</footer>
-
-
-</article>
-
-
-
-<article>
-  
-<h1><a href="/blog/2012/04/28/apue-chapter-1/">Advanced Programming in the UNIX environment Chapter 1</a></h1>
-<time datetime="2012-04-28T22:45:00+09:00" pubdate><span class='month'>Apr</span> <span class='day'>28</span> <span class='year'>2012</span></time>
-
-<footer>
-  <span class="categories">posted in <a class='category' href='/blog/categories/apue/'>apue</a>, <a class='category' href='/blog/categories/unix/'>unix</a></span>
-</footer>
-
-
-</article>
-
+<p>で iptables を無効にできる。</p>
 </div>
 
+
+  <footer>
+    <p class="meta">
+      
   
+
+<span class="byline author vcard">Posted by <span class="fn">kentaktwo</span></span>
+
+      
+
+
+
+
+
+
+
+
+  
+
+
+<time datetime="2012-10-14T00:37:00+09:00" pubdate data-updated="true">Oct 14<span>th</span>, 2012</time>
+      
+
+<span class="categories">
+  
+    <a class='category' href='/blog/categories/unix/'>unix</a>
+  
+</span>
+
+
+    </p>
+    
+      <div class="sharing">
+  
+  <a href="http://twitter.com/share" class="twitter-share-button" data-url="http://kentaktwo.github.com/blog/2012/10/14/disable-iptables/" data-via="" data-counturl="http://kentaktwo.github.com/blog/2012/10/14/disable-iptables/" >Tweet</a>
+  
+  
+  
+</div>
+
+    
+    <p class="meta">
+      
+        <a class="basic-alignment left" href="/blog/2012/08/11/lua-chapter-2/" title="Previous Post: Programming In Lua Chapter 2">&laquo; Programming In Lua Chapter 2</a>
+      
+      
+    </p>
+  </footer>
 </article>
+
+  <section>
+    <h1>Comments</h1>
+    <div id="disqus_thread" aria-live="polite"><noscript>Please enable JavaScript to view the <a href="http://disqus.com/?ref_noscript">comments powered by Disqus.</a></noscript>
+</div>
+  </section>
 
 </div>
 
@@ -177,7 +213,10 @@
       var disqus_shortname = 'apprengineerlog';
       
         
-        var disqus_script = 'count.js';
+        // var disqus_developer = 1;
+        var disqus_identifier = 'http://kentaktwo.github.com/blog/2012/10/14/disable-iptables/';
+        var disqus_url = 'http://kentaktwo.github.com/blog/2012/10/14/disable-iptables/';
+        var disqus_script = 'embed.js';
       
     (function () {
       var dsq = document.createElement('script'); dsq.type = 'text/javascript'; dsq.async = true;

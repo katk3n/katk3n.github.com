@@ -9,7 +9,8 @@
   <meta name="author" content="kentaktwo">
 
   
-  <meta name="description" content="Types and Values ">
+  <meta name="description" content="家でネットワークの勉強するために、VM に Cent OS 入れたのだが、外からアクセスできない。
+どうもインストール時には iptables が動いてて、外からのアクセスを拒否してるらしい。 $ sudo /etc/rc.d/init.d/iptables stop で iptables &hellip;">
   
 
   <!-- http://t.co/dKP3o1e -->
@@ -65,6 +66,50 @@
     <div id="content">
       <div class="blog-index">
   
+  
+  
+    <article>
+      
+  <header>
+    
+      <h1 class="entry-title"><a href="/blog/2012/10/14/disable-iptables/">Iptables を無効にする</a></h1>
+    
+    
+      <p class="meta">
+        
+
+
+
+
+
+
+
+
+  
+
+
+<time datetime="2012-10-14T00:37:00+09:00" pubdate data-updated="true">Oct 14<span>th</span>, 2012</time>
+        
+         | <a href="/blog/2012/10/14/disable-iptables/#disqus_thread">Comments</a>
+        
+      </p>
+    
+  </header>
+
+
+  <div class="entry-content"><p>家でネットワークの勉強するために、VM に Cent OS 入れたのだが、外からアクセスできない。
+どうもインストール時には iptables が動いてて、外からのアクセスを拒否してるらしい。</p>
+
+<pre><code>$ sudo /etc/rc.d/init.d/iptables stop
+</code></pre>
+
+<p>で iptables を無効にできる。</p>
+</div>
+  
+  
+
+
+    </article>
   
   
     <article>
@@ -455,51 +500,6 @@
 
     </article>
   
-  
-    <article>
-      
-  <header>
-    
-      <h1 class="entry-title"><a href="/blog/2012/04/17/install-backtrack/">BackTrack 5 RC2 をインストール</a></h1>
-    
-    
-      <p class="meta">
-        
-
-
-
-
-
-
-
-
-  
-
-
-<time datetime="2012-04-17T21:49:00+09:00" pubdate data-updated="true">Apr 17<span>th</span>, 2012</time>
-        
-         | <a href="/blog/2012/04/17/install-backtrack/#disqus_thread">Comments</a>
-        
-      </p>
-    
-  </header>
-
-
-  <div class="entry-content"><p>ペネトレーションテストに特化した Linux ディストリビューションの BackTrack をインストールしました。</p>
-
-<p><a href="http://www.backtrack-linux.org/">http://www.backtrack-linux.org/</a></p>
-
-</div>
-  
-  
-    <footer>
-      <a rel="full-article" href="/blog/2012/04/17/install-backtrack/">Read on &rarr;</a>
-    </footer>
-  
-
-
-    </article>
-  
   <div class="pagination">
     
       <a class="prev" href="/blog/page/2/">&larr; Older</a>
@@ -515,6 +515,10 @@
   <ul id="recent_posts">
     
       <li class="post">
+        <a href="/blog/2012/10/14/disable-iptables/">iptables を無効にする</a>
+      </li>
+    
+      <li class="post">
         <a href="/blog/2012/08/11/lua-chapter-2/">Programming In Lua Chapter 2</a>
       </li>
     
@@ -528,10 +532,6 @@
     
       <li class="post">
         <a href="/blog/2012/06/30/apue-chapter-3/">Advanced Programming in the UNIX enviroment Chapter 3</a>
-      </li>
-    
-      <li class="post">
-        <a href="/blog/2012/05/07/unp-chapter-2/">Unix Network Programming Chapter 2</a>
       </li>
     
   </ul>
