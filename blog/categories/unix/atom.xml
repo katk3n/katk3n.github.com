@@ -4,7 +4,7 @@
   <title><![CDATA[Category: unix | ApprEngineer.log]]></title>
   <link href="http://kentaktwo.github.com/blog/categories/unix/atom.xml" rel="self"/>
   <link href="http://kentaktwo.github.com/"/>
-  <updated>2012-10-14T00:51:05+09:00</updated>
+  <updated>2013-01-07T00:47:58+09:00</updated>
   <id>http://kentaktwo.github.com/</id>
   <author>
     <name><![CDATA[kentaktwo]]></name>
@@ -12,6 +12,641 @@
   </author>
   <generator uri="http://octopress.org/">Octopress</generator>
 
+  
+  <entry>
+    <title type="html"><![CDATA[Advanced Programming in the UNIX enviroment Chapter 4]]></title>
+    <link href="http://kentaktwo.github.com/blog/2012/10/14/apue-chapter-4/"/>
+    <updated>2012-10-14T14:25:00+09:00</updated>
+    <id>http://kentaktwo.github.com/blog/2012/10/14/apue-chapter-4</id>
+    <content type="html"><![CDATA[<h1>Files and Directories</h1>
+
+<!--more-->
+
+
+<h2>stat, fstat and lstat Functions</h2>
+
+<p>``` c</p>
+
+<h1>include &lt;sys/stat.h></h1>
+
+<p>int stat(const char <em>restrict pathname, struct stat </em>restrict buf);
+int fstat(int filedes, struct stat <em>buf);
+int lstat(const char </em>restrict pathname, struct stat *restrict buf);</p>
+
+<p>return 0 if OK, -1 on error
+```</p>
+
+<ul>
+<li>ファイルについての情報が書かれた構造体 (stat 構造体) を返す。
+
+<ul>
+<li><code>stat()</code> はファイル名</li>
+<li><code>fstat()</code> はファイルディスクリプタ</li>
+<li><code>lstat()</code> はシンボリックリンク
+(<code>stat()</code> の場合はシンボリックリンクのときはその参照先)</li>
+</ul>
+</li>
+<li>restrict ポインタはそのポインタが別名を持たないことを保証し、
+コンパイル時の最適化を効率的に行うことができる。</li>
+<li>stat 構造体の定義は実装によるが、だいたい以下のようになる</li>
+</ul>
+
+
+<p>``` c
+struct stat {</p>
+
+<pre><code>mode_t      st_mode;    /* file type &amp; mode (permissions) */
+ino_t       st_ino;     /* i-node number (serial number) */
+dev_t       st_dev;     /* device number (file system) */
+dev_t       st_rdev;    /* device number for special files */
+nlink_t     st_nlink;   /* number of links */
+uid_t       st_uid;     /* user ID of owner */
+gid_t       st_gid;     /* group ID of owner */
+off_t       st_size;    /* size in bytes, for regular files */
+time_t      st_atime;   /* time of last access */
+time_t      st_mtime;   /* time of last modification */
+time_t      st_ctime;   /* time of last file status change */
+blksize_t   st_blksize; /* best I/O block size */
+blkcnt_t    st_blocks;  /* number of disk blocks allocated */
+</code></pre>
+
+<p>};
+```</p>
+
+<h2>File Types</h2>
+
+<ul>
+<li>ファイルの種類は7種類
+
+<ul>
+<li>Regular file</li>
+<li>Directory file</li>
+<li>Block special file: ディスクドライブなどのデバイスに buffered I/O アクセスする</li>
+<li>Character special file: デバイスに unbuffered I/O アクセスする</li>
+<li>FIFO: プロセス間通信で使う。pipe とも呼ばれる。</li>
+<li>Socket: プロセス間のネットワーク通信に使う。</li>
+<li>Symbolic link: 他のファイルを参照するファイル</li>
+</ul>
+</li>
+<li>ファイルの種類は <code>st_mode</code> に入っている。</li>
+<li>ファイルの種類を調べるには <code>S_ISREG()</code>, <code>S_ISDIR()</code> などのマクロを使う。
+
+<ul>
+<li>Linux で <code>S_ISSOCK()</code> マクロを使うには <code>_GNU_SOURCE</code> を定義する必要がある。</li>
+</ul>
+</li>
+</ul>
+
+
+<h2>Set-User-ID and Set-Group-ID</h2>
+
+<ul>
+<li>すべてのプロセスは関連する ID を持っている
+
+<ul>
+<li>real user ID, real group ID<br/>
+自分が誰なのかを表す。login 時に password file から読み取られる。</li>
+<li>effective user ID, effective group ID, supplementary group ID<br/>
+ファイルアクセスの権限を表す。</li>
+<li>saved set-user-ID, saved set-group-ID<br/>
+プログラム実行時の effective user ID と effective group ID のコピー</li>
+</ul>
+</li>
+<li>プログラムが実行されると、通常 effective user (group) ID には real user (group) ID がセットされるが、
+<em>set-user-ID</em> bit や <em>set-group-ID</em> bit を立てると、
+effective user (group) ID をそのファイルのオーナー (<code>st_uid</code>, <code>st_gid</code>) にすることができる。
+
+<ul>
+<li><code>passwd(1)</code> はスーパーユーザーで実行される必要がある。</li>
+</ul>
+</li>
+<li>set-user-ID (set-group-ID) bit は<code>st_mode</code> の中に含まれ、<code>S_ISUID()</code>, <code>S_ISGID()</code> で調べることができる。</li>
+</ul>
+
+
+<h2>File Access Permissions</h2>
+
+<ul>
+<li>directory の execute 権限は search bit とも呼ばれる
+
+<ul>
+<li>directory の read 権限は directory 内のファイル名のリストを表示したりする (directory file を読む) 権限</li>
+<li>directory の execute 権限は directory にアクセスする権限</li>
+</ul>
+</li>
+<li>ファイルを削除するには、そのファイルがある directory に write と execute 権限があることが必要。
+そのファイル自体に read や write 権限がある必要はない。</li>
+<li>owner ID はファイルのプロパティであり、effective ID はプロセスのプロパティである。</li>
+</ul>
+
+
+<h2>access Function</h2>
+
+<p>``` c</p>
+
+<h1>include &lt;unistd.h></h1>
+
+<p>int access(const char *pathname, int mode);</p>
+
+<p>return 0 if OK, -1 on error
+```</p>
+
+<ul>
+<li>(effective でなく) real user (group) ID がファイルへの権限を持っているか調べる。</li>
+<li>set-user-ID されていても、real user ID についての権限が調べられる。</li>
+</ul>
+
+
+<h2>umask Function</h2>
+
+<p>``` c</p>
+
+<h1>include &lt;sys/stat.h></h1>
+
+<p>mode_t umask(mode_t cmask);</p>
+
+<p>return: 変更前の mask
+```
+- ファイル作成時に umask に設定した権限を除外することができる。</p>
+
+<pre><code>- `S_IROTH | S_IWOTH` みたいにして設定
+</code></pre>
+
+<ul>
+<li>プログラム内で設定した umask はプログラムが終了すると元に戻る。</li>
+</ul>
+
+
+<h2>chmod and fchmod Functions</h2>
+
+<p>``` c</p>
+
+<h1>include &lt;sys/stat.h></h1>
+
+<p>int chmod(const char *pathname, mode_t mode);
+int fchmod(int filedes, mode_t mode);</p>
+
+<p>return 0 if OK, -1 on error
+```</p>
+
+<ul>
+<li>ファイルのアクセス権限を変更する。</li>
+<li>現在の権限から group execute 権限を取り除き、set-group-ID するには</li>
+</ul>
+
+
+<p><code>c
+struct stat statbuf;
+stat("foo", &amp;statbuf);
+chmod("foo", (statbuf.st_mode &amp; ~S_IXGRP) | S_ISGID);
+</code></p>
+
+<ul>
+<li><code>ls -l</code> したときに execute 権限にある <code>S</code> は execute 権限は無いが、
+set-user-ID (set-group-ID) されてるという意味。</li>
+</ul>
+
+
+<h2>Sticky Bit</h2>
+
+<ul>
+<li>sticky bit がセットされたプログラムが実行されると、
+プロセス終了時にそのコピーがスワップ領域にコピーされる。</li>
+<li>次回以降そのプログラム実行時のメモリへのロードが高速になる。</li>
+<li>sticky bit をセットにするには <code>S_ISVTX</code> をセットする。</li>
+<li>最近の UNIX システムでは <em>saved-text</em> bit と呼ばれる。</li>
+<li>最近の UNIX システムでは Virtual memory システムだったり、ファイルシステムが高速
+になったりで、このテクニックの必要は薄くなっている。</li>
+<li>最近は sticky bit は directory にセットされる使い方をしている。
+
+<ul>
+<li>directory に sticky bit がセットされると、directory 内のファイルは
+directory への write 権限を持っていて、かつ
+
+<ul>
+<li>ファイルのオーナーである</li>
+<li>ディレクトリのオーナーである</li>
+<li>スーパーユーザーである
+のいずれかを満たすユーザにしか消去や名前の変更ができないようになる。</li>
+</ul>
+</li>
+<li>sticky bit がセットされている directory には、<code>/tmp</code> などがある。
+
+<ul>
+<li><code>/tmp</code> には色んなユーザがファイルを作成するので、
+パーミッションは 777 になっているが、sticky bit がセットされているので、
+ファイルの削除などはオーナーにしかできない。</li>
+</ul>
+</li>
+</ul>
+</li>
+</ul>
+
+
+<h2>chown, fchown, and lchown Functions</h2>
+
+<ul>
+<li><code>chown()</code> でファイルの user ID や group ID を変更することができる。</li>
+</ul>
+
+
+<p>``` c</p>
+
+<h1>include &lt;unistd.h></h1>
+
+<p>int chown(const char <em>pathname, uid_t owner, gid_t group);
+int fchown(int filedes, uid_t owner, gid_t group);
+int lchown(const char </em>pathname, uid_t owner, gid_t group);</p>
+
+<p>return 0 if OK, -1 on error
+```</p>
+
+<ul>
+<li><code>lchown()</code> はシンボリックリンク自体のオーナーを変更する</li>
+<li><em>owner</em> または <em>group</em> を -1 にすると、その ID は変更されない</li>
+<li><code>_POSIX_CHOWN_RESTRICTED</code> が有効になっていると、他のユーザのファイルの user ID は変更できない。
+自分のファイルの group ID は変更できるが、自分が所属しているグループにしか変更できない。</li>
+<li>superuser のプロセスからこれらの関数が実行されると、set-user-ID と set-group-ID の bit はクリアされる</li>
+</ul>
+
+
+<h2>File Size</h2>
+
+<ul>
+<li><code>stat</code> 構造体の <code>st_size</code> にはファイルのサイズがバイト単位で入っている</li>
+<li>このフィールドは regular files, directories, symbolic links のときのみ意味をなす
+
+<ul>
+<li>regular file の場合、ファイルサイズ 0 が許容される。これはファイルの最初が end-of-file の場合である。</li>
+<li>directory の場合、ファイルサイズは 16 や 512 などの複数の値になる。</li>
+<li>symbolic link の場合、ファイルサイズはリンク先のファイル名の長さ (byte) になる。
+例えば、リンク先が "usr/lib" のとき、ファイルサイズは 7 になる。</li>
+</ul>
+</li>
+<li>最近の UNIX システムでは、<code>st_blksize</code> と <code>st_blocks</code> というフィールドも用意されている
+
+<ul>
+<li><code>st_blksize</code> はファイル I/O の望ましいブロックサイズ</li>
+<li><code>st_blocks</code> は割り当てられた 512-byte ブロックの数</li>
+<li>standard I/O library では、効率化のため、1回に <code>st_blksize</code> の分だけ read や write を行う</li>
+</ul>
+</li>
+</ul>
+
+
+<h2>File Truncation</h2>
+
+<p>``` c</p>
+
+<h1>include &lt;unistd.h></h1>
+
+<p>int truncate(const char *pathname, off_t length);
+int ftruncate(int filedes, off_t length);</p>
+
+<p>return 0 if OK, -1 on error
+```</p>
+
+<ul>
+<li>ファイルの長さを <em>length</em> バイトに切り詰める</li>
+<li>truncate 前のファイルサイズが <em>length</em> より大きい場合、<em>length</em> より後ろのデータにはアクセスできなくなる</li>
+<li>truncate 前のファイルサイズが <em>length</em> より小さい場合、どうなるかは実装依存だが、
+XSI-conforming system の場合、ファイルサイズは大きくなる (hole ができる)</li>
+</ul>
+
+
+<h2>File Systems</h2>
+
+<h3>Hard Links</h3>
+
+<ul>
+<li>各 i-node は link count を持っている。これは自身の i-node を参照しているディレクトリの数である。</li>
+<li>link count が 0 になったときのみ、このファイルは削除することができる。
+
+<ul>
+<li>ディレクトリのエントリを削除する関数が delete でなく unlink なのはそのため。</li>
+</ul>
+</li>
+<li>link count は <code>stat</code> 構造体の中の <code>st_nlink</code> メンバに格納されている。この型は <code>nlink_t</code> 型である。</li>
+<li>link count の最大値は <code>LINK_MAX</code> で定義されている。</li>
+</ul>
+
+
+<h3>Symbolic Links</h3>
+
+<ul>
+<li>symbolic link の指す data block の中にはこのリンクが参照するファイル名が書かれている。</li>
+<li>この i-node には file type に <code>S_IFLNK</code> がセットされている。</li>
+</ul>
+
+
+<h3>Directory</h3>
+
+<ul>
+<li>directory entry には ファイル名や i-node 番号などが書かれている。</li>
+<li>i-node 番号の型は <code>ino_t</code> 型である。</li>
+<li>directory entry に書かれた i-node 番号は同じファイルシステム上のものであり、
+別のファイルシステムの i-node を参照することはできない。
+<code>ln(1)</code> コマンドをファイルシステムをまたがって叩くことができないのはそのためである。</li>
+<li><code>mv(1)</code> は directory entry を変更しているだけで、実際のファイルの中身が変更されているわけではない。</li>
+<li>leaf directory (他の directory を含んでいない directory) の link count は常に2となる (<code>.</code> と親ディレクトリからの参照)</li>
+<li>leaf directory でない directory の link count は 3 以上となる (<code>.</code>, 子ディレクトリの <code>..</code>, 親ディレクトリからの参照)</li>
+</ul>
+
+
+<h2>link, unlink, remove, and rename Functions</h2>
+
+<p>``` c</p>
+
+<h1>include &lt;unistd.h></h1>
+
+<p>int link(cont char <em>existingpath, const char </em>newpath);
+int unlink(const char *pathname);</p>
+
+<p>return 0 if OK, -1 on error
+```</p>
+
+<ul>
+<li><code>link()</code> は <em>existingpath</em> を参照する新しい directory entry を <em>newpath</em> に作成する。
+
+<ul>
+<li><em>newpath</em> がすでに存在する場合はエラーとなる。</li>
+<li>POSIX.1 はファイルシステムをまたいで link することを許しているが、
+ほとんどの実装ではそれぞれのパスは同じファイルシステム上になくてはならない。</li>
+<li>directory の hard link を作成できる実装の場合、それができるのは superuser に限られる。
+
+<ul>
+<li>loop が発生する恐れがあるため。</li>
+<li>多くのファイルシステムの実装では directory の hard link を作ることを許可していない。</li>
+</ul>
+</li>
+</ul>
+</li>
+<li><p><code>unlink()</code> は directory entry を削除し、 link count を減らす。</p>
+
+<ul>
+<li>link count が 0 になったときのみ、このファイルの中身を削除することができるが、
+ファイルが open されているときはまだ削除できない。
+
+<ul>
+<li>ファイルが close されたときに、kernel がそのファイルを open しているプロセス数をチェックする。
+それが 0 なら、次に link count をチェックし、それも 0 ならファイルの中身を削除する。</li>
+</ul>
+</li>
+<li><em>pathname</em> が symbolic link の場合、<code>unlink()</code> は参照先ではなく、symbolic link 自体を削除する。</li>
+</ul>
+</li>
+<li><p>superuser は <code>unlink()</code> に directory を指定することもできるが、それよりも <code>rmdir()</code> を使うべきである。</p></li>
+<li>file と directory 両方に使える関数に <code>remove()</code> がある。</li>
+</ul>
+
+
+<p>``` c</p>
+
+<h1>include &lt;stdio.h></h1>
+
+<p>int remove(const char *pathname);</p>
+
+<p>return 0 if OK, -1 on error
+```</p>
+
+<ul>
+<li><p><code>remove()</code> は対象が file なら <code>unlink()</code> と同じであり、directory なら <code>rmdir()</code> と同じである。</p></li>
+<li><p>file や directory は <code>rename()</code> で名前を変えることができる。</p></li>
+</ul>
+
+
+<p>``` c</p>
+
+<h1>include &lt;stdio.h></h1>
+
+<p>int rename(const char <em>oldname, const char </em>newname);</p>
+
+<p>return 0 if OK, -1 on error
+```</p>
+
+<ul>
+<li><em>newname</em> が既に存在していた場合、<em>newname</em> は削除され、<em>oldname</em> が <em>newname</em> に rename される。
+
+<ul>
+<li>directory の場合、<em>newname</em> は空である必要がある。</li>
+</ul>
+</li>
+<li>symbolic link の場合、参照先ではなく、リンク自身が rename される。</li>
+<li><em>oldname</em> と <em>newname</em> が同じ場合、変更されずに、0 が返る。</li>
+</ul>
+
+
+<h2>Symbolic Links</h2>
+
+<ul>
+<li>symbolic link は i-node を直接参照する hard link とは違い、間接的にファイルを参照する。</li>
+<li>symbolic link はファイルシステムをまたぐことに関する制限はない。</li>
+<li>directory を指す symbolic link を作る際にも root 権限は必要ない。</li>
+<li>ファイル名でファイルを参照する関数には、symbolic link をたどり参照先のファイルを見るものと、
+たどらずに、symbolic link 自体を見るものがある。
+
+<ul>
+<li><code>chown()</code> がどちらになるかは実装による</li>
+<li><code>open()</code> は symbolic link をたどるが、<code>O_CREAT</code> と <code>O_EXCL</code> の両方が付いている場合は例外で、
+その時に symbolic link を開こうとすると、エラーとなり、 <code>errno</code> に <code>EEXIST</code> がセットされる。
+これは権限のあるプロセスが誤ってファイルに書き込みをしないようにするためである。</li>
+</ul>
+</li>
+</ul>
+
+
+<h2>symlink and readlink Functions</h2>
+
+<ul>
+<li>symbolic link を作成するには <code>symlink()</code> を使う</li>
+</ul>
+
+
+<p>``` c</p>
+
+<h1>include &lt;unistd.h></h1>
+
+<p>int symlink(const char <em>actualpath, const char </em>sympath);</p>
+
+<p>return 0 if OK, -1 on error
+```</p>
+
+<ul>
+<li><code>open()</code> は symbolic link をたどってしまうため、symbolic link 自身を open したい場合は <code>readlink()</code> を使う</li>
+</ul>
+
+
+<p>``` c</p>
+
+<h1>include &lt;unistd.h></h1>
+
+<p>ssize_t readlink(const char <em>restrict pathname, char </em>restrict buf, size_t bufsize);</p>
+
+<p>return number of bytes read if OK, -1 on error
+```
+- この関数1つで open, read, close を行なっている。</p>
+
+<h2>File Times</h2>
+
+<p>各ファイルでは3種類の時刻が管理されている
+- <code>st_atime</code>: 最後にファイルにアクセスされた時刻。<code>read()</code> など。<code>ls -u</code> でソート
+- <code>st_mtime</code>: 最後にファイルの中身が変更された時刻。<code>write()</code> など。<code>ls -t</code> でソート
+- <code>st_ctime</code>: 最後に i-node のステータスが変更された時刻。<code>chmod(), chown()</code> など。<code>ls -c</code> でソート</p>
+
+<h2>utime Function</h2>
+
+<p>ファイルの access time や modification time を変更するには <code>utime()</code> を使う</p>
+
+<p>``` c</p>
+
+<h1>include &lt;utime.h></h1>
+
+<p>int utime(const char <em>pathname, const struct utimbuf </em>times);</p>
+
+<p>return 0 if OK, -1 on error
+<code>
+`utimbuf` 構造体は以下のようになっている
+</code> c
+struct utimbuf {</p>
+
+<pre><code>time_t actime;  /* access time */
+time_t modtime; /* modification time*/
+</code></pre>
+
+<p>}
+```</p>
+
+<ul>
+<li><em>times</em> が null の場合、access time と modification time は現在の時刻に更新される。</li>
+<li>chenged-status time を変更する関数は無い。<code>utime()</code> が実行されると自動的に更新される。</li>
+</ul>
+
+
+<h2>mkdir and rmdir Functions</h2>
+
+<ul>
+<li><code>mkdir()</code> で空の directory を作成できる。
+``` c
+
+<h1>include &lt;sys/stat.h></h1>
+
+<p>int mkdir(const char *pathname, mode_t mode);
+return 0 if OK, -1 on error
+```</p></li>
+<li><code>.</code> と <code>..</code> は自動的に作られる。</li>
+<li><em>mode</em> にはプロセスの mask による変更が加えられる。</li>
+<li><p>directory の場合、execute bit を付けないと directory 内のファイルにアクセスできなくなるので注意</p></li>
+<li><p>空の directory を削除するには <code>rmdir()</code> を使う
+``` c</p>
+
+<h1>include &lt;unistd.h></h1>
+
+<p>int rmdir(const char *pathname);</p></li>
+</ul>
+
+
+<p>return 0 if OK, -1 on error
+```
+- link count が 0 でも、その directory を open しているプロセスがあれば、close されるまで領域は解放されない。
+解放はされないが、その directory 内に新しくファイルを置くことはできなくなる。</p>
+
+<h2>Reading Directories</h2>
+
+<p>directory を読むには、以下のような関数を使う
+``` c</p>
+
+<h1>include &lt;dirent.h></h1>
+
+<p>DIR <em>opendir(const char </em>pathname);    return pointer if OK, NULL on error
+struct dirent <em>readdir(DIR </em>dp);       return pointer if OK, NULL at end of directory or error
+void rewinddir(DIR <em>dp);
+int closedir(DIR </em>dp);                 return 0 if OK, -1 on error
+long telldir(DIR <em>dp);                 return current location in directory associated with dp
+void seekdir(DIR </em>dp, long loc);
+<code>
+`dirent` 構造体 の定義は実装依存だが、少なくとも以下の2つは含まれている
+</code> c
+struct dirent {</p>
+
+<pre><code>ino_t d_ino;                    /* i-node number */ 
+char  d_name[NAME_MAX + 1];     /* null-terminated filename */
+</code></pre>
+
+<p>}
+```</p>
+
+<ul>
+<li><code>DIR</code> は <code>FILE</code> 構造体のようなもので、directory が read されるのを管理するための構造体</li>
+<li>directory entries の順番は実装依存だが、たいていアルファベット順にはなっていない</li>
+<li><code>rewinddir()</code> は DIR のポインタを先頭に戻す</li>
+</ul>
+
+
+<h2>chdir, fchdir, and getcwd Functions</h2>
+
+<ul>
+<li>すべてのプロセスは current working directory を持っている。
+
+<ul>
+<li>user がログインすると、current working directory が <code>/etc/passwd</code> の第6フィールドにセットされた home directory に設定される。</li>
+</ul>
+</li>
+<li><p>current working directory はプロセスの attribute である。</p></li>
+<li><p><code>chdir()</code> や <code>fchdir()</code> を使うと、それを呼んだプロセスの current working directory が変更できる
+``` c</p>
+
+<h1>include &lt;unistd.h></h1>
+
+<p>int chdir(const char *pathname);
+int fchdir(int filedes);</p></li>
+</ul>
+
+
+<p>return 0 if OK, -1 on error
+```</p>
+
+<ul>
+<li>kernel は current working directory の full path を管理しているわけではない</li>
+<li>full path を取得するのは、v-node を辿っていけばいいが、そのような関数は既にあり、<code>getcwd()</code> で full path が取得できる
+``` c
+
+<h1>include &lt;unistd.h></h1>
+
+<p>char <em>getcwd(char </em>buf, size_t size);</p></li>
+</ul>
+
+
+<p>return buf if OK, NULL on error
+```</p>
+
+<h2>Device Special Files</h2>
+
+<p><code>stat</code> 構造体には <code>st_dev</code> と <code>st_rdev</code> の2つのフィールドがある。</p>
+
+<ul>
+<li>すべてのファイルシステムには major と minor 2種類のデバイス番号が付けられている。
+
+<ul>
+<li>型は <code>dev_t</code> 型</li>
+<li>major number はデバイスドライバを識別する番号</li>
+<li>minor number はサブデバイスを識別する番号</li>
+<li>同じディスクドライブにあるファイルシステムはたいてい同じ major number を持つが、異なる minor number を持つ</li>
+</ul>
+</li>
+<li>major, minor number はそれぞれ <code>major()</code>, <code>minor()</code> マクロで取得できる</li>
+<li><code>st_dev</code> はそのファイル名や i-node が格納されているデバイス番号</li>
+<li>character special files と block special files の場合のみ <code>st_rdev</code> に値が入っている。
+これは実際のデバイスのデバイス番号である。
+
+<ul>
+<li><code>/dev/tty0</code> や <code>/dev/hda3</code> などの <code>st_dev</code> のデバイス番号は 0/7 などの <code>devfs</code> 仮想ファイルシステムになっている。
+実際のデバイス番号は <code>st_rdev</code> に書かれた 4/0 などである。</li>
+</ul>
+</li>
+</ul>
+
+]]></content>
+  </entry>
   
   <entry>
     <title type="html"><![CDATA[iptables を無効にする]]></title>
@@ -749,85 +1384,6 @@ IANA が管理していないポート。 <em>ephemeral ports</em> （transport 
 </ul>
 </li>
 <li>接続先を決めるための2つの値である IP アドレスとポート番号の組は <em>socket</em> と呼ばれる</li>
-</ul>
-
-]]></content>
-  </entry>
-  
-  <entry>
-    <title type="html"><![CDATA[Advanced Programming in the UNIX environment Chapter 2]]></title>
-    <link href="http://kentaktwo.github.com/blog/2012/05/02/apue-chapter-2/"/>
-    <updated>2012-05-02T14:31:00+09:00</updated>
-    <id>http://kentaktwo.github.com/blog/2012/05/02/apue-chapter-2</id>
-    <content type="html"><![CDATA[<h1>UNIX Standardization and Implementations</h1>
-
-<!--more-->
-
-
-<h2>Limits</h2>
-
-<ul>
-<li>Compile-time limits
-
-<ul>
-<li>short integer の最大値など</li>
-<li>ヘッダに定義</li>
-<li>コンパイル時にインクルードされる</li>
-</ul>
-</li>
-<li>Runtime limits
-
-<ul>
-<li>filename の最大文字数など</li>
-<li>プロセスが関数を呼んで値を取得する必要がある</li>
-</ul>
-</li>
-<li>Runtime limits は以下の関数を呼ぶことで取得できる
-
-<ul>
-<li><code>sysconf()</code>
-
-<ul>
-<li>file や directory に関係しない limit</li>
-<li><code>_SC_</code> で始まる値を取得できる</li>
-</ul>
-</li>
-<li><code>pathconf()</code>
-
-<ul>
-<li>file や directory に関係する limit</li>
-<li><code>_PC_</code> で始まる値を取得できる</li>
-</ul>
-</li>
-<li><code>fpathconf()</code>: <code>pathconf</code> の引数がファイルディスクリプタになった版</li>
-</ul>
-</li>
-<li>limits は未定義なこともある
-
-<ul>
-<li>e.g. pathname の最大値
-
-<ol>
-<li><code>&lt;limits.h&gt;</code> に定義されていればその値を使う</li>
-<li>定義されていなければ、<code>pathconf("/", _PC_PATH_MAX)</code> して取得する</li>
-<li>取得できなければ、適当な値を推測して使う</li>
-</ol>
-</li>
-</ul>
-</li>
-</ul>
-
-
-<h2>Primitive System Data Types</h2>
-
-<ul>
-<li>C のデータ型は UNIX システムに依存することがある</li>
-<li><code>&lt;sys/types.h&gt;</code> に実装依存のデータ型 (<em>primitive system data types</em>) が定義されている
-
-<ul>
-<li><code>clock_t</code>, <code>size_t</code>, <code>time_t</code> など</li>
-</ul>
-</li>
 </ul>
 
 ]]></content>

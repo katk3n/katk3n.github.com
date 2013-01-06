@@ -1,0 +1,959 @@
+
+<!DOCTYPE html>
+<!--[if IEMobile 7 ]><html class="no-js iem7"><![endif]-->
+<!--[if lt IE 9]><html class="no-js lte-ie8"><![endif]-->
+<!--[if (gt IE 8)|(gt IEMobile 7)|!(IEMobile)|!(IE)]><!--><html class="no-js" lang="en"><!--<![endif]-->
+<head>
+  <meta charset="utf-8">
+  <title>Advanced Programming in the UNIX enviroment Chapter 4 - ApprEngineer.log</title>
+  <meta name="author" content="kentaktwo">
+
+  
+  <meta name="description" content="Files and Directories stat, fstat and lstat Functions 1
+2
+3
+4
+5
+6
+#include &lt;sys/stat.h&gt;
+int stat(const char *restrict pathname, struct stat * &hellip;">
+  
+
+  <!-- http://t.co/dKP3o1e -->
+  <meta name="HandheldFriendly" content="True">
+  <meta name="MobileOptimized" content="320">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+
+  
+  <link rel="canonical" href="http://kentaktwo.github.com/blog/2012/10/14/apue-chapter-4">
+  <link href="/favicon.png" rel="icon">
+  <link href="/stylesheets/screen.css" media="screen, projection" rel="stylesheet" type="text/css">
+  <script src="/javascripts/modernizr-2.0.js"></script>
+  <script src="/javascripts/ender.js"></script>
+  <script src="/javascripts/octopress.js" type="text/javascript"></script>
+  <link href="/atom.xml" rel="alternate" title="ApprEngineer.log" type="application/atom+xml">
+  <!--Fonts from Google"s Web font directory at http://google.com/webfonts -->
+<link href="http://fonts.googleapis.com/css?family=PT+Serif:regular,italic,bold,bolditalic" rel="stylesheet" type="text/css">
+<link href="http://fonts.googleapis.com/css?family=PT+Sans:regular,italic,bold,bolditalic" rel="stylesheet" type="text/css">
+<link href='http://fonts.googleapis.com/css?family=Lato:400,700,400italic,700italic' rel='stylesheet' type='text/css'>
+
+  
+
+</head>
+
+<body   >
+  <header role="banner"><hgroup>
+  <h1><a href="/">ApprEngineer.log</a></h1>
+  
+    <h2>Apprentice web engineer's study log</h2>
+  
+</hgroup>
+
+</header>
+  <nav role="navigation"><ul class="subscription" data-subscription="rss">
+  <li><a href="/atom.xml" rel="subscribe-rss" title="subscribe via RSS">RSS</a></li>
+  
+</ul>
+  
+<form action="http://google.com/search" method="get">
+  <fieldset role="search">
+    <input type="hidden" name="q" value="site:kentaktwo.github.com" />
+    <input class="search" type="text" name="q" results="0" placeholder="Search"/>
+  </fieldset>
+</form>
+  
+<ul class="main-navigation">
+  <li><a href="/">Blog</a></li>
+  <li><a href="/blog/archives">Archives</a></li>
+</ul>
+
+</nav>
+  <div id="main">
+    <div id="content">
+      <div>
+<article class="hentry" role="article">
+  
+  <header>
+    
+      <h1 class="entry-title">Advanced Programming in the UNIX Enviroment Chapter 4</h1>
+    
+    
+      <p class="meta">
+        
+
+
+
+
+
+
+
+
+  
+
+
+<time datetime="2012-10-14T14:25:00+09:00" pubdate data-updated="true">Oct 14<span>th</span>, 2012</time>
+        
+         | <a href="#disqus_thread">Comments</a>
+        
+      </p>
+    
+  </header>
+
+
+<div class="entry-content"><h1>Files and Directories</h1>
+
+<!--more-->
+
+
+<h2>stat, fstat and lstat Functions</h2>
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+</pre></td><td class='code'><pre><code class='c'><span class='line'><span class="cp">#include &lt;sys/stat.h&gt;</span>
+</span><span class='line'><span class="kt">int</span> <span class="n">stat</span><span class="p">(</span><span class="k">const</span> <span class="kt">char</span> <span class="o">*</span><span class="kr">restrict</span> <span class="n">pathname</span><span class="p">,</span> <span class="k">struct</span> <span class="n">stat</span> <span class="o">*</span><span class="kr">restrict</span> <span class="n">buf</span><span class="p">);</span>
+</span><span class='line'><span class="kt">int</span> <span class="n">fstat</span><span class="p">(</span><span class="kt">int</span> <span class="n">filedes</span><span class="p">,</span> <span class="k">struct</span> <span class="n">stat</span> <span class="o">*</span><span class="n">buf</span><span class="p">);</span>
+</span><span class='line'><span class="kt">int</span> <span class="n">lstat</span><span class="p">(</span><span class="k">const</span> <span class="kt">char</span> <span class="o">*</span><span class="kr">restrict</span> <span class="n">pathname</span><span class="p">,</span> <span class="k">struct</span> <span class="n">stat</span> <span class="o">*</span><span class="kr">restrict</span> <span class="n">buf</span><span class="p">);</span>
+</span><span class='line'>
+</span><span class='line'><span class="k">return</span> <span class="mi">0</span> <span class="k">if</span> <span class="n">OK</span><span class="p">,</span> <span class="o">-</span><span class="mi">1</span> <span class="n">on</span> <span class="n">error</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<ul>
+<li>ファイルについての情報が書かれた構造体 (stat 構造体) を返す。
+
+<ul>
+<li><code>stat()</code> はファイル名</li>
+<li><code>fstat()</code> はファイルディスクリプタ</li>
+<li><code>lstat()</code> はシンボリックリンク
+(<code>stat()</code> の場合はシンボリックリンクのときはその参照先)</li>
+</ul>
+</li>
+<li>restrict ポインタはそのポインタが別名を持たないことを保証し、
+コンパイル時の最適化を効率的に行うことができる。</li>
+<li>stat 構造体の定義は実装によるが、だいたい以下のようになる</li>
+</ul>
+
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+<span class='line-number'>7</span>
+<span class='line-number'>8</span>
+<span class='line-number'>9</span>
+<span class='line-number'>10</span>
+<span class='line-number'>11</span>
+<span class='line-number'>12</span>
+<span class='line-number'>13</span>
+<span class='line-number'>14</span>
+<span class='line-number'>15</span>
+</pre></td><td class='code'><pre><code class='c'><span class='line'><span class="k">struct</span> <span class="n">stat</span> <span class="p">{</span>
+</span><span class='line'>    <span class="n">mode_t</span>      <span class="n">st_mode</span><span class="p">;</span>    <span class="cm">/* file type &amp; mode (permissions) */</span>
+</span><span class='line'>    <span class="n">ino_t</span>       <span class="n">st_ino</span><span class="p">;</span>     <span class="cm">/* i-node number (serial number) */</span>
+</span><span class='line'>    <span class="n">dev_t</span>       <span class="n">st_dev</span><span class="p">;</span>     <span class="cm">/* device number (file system) */</span>
+</span><span class='line'>    <span class="n">dev_t</span>       <span class="n">st_rdev</span><span class="p">;</span>    <span class="cm">/* device number for special files */</span>
+</span><span class='line'>    <span class="n">nlink_t</span>     <span class="n">st_nlink</span><span class="p">;</span>   <span class="cm">/* number of links */</span>
+</span><span class='line'>    <span class="n">uid_t</span>       <span class="n">st_uid</span><span class="p">;</span>     <span class="cm">/* user ID of owner */</span>
+</span><span class='line'>    <span class="n">gid_t</span>       <span class="n">st_gid</span><span class="p">;</span>     <span class="cm">/* group ID of owner */</span>
+</span><span class='line'>    <span class="kt">off_t</span>       <span class="n">st_size</span><span class="p">;</span>    <span class="cm">/* size in bytes, for regular files */</span>
+</span><span class='line'>    <span class="kt">time_t</span>      <span class="n">st_atime</span><span class="p">;</span>   <span class="cm">/* time of last access */</span>
+</span><span class='line'>    <span class="kt">time_t</span>      <span class="n">st_mtime</span><span class="p">;</span>   <span class="cm">/* time of last modification */</span>
+</span><span class='line'>    <span class="kt">time_t</span>      <span class="n">st_ctime</span><span class="p">;</span>   <span class="cm">/* time of last file status change */</span>
+</span><span class='line'>    <span class="n">blksize_t</span>   <span class="n">st_blksize</span><span class="p">;</span> <span class="cm">/* best I/O block size */</span>
+</span><span class='line'>    <span class="n">blkcnt_t</span>    <span class="n">st_blocks</span><span class="p">;</span>  <span class="cm">/* number of disk blocks allocated */</span>
+</span><span class='line'><span class="p">};</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<h2>File Types</h2>
+
+<ul>
+<li>ファイルの種類は7種類
+
+<ul>
+<li>Regular file</li>
+<li>Directory file</li>
+<li>Block special file: ディスクドライブなどのデバイスに buffered I/O アクセスする</li>
+<li>Character special file: デバイスに unbuffered I/O アクセスする</li>
+<li>FIFO: プロセス間通信で使う。pipe とも呼ばれる。</li>
+<li>Socket: プロセス間のネットワーク通信に使う。</li>
+<li>Symbolic link: 他のファイルを参照するファイル</li>
+</ul>
+</li>
+<li>ファイルの種類は <code>st_mode</code> に入っている。</li>
+<li>ファイルの種類を調べるには <code>S_ISREG()</code>, <code>S_ISDIR()</code> などのマクロを使う。
+
+<ul>
+<li>Linux で <code>S_ISSOCK()</code> マクロを使うには <code>_GNU_SOURCE</code> を定義する必要がある。</li>
+</ul>
+</li>
+</ul>
+
+
+<h2>Set-User-ID and Set-Group-ID</h2>
+
+<ul>
+<li>すべてのプロセスは関連する ID を持っている
+
+<ul>
+<li>real user ID, real group ID<br/>
+自分が誰なのかを表す。login 時に password file から読み取られる。</li>
+<li>effective user ID, effective group ID, supplementary group ID<br/>
+ファイルアクセスの権限を表す。</li>
+<li>saved set-user-ID, saved set-group-ID<br/>
+プログラム実行時の effective user ID と effective group ID のコピー</li>
+</ul>
+</li>
+<li>プログラムが実行されると、通常 effective user (group) ID には real user (group) ID がセットされるが、
+<em>set-user-ID</em> bit や <em>set-group-ID</em> bit を立てると、
+effective user (group) ID をそのファイルのオーナー (<code>st_uid</code>, <code>st_gid</code>) にすることができる。
+
+<ul>
+<li><code>passwd(1)</code> はスーパーユーザーで実行される必要がある。</li>
+</ul>
+</li>
+<li>set-user-ID (set-group-ID) bit は<code>st_mode</code> の中に含まれ、<code>S_ISUID()</code>, <code>S_ISGID()</code> で調べることができる。</li>
+</ul>
+
+
+<h2>File Access Permissions</h2>
+
+<ul>
+<li>directory の execute 権限は search bit とも呼ばれる
+
+<ul>
+<li>directory の read 権限は directory 内のファイル名のリストを表示したりする (directory file を読む) 権限</li>
+<li>directory の execute 権限は directory にアクセスする権限</li>
+</ul>
+</li>
+<li>ファイルを削除するには、そのファイルがある directory に write と execute 権限があることが必要。
+そのファイル自体に read や write 権限がある必要はない。</li>
+<li>owner ID はファイルのプロパティであり、effective ID はプロセスのプロパティである。</li>
+</ul>
+
+
+<h2>access Function</h2>
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+</pre></td><td class='code'><pre><code class='c'><span class='line'><span class="cp">#include &lt;unistd.h&gt;</span>
+</span><span class='line'><span class="kt">int</span> <span class="n">access</span><span class="p">(</span><span class="k">const</span> <span class="kt">char</span> <span class="o">*</span><span class="n">pathname</span><span class="p">,</span> <span class="kt">int</span> <span class="n">mode</span><span class="p">);</span>
+</span><span class='line'>
+</span><span class='line'><span class="k">return</span> <span class="mi">0</span> <span class="k">if</span> <span class="n">OK</span><span class="p">,</span> <span class="o">-</span><span class="mi">1</span> <span class="n">on</span> <span class="n">error</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<ul>
+<li>(effective でなく) real user (group) ID がファイルへの権限を持っているか調べる。</li>
+<li>set-user-ID されていても、real user ID についての権限が調べられる。</li>
+</ul>
+
+
+<h2>umask Function</h2>
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+</pre></td><td class='code'><pre><code class='c'><span class='line'><span class="cp">#include &lt;sys/stat.h&gt;</span>
+</span><span class='line'><span class="n">mode_t</span> <span class="n">umask</span><span class="p">(</span><span class="n">mode_t</span> <span class="n">cmask</span><span class="p">);</span>
+</span><span class='line'>
+</span><span class='line'><span class="nl">return:</span> <span class="err">変更前の</span> <span class="n">mask</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<ul>
+<li>ファイル作成時に umask に設定した権限を除外することができる。
+
+<ul>
+<li><code>S_IROTH | S_IWOTH</code> みたいにして設定</li>
+</ul>
+</li>
+<li>プログラム内で設定した umask はプログラムが終了すると元に戻る。</li>
+</ul>
+
+
+<h2>chmod and fchmod Functions</h2>
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+</pre></td><td class='code'><pre><code class='c'><span class='line'><span class="cp">#include &lt;sys/stat.h&gt;</span>
+</span><span class='line'><span class="kt">int</span> <span class="n">chmod</span><span class="p">(</span><span class="k">const</span> <span class="kt">char</span> <span class="o">*</span><span class="n">pathname</span><span class="p">,</span> <span class="n">mode_t</span> <span class="n">mode</span><span class="p">);</span>
+</span><span class='line'><span class="kt">int</span> <span class="n">fchmod</span><span class="p">(</span><span class="kt">int</span> <span class="n">filedes</span><span class="p">,</span> <span class="n">mode_t</span> <span class="n">mode</span><span class="p">);</span>
+</span><span class='line'>
+</span><span class='line'><span class="k">return</span> <span class="mi">0</span> <span class="k">if</span> <span class="n">OK</span><span class="p">,</span> <span class="o">-</span><span class="mi">1</span> <span class="n">on</span> <span class="n">error</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<ul>
+<li>ファイルのアクセス権限を変更する。</li>
+<li>現在の権限から group execute 権限を取り除き、set-group-ID するには</li>
+</ul>
+
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+</pre></td><td class='code'><pre><code class='c'><span class='line'><span class="k">struct</span> <span class="n">stat</span> <span class="n">statbuf</span><span class="p">;</span>
+</span><span class='line'><span class="n">stat</span><span class="p">(</span><span class="s">&quot;foo&quot;</span><span class="p">,</span> <span class="o">&amp;</span><span class="n">statbuf</span><span class="p">);</span>
+</span><span class='line'><span class="n">chmod</span><span class="p">(</span><span class="s">&quot;foo&quot;</span><span class="p">,</span> <span class="p">(</span><span class="n">statbuf</span><span class="p">.</span><span class="n">st_mode</span> <span class="o">&amp;</span> <span class="o">~</span><span class="n">S_IXGRP</span><span class="p">)</span> <span class="o">|</span> <span class="n">S_ISGID</span><span class="p">);</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<ul>
+<li><code>ls -l</code> したときに execute 権限にある <code>S</code> は execute 権限は無いが、
+set-user-ID (set-group-ID) されてるという意味。</li>
+</ul>
+
+
+<h2>Sticky Bit</h2>
+
+<ul>
+<li>sticky bit がセットされたプログラムが実行されると、
+プロセス終了時にそのコピーがスワップ領域にコピーされる。</li>
+<li>次回以降そのプログラム実行時のメモリへのロードが高速になる。</li>
+<li>sticky bit をセットにするには <code>S_ISVTX</code> をセットする。</li>
+<li>最近の UNIX システムでは <em>saved-text</em> bit と呼ばれる。</li>
+<li>最近の UNIX システムでは Virtual memory システムだったり、ファイルシステムが高速
+になったりで、このテクニックの必要は薄くなっている。</li>
+<li>最近は sticky bit は directory にセットされる使い方をしている。
+
+<ul>
+<li>directory に sticky bit がセットされると、directory 内のファイルは
+directory への write 権限を持っていて、かつ
+
+<ul>
+<li>ファイルのオーナーである</li>
+<li>ディレクトリのオーナーである</li>
+<li>スーパーユーザーである
+のいずれかを満たすユーザにしか消去や名前の変更ができないようになる。</li>
+</ul>
+</li>
+<li>sticky bit がセットされている directory には、<code>/tmp</code> などがある。
+
+<ul>
+<li><code>/tmp</code> には色んなユーザがファイルを作成するので、
+パーミッションは 777 になっているが、sticky bit がセットされているので、
+ファイルの削除などはオーナーにしかできない。</li>
+</ul>
+</li>
+</ul>
+</li>
+</ul>
+
+
+<h2>chown, fchown, and lchown Functions</h2>
+
+<ul>
+<li><code>chown()</code> でファイルの user ID や group ID を変更することができる。</li>
+</ul>
+
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+</pre></td><td class='code'><pre><code class='c'><span class='line'><span class="cp">#include &lt;unistd.h&gt;</span>
+</span><span class='line'><span class="kt">int</span> <span class="n">chown</span><span class="p">(</span><span class="k">const</span> <span class="kt">char</span> <span class="o">*</span><span class="n">pathname</span><span class="p">,</span> <span class="n">uid_t</span> <span class="n">owner</span><span class="p">,</span> <span class="n">gid_t</span> <span class="n">group</span><span class="p">);</span>
+</span><span class='line'><span class="kt">int</span> <span class="n">fchown</span><span class="p">(</span><span class="kt">int</span> <span class="n">filedes</span><span class="p">,</span> <span class="n">uid_t</span> <span class="n">owner</span><span class="p">,</span> <span class="n">gid_t</span> <span class="n">group</span><span class="p">);</span>
+</span><span class='line'><span class="kt">int</span> <span class="n">lchown</span><span class="p">(</span><span class="k">const</span> <span class="kt">char</span> <span class="o">*</span><span class="n">pathname</span><span class="p">,</span> <span class="n">uid_t</span> <span class="n">owner</span><span class="p">,</span> <span class="n">gid_t</span> <span class="n">group</span><span class="p">);</span>
+</span><span class='line'>
+</span><span class='line'><span class="k">return</span> <span class="mi">0</span> <span class="k">if</span> <span class="n">OK</span><span class="p">,</span> <span class="o">-</span><span class="mi">1</span> <span class="n">on</span> <span class="n">error</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<ul>
+<li><code>lchown()</code> はシンボリックリンク自体のオーナーを変更する</li>
+<li><em>owner</em> または <em>group</em> を -1 にすると、その ID は変更されない</li>
+<li><code>_POSIX_CHOWN_RESTRICTED</code> が有効になっていると、他のユーザのファイルの user ID は変更できない。
+自分のファイルの group ID は変更できるが、自分が所属しているグループにしか変更できない。</li>
+<li>superuser のプロセスからこれらの関数が実行されると、set-user-ID と set-group-ID の bit はクリアされる</li>
+</ul>
+
+
+<h2>File Size</h2>
+
+<ul>
+<li><code>stat</code> 構造体の <code>st_size</code> にはファイルのサイズがバイト単位で入っている</li>
+<li>このフィールドは regular files, directories, symbolic links のときのみ意味をなす
+
+<ul>
+<li>regular file の場合、ファイルサイズ 0 が許容される。これはファイルの最初が end-of-file の場合である。</li>
+<li>directory の場合、ファイルサイズは 16 や 512 などの複数の値になる。</li>
+<li>symbolic link の場合、ファイルサイズはリンク先のファイル名の長さ (byte) になる。
+例えば、リンク先が &#8220;usr/lib&#8221; のとき、ファイルサイズは 7 になる。</li>
+</ul>
+</li>
+<li>最近の UNIX システムでは、<code>st_blksize</code> と <code>st_blocks</code> というフィールドも用意されている
+
+<ul>
+<li><code>st_blksize</code> はファイル I/O の望ましいブロックサイズ</li>
+<li><code>st_blocks</code> は割り当てられた 512-byte ブロックの数</li>
+<li>standard I/O library では、効率化のため、1回に <code>st_blksize</code> の分だけ read や write を行う</li>
+</ul>
+</li>
+</ul>
+
+
+<h2>File Truncation</h2>
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+</pre></td><td class='code'><pre><code class='c'><span class='line'><span class="cp">#include &lt;unistd.h&gt;</span>
+</span><span class='line'><span class="kt">int</span> <span class="n">truncate</span><span class="p">(</span><span class="k">const</span> <span class="kt">char</span> <span class="o">*</span><span class="n">pathname</span><span class="p">,</span> <span class="kt">off_t</span> <span class="n">length</span><span class="p">);</span>
+</span><span class='line'><span class="kt">int</span> <span class="n">ftruncate</span><span class="p">(</span><span class="kt">int</span> <span class="n">filedes</span><span class="p">,</span> <span class="kt">off_t</span> <span class="n">length</span><span class="p">);</span>
+</span><span class='line'>
+</span><span class='line'><span class="k">return</span> <span class="mi">0</span> <span class="k">if</span> <span class="n">OK</span><span class="p">,</span> <span class="o">-</span><span class="mi">1</span> <span class="n">on</span> <span class="n">error</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<ul>
+<li>ファイルの長さを <em>length</em> バイトに切り詰める</li>
+<li>truncate 前のファイルサイズが <em>length</em> より大きい場合、<em>length</em> より後ろのデータにはアクセスできなくなる</li>
+<li>truncate 前のファイルサイズが <em>length</em> より小さい場合、どうなるかは実装依存だが、
+XSI-conforming system の場合、ファイルサイズは大きくなる (hole ができる)</li>
+</ul>
+
+
+<h2>File Systems</h2>
+
+<h3>Hard Links</h3>
+
+<ul>
+<li>各 i-node は link count を持っている。これは自身の i-node を参照しているディレクトリの数である。</li>
+<li>link count が 0 になったときのみ、このファイルは削除することができる。
+
+<ul>
+<li>ディレクトリのエントリを削除する関数が delete でなく unlink なのはそのため。</li>
+</ul>
+</li>
+<li>link count は <code>stat</code> 構造体の中の <code>st_nlink</code> メンバに格納されている。この型は <code>nlink_t</code> 型である。</li>
+<li>link count の最大値は <code>LINK_MAX</code> で定義されている。</li>
+</ul>
+
+
+<h3>Symbolic Links</h3>
+
+<ul>
+<li>symbolic link の指す data block の中にはこのリンクが参照するファイル名が書かれている。</li>
+<li>この i-node には file type に <code>S_IFLNK</code> がセットされている。</li>
+</ul>
+
+
+<h3>Directory</h3>
+
+<ul>
+<li>directory entry には ファイル名や i-node 番号などが書かれている。</li>
+<li>i-node 番号の型は <code>ino_t</code> 型である。</li>
+<li>directory entry に書かれた i-node 番号は同じファイルシステム上のものであり、
+別のファイルシステムの i-node を参照することはできない。
+<code>ln(1)</code> コマンドをファイルシステムをまたがって叩くことができないのはそのためである。</li>
+<li><code>mv(1)</code> は directory entry を変更しているだけで、実際のファイルの中身が変更されているわけではない。</li>
+<li>leaf directory (他の directory を含んでいない directory) の link count は常に2となる (<code>.</code> と親ディレクトリからの参照)</li>
+<li>leaf directory でない directory の link count は 3 以上となる (<code>.</code>, 子ディレクトリの <code>..</code>, 親ディレクトリからの参照)</li>
+</ul>
+
+
+<h2>link, unlink, remove, and rename Functions</h2>
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+</pre></td><td class='code'><pre><code class='c'><span class='line'><span class="cp">#include &lt;unistd.h&gt;</span>
+</span><span class='line'><span class="kt">int</span> <span class="n">link</span><span class="p">(</span><span class="n">cont</span> <span class="kt">char</span> <span class="o">*</span><span class="n">existingpath</span><span class="p">,</span> <span class="k">const</span> <span class="kt">char</span> <span class="o">*</span><span class="n">newpath</span><span class="p">);</span>
+</span><span class='line'><span class="kt">int</span> <span class="n">unlink</span><span class="p">(</span><span class="k">const</span> <span class="kt">char</span> <span class="o">*</span><span class="n">pathname</span><span class="p">);</span>
+</span><span class='line'>
+</span><span class='line'><span class="k">return</span> <span class="mi">0</span> <span class="k">if</span> <span class="n">OK</span><span class="p">,</span> <span class="o">-</span><span class="mi">1</span> <span class="n">on</span> <span class="n">error</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<ul>
+<li><code>link()</code> は <em>existingpath</em> を参照する新しい directory entry を <em>newpath</em> に作成する。
+
+<ul>
+<li><em>newpath</em> がすでに存在する場合はエラーとなる。</li>
+<li>POSIX.1 はファイルシステムをまたいで link することを許しているが、
+ほとんどの実装ではそれぞれのパスは同じファイルシステム上になくてはならない。</li>
+<li>directory の hard link を作成できる実装の場合、それができるのは superuser に限られる。
+
+<ul>
+<li>loop が発生する恐れがあるため。</li>
+<li>多くのファイルシステムの実装では directory の hard link を作ることを許可していない。</li>
+</ul>
+</li>
+</ul>
+</li>
+<li><p><code>unlink()</code> は directory entry を削除し、 link count を減らす。</p>
+
+<ul>
+<li>link count が 0 になったときのみ、このファイルの中身を削除することができるが、
+ファイルが open されているときはまだ削除できない。
+
+<ul>
+<li>ファイルが close されたときに、kernel がそのファイルを open しているプロセス数をチェックする。
+それが 0 なら、次に link count をチェックし、それも 0 ならファイルの中身を削除する。</li>
+</ul>
+</li>
+<li><em>pathname</em> が symbolic link の場合、<code>unlink()</code> は参照先ではなく、symbolic link 自体を削除する。</li>
+</ul>
+</li>
+<li><p>superuser は <code>unlink()</code> に directory を指定することもできるが、それよりも <code>rmdir()</code> を使うべきである。</p></li>
+<li>file と directory 両方に使える関数に <code>remove()</code> がある。</li>
+</ul>
+
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+</pre></td><td class='code'><pre><code class='c'><span class='line'><span class="cp">#include &lt;stdio.h&gt;</span>
+</span><span class='line'><span class="kt">int</span> <span class="n">remove</span><span class="p">(</span><span class="k">const</span> <span class="kt">char</span> <span class="o">*</span><span class="n">pathname</span><span class="p">);</span>
+</span><span class='line'>
+</span><span class='line'><span class="k">return</span> <span class="mi">0</span> <span class="k">if</span> <span class="n">OK</span><span class="p">,</span> <span class="o">-</span><span class="mi">1</span> <span class="n">on</span> <span class="n">error</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<ul>
+<li><p><code>remove()</code> は対象が file なら <code>unlink()</code> と同じであり、directory なら <code>rmdir()</code> と同じである。</p></li>
+<li><p>file や directory は <code>rename()</code> で名前を変えることができる。</p></li>
+</ul>
+
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+</pre></td><td class='code'><pre><code class='c'><span class='line'><span class="cp">#include &lt;stdio.h&gt;</span>
+</span><span class='line'><span class="kt">int</span> <span class="n">rename</span><span class="p">(</span><span class="k">const</span> <span class="kt">char</span> <span class="o">*</span><span class="n">oldname</span><span class="p">,</span> <span class="k">const</span> <span class="kt">char</span> <span class="o">*</span><span class="n">newname</span><span class="p">);</span>
+</span><span class='line'>
+</span><span class='line'><span class="k">return</span> <span class="mi">0</span> <span class="k">if</span> <span class="n">OK</span><span class="p">,</span> <span class="o">-</span><span class="mi">1</span> <span class="n">on</span> <span class="n">error</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<ul>
+<li><em>newname</em> が既に存在していた場合、<em>newname</em> は削除され、<em>oldname</em> が <em>newname</em> に rename される。
+
+<ul>
+<li>directory の場合、<em>newname</em> は空である必要がある。</li>
+</ul>
+</li>
+<li>symbolic link の場合、参照先ではなく、リンク自身が rename される。</li>
+<li><em>oldname</em> と <em>newname</em> が同じ場合、変更されずに、0 が返る。</li>
+</ul>
+
+
+<h2>Symbolic Links</h2>
+
+<ul>
+<li>symbolic link は i-node を直接参照する hard link とは違い、間接的にファイルを参照する。</li>
+<li>symbolic link はファイルシステムをまたぐことに関する制限はない。</li>
+<li>directory を指す symbolic link を作る際にも root 権限は必要ない。</li>
+<li>ファイル名でファイルを参照する関数には、symbolic link をたどり参照先のファイルを見るものと、
+たどらずに、symbolic link 自体を見るものがある。
+
+<ul>
+<li><code>chown()</code> がどちらになるかは実装による</li>
+<li><code>open()</code> は symbolic link をたどるが、<code>O_CREAT</code> と <code>O_EXCL</code> の両方が付いている場合は例外で、
+その時に symbolic link を開こうとすると、エラーとなり、 <code>errno</code> に <code>EEXIST</code> がセットされる。
+これは権限のあるプロセスが誤ってファイルに書き込みをしないようにするためである。</li>
+</ul>
+</li>
+</ul>
+
+
+<h2>symlink and readlink Functions</h2>
+
+<ul>
+<li>symbolic link を作成するには <code>symlink()</code> を使う</li>
+</ul>
+
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+</pre></td><td class='code'><pre><code class='c'><span class='line'><span class="cp">#include &lt;unistd.h&gt;</span>
+</span><span class='line'><span class="kt">int</span> <span class="n">symlink</span><span class="p">(</span><span class="k">const</span> <span class="kt">char</span> <span class="o">*</span><span class="n">actualpath</span><span class="p">,</span> <span class="k">const</span> <span class="kt">char</span> <span class="o">*</span><span class="n">sympath</span><span class="p">);</span>
+</span><span class='line'>
+</span><span class='line'><span class="k">return</span> <span class="mi">0</span> <span class="k">if</span> <span class="n">OK</span><span class="p">,</span> <span class="o">-</span><span class="mi">1</span> <span class="n">on</span> <span class="n">error</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<ul>
+<li><code>open()</code> は symbolic link をたどってしまうため、symbolic link 自身を open したい場合は <code>readlink()</code> を使う</li>
+</ul>
+
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+</pre></td><td class='code'><pre><code class='c'><span class='line'><span class="cp">#include &lt;unistd.h&gt;</span>
+</span><span class='line'><span class="kt">ssize_t</span> <span class="n">readlink</span><span class="p">(</span><span class="k">const</span> <span class="kt">char</span> <span class="o">*</span><span class="kr">restrict</span> <span class="n">pathname</span><span class="p">,</span> <span class="kt">char</span> <span class="o">*</span><span class="kr">restrict</span> <span class="n">buf</span><span class="p">,</span> <span class="kt">size_t</span> <span class="n">bufsize</span><span class="p">);</span>
+</span><span class='line'>
+</span><span class='line'><span class="k">return</span> <span class="n">number</span> <span class="n">of</span> <span class="n">bytes</span> <span class="n">read</span> <span class="k">if</span> <span class="n">OK</span><span class="p">,</span> <span class="o">-</span><span class="mi">1</span> <span class="n">on</span> <span class="n">error</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<ul>
+<li>この関数1つで open, read, close を行なっている。</li>
+</ul>
+
+
+<h2>File Times</h2>
+
+<p>各ファイルでは3種類の時刻が管理されている
+- <code>st_atime</code>: 最後にファイルにアクセスされた時刻。<code>read()</code> など。<code>ls -u</code> でソート
+- <code>st_mtime</code>: 最後にファイルの中身が変更された時刻。<code>write()</code> など。<code>ls -t</code> でソート
+- <code>st_ctime</code>: 最後に i-node のステータスが変更された時刻。<code>chmod(), chown()</code> など。<code>ls -c</code> でソート</p>
+
+<h2>utime Function</h2>
+
+<p>ファイルの access time や modification time を変更するには <code>utime()</code> を使う</p>
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+</pre></td><td class='code'><pre><code class='c'><span class='line'><span class="cp">#include &lt;utime.h&gt;</span>
+</span><span class='line'><span class="kt">int</span> <span class="n">utime</span><span class="p">(</span><span class="k">const</span> <span class="kt">char</span> <span class="o">*</span><span class="n">pathname</span><span class="p">,</span> <span class="k">const</span> <span class="k">struct</span> <span class="n">utimbuf</span> <span class="o">*</span><span class="n">times</span><span class="p">);</span>
+</span><span class='line'>
+</span><span class='line'><span class="k">return</span> <span class="mi">0</span> <span class="k">if</span> <span class="n">OK</span><span class="p">,</span> <span class="o">-</span><span class="mi">1</span> <span class="n">on</span> <span class="n">error</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p><code>utimbuf</code> 構造体は以下のようになっている</p>
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+</pre></td><td class='code'><pre><code class='c'><span class='line'><span class="k">struct</span> <span class="n">utimbuf</span> <span class="p">{</span>
+</span><span class='line'>    <span class="kt">time_t</span> <span class="n">actime</span><span class="p">;</span>  <span class="cm">/* access time */</span>
+</span><span class='line'>    <span class="kt">time_t</span> <span class="n">modtime</span><span class="p">;</span> <span class="cm">/* modification time*/</span>
+</span><span class='line'><span class="p">}</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<ul>
+<li><em>times</em> が null の場合、access time と modification time は現在の時刻に更新される。</li>
+<li>chenged-status time を変更する関数は無い。<code>utime()</code> が実行されると自動的に更新される。</li>
+</ul>
+
+
+<h2>mkdir and rmdir Functions</h2>
+
+<ul>
+<li><code>mkdir()</code> で空の directory を作成できる。</li>
+</ul>
+
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+</pre></td><td class='code'><pre><code class='c'><span class='line'><span class="cp">#include &lt;sys/stat.h&gt;</span>
+</span><span class='line'><span class="kt">int</span> <span class="n">mkdir</span><span class="p">(</span><span class="k">const</span> <span class="kt">char</span> <span class="o">*</span><span class="n">pathname</span><span class="p">,</span> <span class="n">mode_t</span> <span class="n">mode</span><span class="p">);</span>
+</span><span class='line'><span class="k">return</span> <span class="mi">0</span> <span class="k">if</span> <span class="n">OK</span><span class="p">,</span> <span class="o">-</span><span class="mi">1</span> <span class="n">on</span> <span class="n">error</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<ul>
+<li><code>.</code> と <code>..</code> は自動的に作られる。</li>
+<li><em>mode</em> にはプロセスの mask による変更が加えられる。</li>
+<li><p>directory の場合、execute bit を付けないと directory 内のファイルにアクセスできなくなるので注意</p></li>
+<li><p>空の directory を削除するには <code>rmdir()</code> を使う</p></li>
+</ul>
+
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+</pre></td><td class='code'><pre><code class='c'><span class='line'><span class="cp">#include &lt;unistd.h&gt;</span>
+</span><span class='line'><span class="kt">int</span> <span class="n">rmdir</span><span class="p">(</span><span class="k">const</span> <span class="kt">char</span> <span class="o">*</span><span class="n">pathname</span><span class="p">);</span>
+</span><span class='line'>
+</span><span class='line'><span class="k">return</span> <span class="mi">0</span> <span class="k">if</span> <span class="n">OK</span><span class="p">,</span> <span class="o">-</span><span class="mi">1</span> <span class="n">on</span> <span class="n">error</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<ul>
+<li>link count が 0 でも、その directory を open しているプロセスがあれば、close されるまで領域は解放されない。
+解放はされないが、その directory 内に新しくファイルを置くことはできなくなる。</li>
+</ul>
+
+
+<h2>Reading Directories</h2>
+
+<p>directory を読むには、以下のような関数を使う</p>
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+<span class='line-number'>7</span>
+</pre></td><td class='code'><pre><code class='c'><span class='line'><span class="cp">#include &lt;dirent.h&gt;</span>
+</span><span class='line'><span class="kt">DIR</span> <span class="o">*</span><span class="n">opendir</span><span class="p">(</span><span class="k">const</span> <span class="kt">char</span> <span class="o">*</span><span class="n">pathname</span><span class="p">);</span>    <span class="k">return</span> <span class="n">pointer</span> <span class="k">if</span> <span class="n">OK</span><span class="p">,</span> <span class="nb">NULL</span> <span class="n">on</span> <span class="n">error</span>
+</span><span class='line'><span class="k">struct</span> <span class="n">dirent</span> <span class="o">*</span><span class="n">readdir</span><span class="p">(</span><span class="kt">DIR</span> <span class="o">*</span><span class="n">dp</span><span class="p">);</span>       <span class="k">return</span> <span class="n">pointer</span> <span class="k">if</span> <span class="n">OK</span><span class="p">,</span> <span class="nb">NULL</span> <span class="n">at</span> <span class="n">end</span> <span class="n">of</span> <span class="n">directory</span> <span class="n">or</span> <span class="n">error</span>
+</span><span class='line'><span class="kt">void</span> <span class="n">rewinddir</span><span class="p">(</span><span class="kt">DIR</span> <span class="o">*</span><span class="n">dp</span><span class="p">);</span>
+</span><span class='line'><span class="kt">int</span> <span class="n">closedir</span><span class="p">(</span><span class="kt">DIR</span> <span class="o">*</span><span class="n">dp</span><span class="p">);</span>                 <span class="k">return</span> <span class="mi">0</span> <span class="k">if</span> <span class="n">OK</span><span class="p">,</span> <span class="o">-</span><span class="mi">1</span> <span class="n">on</span> <span class="n">error</span>
+</span><span class='line'><span class="kt">long</span> <span class="n">telldir</span><span class="p">(</span><span class="kt">DIR</span> <span class="o">*</span><span class="n">dp</span><span class="p">);</span>                 <span class="k">return</span> <span class="n">current</span> <span class="n">location</span> <span class="n">in</span> <span class="n">directory</span> <span class="n">associated</span> <span class="n">with</span> <span class="n">dp</span>
+</span><span class='line'><span class="kt">void</span> <span class="n">seekdir</span><span class="p">(</span><span class="kt">DIR</span> <span class="o">*</span><span class="n">dp</span><span class="p">,</span> <span class="kt">long</span> <span class="n">loc</span><span class="p">);</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p><code>dirent</code> 構造体 の定義は実装依存だが、少なくとも以下の2つは含まれている</p>
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+</pre></td><td class='code'><pre><code class='c'><span class='line'><span class="k">struct</span> <span class="n">dirent</span> <span class="p">{</span>
+</span><span class='line'>    <span class="n">ino_t</span> <span class="n">d_ino</span><span class="p">;</span>                    <span class="cm">/* i-node number */</span>
+</span><span class='line'>    <span class="kt">char</span>  <span class="n">d_name</span><span class="p">[</span><span class="n">NAME_MAX</span> <span class="o">+</span> <span class="mi">1</span><span class="p">];</span>     <span class="cm">/* null-terminated filename */</span>
+</span><span class='line'><span class="p">}</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<ul>
+<li><code>DIR</code> は <code>FILE</code> 構造体のようなもので、directory が read されるのを管理するための構造体</li>
+<li>directory entries の順番は実装依存だが、たいていアルファベット順にはなっていない</li>
+<li><code>rewinddir()</code> は DIR のポインタを先頭に戻す</li>
+</ul>
+
+
+<h2>chdir, fchdir, and getcwd Functions</h2>
+
+<ul>
+<li>すべてのプロセスは current working directory を持っている。
+
+<ul>
+<li>user がログインすると、current working directory が <code>/etc/passwd</code> の第6フィールドにセットされた home directory に設定される。</li>
+</ul>
+</li>
+<li><p>current working directory はプロセスの attribute である。</p></li>
+<li><p><code>chdir()</code> や <code>fchdir()</code> を使うと、それを呼んだプロセスの current working directory が変更できる</p></li>
+</ul>
+
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+</pre></td><td class='code'><pre><code class='c'><span class='line'><span class="cp">#include &lt;unistd.h&gt;</span>
+</span><span class='line'><span class="kt">int</span> <span class="n">chdir</span><span class="p">(</span><span class="k">const</span> <span class="kt">char</span> <span class="o">*</span><span class="n">pathname</span><span class="p">);</span>
+</span><span class='line'><span class="kt">int</span> <span class="n">fchdir</span><span class="p">(</span><span class="kt">int</span> <span class="n">filedes</span><span class="p">);</span>
+</span><span class='line'>
+</span><span class='line'><span class="k">return</span> <span class="mi">0</span> <span class="k">if</span> <span class="n">OK</span><span class="p">,</span> <span class="o">-</span><span class="mi">1</span> <span class="n">on</span> <span class="n">error</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<ul>
+<li>kernel は current working directory の full path を管理しているわけではない</li>
+<li>full path を取得するのは、v-node を辿っていけばいいが、そのような関数は既にあり、<code>getcwd()</code> で full path が取得できる</li>
+</ul>
+
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+</pre></td><td class='code'><pre><code class='c'><span class='line'><span class="cp">#include &lt;unistd.h&gt;</span>
+</span><span class='line'><span class="kt">char</span> <span class="o">*</span><span class="n">getcwd</span><span class="p">(</span><span class="kt">char</span> <span class="o">*</span><span class="n">buf</span><span class="p">,</span> <span class="kt">size_t</span> <span class="n">size</span><span class="p">);</span>
+</span><span class='line'>
+</span><span class='line'><span class="k">return</span> <span class="n">buf</span> <span class="k">if</span> <span class="n">OK</span><span class="p">,</span> <span class="nb">NULL</span> <span class="n">on</span> <span class="n">error</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<h2>Device Special Files</h2>
+
+<p><code>stat</code> 構造体には <code>st_dev</code> と <code>st_rdev</code> の2つのフィールドがある。</p>
+
+<ul>
+<li>すべてのファイルシステムには major と minor 2種類のデバイス番号が付けられている。
+
+<ul>
+<li>型は <code>dev_t</code> 型</li>
+<li>major number はデバイスドライバを識別する番号</li>
+<li>minor number はサブデバイスを識別する番号</li>
+<li>同じディスクドライブにあるファイルシステムはたいてい同じ major number を持つが、異なる minor number を持つ</li>
+</ul>
+</li>
+<li>major, minor number はそれぞれ <code>major()</code>, <code>minor()</code> マクロで取得できる</li>
+<li><code>st_dev</code> はそのファイル名や i-node が格納されているデバイス番号</li>
+<li>character special files と block special files の場合のみ <code>st_rdev</code> に値が入っている。
+これは実際のデバイスのデバイス番号である。
+
+<ul>
+<li><code>/dev/tty0</code> や <code>/dev/hda3</code> などの <code>st_dev</code> のデバイス番号は 0/7 などの <code>devfs</code> 仮想ファイルシステムになっている。
+実際のデバイス番号は <code>st_rdev</code> に書かれた 4/0 などである。</li>
+</ul>
+</li>
+</ul>
+
+</div>
+
+
+  <footer>
+    <p class="meta">
+      
+  
+
+<span class="byline author vcard">Posted by <span class="fn">kentaktwo</span></span>
+
+      
+
+
+
+
+
+
+
+
+  
+
+
+<time datetime="2012-10-14T14:25:00+09:00" pubdate data-updated="true">Oct 14<span>th</span>, 2012</time>
+      
+
+<span class="categories">
+  
+    <a class='category' href='/blog/categories/apue/'>apue</a>, <a class='category' href='/blog/categories/unix/'>unix</a>
+  
+</span>
+
+
+    </p>
+    
+      <div class="sharing">
+  
+  <a href="http://twitter.com/share" class="twitter-share-button" data-url="http://kentaktwo.github.com/blog/2012/10/14/apue-chapter-4/" data-via="" data-counturl="http://kentaktwo.github.com/blog/2012/10/14/apue-chapter-4/" >Tweet</a>
+  
+  
+  
+</div>
+
+    
+    <p class="meta">
+      
+        <a class="basic-alignment left" href="/blog/2012/10/14/disable-iptables/" title="Previous Post: iptables を無効にする">&laquo; iptables を無効にする</a>
+      
+      
+    </p>
+  </footer>
+</article>
+
+  <section>
+    <h1>Comments</h1>
+    <div id="disqus_thread" aria-live="polite"><noscript>Please enable JavaScript to view the <a href="http://disqus.com/?ref_noscript">comments powered by Disqus.</a></noscript>
+</div>
+  </section>
+
+</div>
+
+<aside class="sidebar">
+  
+    <section>
+  <h1>Recent Posts</h1>
+  <ul id="recent_posts">
+    
+      <li class="post">
+        <a href="/blog/2012/10/14/apue-chapter-4/">Advanced Programming in the UNIX enviroment Chapter 4</a>
+      </li>
+    
+      <li class="post">
+        <a href="/blog/2012/10/14/disable-iptables/">iptables を無効にする</a>
+      </li>
+    
+      <li class="post">
+        <a href="/blog/2012/08/11/lua-chapter-2/">Programming In Lua Chapter 2</a>
+      </li>
+    
+      <li class="post">
+        <a href="/blog/2012/07/24/lua-chapter-1/">Programming In Lua Chapter 1</a>
+      </li>
+    
+      <li class="post">
+        <a href="/blog/2012/07/02/unp-chapter-3/">Unix Network Programming Chapter 3</a>
+      </li>
+    
+  </ul>
+</section>
+
+
+
+
+
+
+  
+</aside>
+
+
+    </div>
+  </div>
+  <footer role="contentinfo"><p>
+  Copyright &copy; 2013 - kentaktwo -
+  <span class="credit">Powered by <a href="http://octopress.org">Octopress</a></span>
+</p>
+
+</footer>
+  
+
+<script type="text/javascript">
+      var disqus_shortname = 'apprengineerlog';
+      
+        
+        // var disqus_developer = 1;
+        var disqus_identifier = 'http://kentaktwo.github.com/blog/2012/10/14/apue-chapter-4/';
+        var disqus_url = 'http://kentaktwo.github.com/blog/2012/10/14/apue-chapter-4/';
+        var disqus_script = 'embed.js';
+      
+    (function () {
+      var dsq = document.createElement('script'); dsq.type = 'text/javascript'; dsq.async = true;
+      dsq.src = 'http://' + disqus_shortname + '.disqus.com/' + disqus_script;
+      (document.getElementsByTagName('head')[0] || document.getElementsByTagName('body')[0]).appendChild(dsq);
+    }());
+</script>
+
+
+
+
+
+
+
+  <script type="text/javascript">
+    (function(){
+      var twitterWidgets = document.createElement('script');
+      twitterWidgets.type = 'text/javascript';
+      twitterWidgets.async = true;
+      twitterWidgets.src = 'http://platform.twitter.com/widgets.js';
+      document.getElementsByTagName('head')[0].appendChild(twitterWidgets);
+    })();
+  </script>
+
+
+
+
+
+</body>
+</html>
