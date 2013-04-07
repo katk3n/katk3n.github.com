@@ -1,0 +1,694 @@
+
+<!DOCTYPE html>
+<!--[if IEMobile 7 ]><html class="no-js iem7"><![endif]-->
+<!--[if lt IE 9]><html class="no-js lte-ie8"><![endif]-->
+<!--[if (gt IE 8)|(gt IEMobile 7)|!(IEMobile)|!(IE)]><!--><html class="no-js" lang="en"><!--<![endif]-->
+<head>
+  <meta charset="utf-8">
+  <title>Advanced Programming in the UNIX environment Chapter 5 - ApprEngineer.log</title>
+  <meta name="author" content="kentaktwo">
+
+  
+  <meta name="description" content="Standard I/O Library Stream システムコールでの I/O は file descriptor を使用していた。
+standard I/O library では、stream と呼ばれるものを使用する。
+stream は single-byte, multibyte (&# &hellip;">
+  
+
+  <!-- http://t.co/dKP3o1e -->
+  <meta name="HandheldFriendly" content="True">
+  <meta name="MobileOptimized" content="320">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+
+  
+  <link rel="canonical" href="http://kentaktwo.github.com/blog/2013/01/18/apue-chapter-5">
+  <link href="/favicon.png" rel="icon">
+  <link href="/stylesheets/screen.css" media="screen, projection" rel="stylesheet" type="text/css">
+  <script src="/javascripts/modernizr-2.0.js"></script>
+  <script src="/javascripts/ender.js"></script>
+  <script src="/javascripts/octopress.js" type="text/javascript"></script>
+  <link href="/atom.xml" rel="alternate" title="ApprEngineer.log" type="application/atom+xml">
+  <!--Fonts from Google"s Web font directory at http://google.com/webfonts -->
+<link href="http://fonts.googleapis.com/css?family=PT+Serif:regular,italic,bold,bolditalic" rel="stylesheet" type="text/css">
+<link href="http://fonts.googleapis.com/css?family=PT+Sans:regular,italic,bold,bolditalic" rel="stylesheet" type="text/css">
+<link href='http://fonts.googleapis.com/css?family=Lato:400,700,400italic,700italic' rel='stylesheet' type='text/css'>
+
+  
+
+</head>
+
+<body   >
+  <header role="banner"><hgroup>
+  <h1><a href="/">ApprEngineer.log</a></h1>
+  
+    <h2>Apprentice web engineer's study log</h2>
+  
+</hgroup>
+
+</header>
+  <nav role="navigation"><ul class="subscription" data-subscription="rss">
+  <li><a href="/atom.xml" rel="subscribe-rss" title="subscribe via RSS">RSS</a></li>
+  
+</ul>
+  
+<form action="http://google.com/search" method="get">
+  <fieldset role="search">
+    <input type="hidden" name="q" value="site:kentaktwo.github.com" />
+    <input class="search" type="text" name="q" results="0" placeholder="Search"/>
+  </fieldset>
+</form>
+  
+<ul class="main-navigation">
+  <li><a href="/">Blog</a></li>
+  <li><a href="/blog/archives">Archives</a></li>
+</ul>
+
+</nav>
+  <div id="main">
+    <div id="content">
+      <div>
+<article class="hentry" role="article">
+  
+  <header>
+    
+      <h1 class="entry-title">Advanced Programming in the UNIX Environment Chapter 5</h1>
+    
+    
+      <p class="meta">
+        
+
+
+
+
+
+
+
+
+  
+
+
+<time datetime="2013-01-18T21:10:00+09:00" pubdate data-updated="true">Jan 18<span>th</span>, 2013</time>
+        
+         | <a href="#disqus_thread">Comments</a>
+        
+      </p>
+    
+  </header>
+
+
+<div class="entry-content"><h1>Standard I/O Library</h1>
+
+<!--more-->
+
+
+<h2>Stream</h2>
+
+<ul>
+<li>システムコールでの I/O は file descriptor を使用していた。</li>
+<li>standard I/O library では、<em>stream</em> と呼ばれるものを使用する。</li>
+<li>stream は single-byte, multibyte (&#8220;wide&#8221;) 両方の文字セットで使用できる。</li>
+<li>read や write を single-byte か multibyte どちらで行うかを決めるものを stream&#8217;s orientation と呼ぶ。</li>
+<li><code>fwide()</code> 関数で stream&#8217;s orientation を変更することができる。</li>
+</ul>
+
+
+<h2>FILE Object</h2>
+
+<ul>
+<li><code>fopen()</code> などで stream を open すると、<code>FILE</code> オブジェクトのポインタが返ってくる。</li>
+<li><code>FILE</code> には standard I/O library が stream を扱うのに必要な情報が入っている。</li>
+<li><code>FILE *</code> を file pointer と呼ぶ。</li>
+</ul>
+
+
+<h2>Standard Input, Standard Output, and Standard Error</h2>
+
+<p><code>STDIN_FILENO</code>, <code>STDOUT_FILENO</code>, <code>STDERR_FILENO</code> file descriptor に対応する file pointer として、
+<code>stdin</code>, <code>stdout</code>, <code>stderr</code> が <code>&lt;stdio.h&gt;</code> で定義されている。</p>
+
+<h2>Buffering</h2>
+
+<p>standard I/O library は <code>read()</code> や <code>write()</code> の呼び出し回数をできるだけ少なくするために、
+buffering を行なっている。3種類の buffering が提供されている:</p>
+
+<ol>
+<li>Fully buffered: 実際の I/O は buffer がいっぱいになったときに実行される。<br/>
+ディスクの読み込みなどは fully buffered である。</li>
+<li>Line buffered: input や output で改行記号を検出したときに I/O が行われる。<br/>
+stdin や stdout などのターミナル関連での buffering は Line buffered である。</li>
+<li>Unbuffered: buffering しない。<br/>
+standard error stream などは Unbuffered である (すぐに表示してほしいため)。</li>
+</ol>
+
+
+<!--dummy comment line for breaking list-->
+
+
+<ul>
+<li>buffering は <code>setbuf()</code> や <code>setvbuf()</code> で変更することができる。</li>
+<li>standard I/O buffer の中身を書きだすことを <em>flush</em> と呼ぶ。
+
+<ul>
+<li>flush は buffer がいっぱいになったときなどに standard I/O が自動的に行なってくれるが、
+<code>fflush()</code> を呼ぶことで明示的に行うこともできる。</li>
+</ul>
+</li>
+</ul>
+
+
+<h2>Opening a Stream</h2>
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+</pre></td><td class='code'><pre><code class='c'><span class='line'><span class="kt">FILE</span> <span class="o">*</span><span class="n">fopen</span><span class="p">(</span><span class="k">const</span> <span class="kt">char</span> <span class="o">*</span><span class="kr">restrict</span> <span class="n">pathname</span><span class="p">,</span> <span class="k">const</span> <span class="kt">char</span> <span class="o">*</span><span class="kr">restrict</span> <span class="n">type</span><span class="p">);</span>
+</span><span class='line'><span class="kt">FILE</span> <span class="o">*</span><span class="n">freopen</span><span class="p">(</span><span class="k">const</span> <span class="kt">char</span> <span class="o">*</span><span class="kr">restrict</span> <span class="n">pathname</span><span class="p">,</span> <span class="k">const</span> <span class="kt">char</span> <span class="o">*</span><span class="kr">restrict</span> <span class="n">type</span><span class="p">,</span> <span class="kt">FILE</span> <span class="o">*</span><span class="kr">restrict</span> <span class="n">fp</span><span class="p">);</span>
+</span><span class='line'><span class="kt">FILE</span> <span class="o">*</span><span class="n">fdopen</span><span class="p">(</span><span class="kt">int</span> <span class="n">filedes</span><span class="p">,</span> <span class="k">const</span> <span class="kt">char</span> <span class="o">*</span><span class="kr">restrict</span> <span class="n">type</span><span class="p">);</span>
+</span><span class='line'>
+</span><span class='line'><span class="k">return</span> <span class="n">file</span> <span class="n">pointer</span> <span class="k">if</span> <span class="n">OK</span><span class="p">,</span> <span class="nb">NULL</span> <span class="n">on</span> <span class="n">error</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<ul>
+<li><code>fopen()</code> はファイル名を指定して open する。</li>
+<li><code>freopen()</code> はファイル名を指定して、指定した stream に open する。
+
+<ul>
+<li>stdin, stdout, stderr などに open したい場合に使う。</li>
+</ul>
+</li>
+<li><code>fdopen()</code> は file descriptor を指定して open する。</li>
+<li><em>type</em> は
+
+<ul>
+<li><code>r</code> はそのまま、<code>w</code> は truncate する、<code>a</code> は追記する</li>
+<li><code>+</code> をつけると read, write 両方になる</li>
+<li><code>fdopen()</code> の場合、既にファイルが open されているため、truncate は行われない。</li>
+</ul>
+</li>
+</ul>
+
+
+<h2>Closing a Stream</h2>
+
+<ul>
+<li>open stream を close するには <code>fclose()</code> を使う。</li>
+<li>buffering された output data は close される前に flush される。</li>
+<li>buffering された input data は破棄される。</li>
+<li>standard I/O library が自動的に確保した buffer は解放される。</li>
+<li><code>exit()</code> が呼ばれると自動的に <code>close()</code> される。</li>
+</ul>
+
+
+<h2>Reading and Writing a Stream</h2>
+
+<p>unformatted I/O を行う関数には、3種類ある。</p>
+
+<h3>Character-at-a-time I/O</h3>
+
+<p>文字単位で入出力する。</p>
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+<span class='line-number'>7</span>
+<span class='line-number'>8</span>
+<span class='line-number'>9</span>
+<span class='line-number'>10</span>
+<span class='line-number'>11</span>
+<span class='line-number'>12</span>
+<span class='line-number'>13</span>
+<span class='line-number'>14</span>
+<span class='line-number'>15</span>
+</pre></td><td class='code'><pre><code class='c'><span class='line'><span class="cp">#include &lt;stdio.h&gt;</span>
+</span><span class='line'>
+</span><span class='line'><span class="cm">/* Input Functions */</span>
+</span><span class='line'><span class="kt">int</span> <span class="n">getc</span><span class="p">(</span><span class="kt">FILE</span> <span class="o">*</span><span class="n">fp</span><span class="p">);</span>
+</span><span class='line'><span class="kt">int</span> <span class="n">fgetc</span><span class="p">(</span><span class="kt">FILE</span> <span class="o">*</span><span class="n">fp</span><span class="p">);</span>
+</span><span class='line'><span class="kt">int</span> <span class="n">getchar</span><span class="p">(</span><span class="kt">void</span><span class="p">);</span>
+</span><span class='line'>
+</span><span class='line'><span class="k">return</span> <span class="n">next</span> <span class="n">character</span> <span class="k">if</span> <span class="n">OK</span><span class="p">,</span> <span class="n">EOF</span> <span class="n">on</span> <span class="n">end</span> <span class="n">of</span> <span class="n">file</span> <span class="n">or</span> <span class="n">error</span>
+</span><span class='line'>
+</span><span class='line'><span class="cm">/* Output Functions */</span>
+</span><span class='line'><span class="kt">int</span> <span class="n">putc</span><span class="p">(</span><span class="kt">int</span> <span class="n">c</span><span class="p">,</span> <span class="kt">FILE</span> <span class="o">*</span><span class="n">fp</span><span class="p">);</span>
+</span><span class='line'><span class="kt">int</span> <span class="n">fputc</span><span class="p">(</span><span class="kt">int</span> <span class="n">c</span><span class="p">,</span> <span class="kt">FILE</span> <span class="o">*</span><span class="n">fp</span><span class="p">);</span>
+</span><span class='line'><span class="kt">int</span> <span class="n">putchar</span><span class="p">(</span><span class="kt">int</span> <span class="n">c</span><span class="p">);</span>
+</span><span class='line'>
+</span><span class='line'><span class="k">return</span> <span class="n">c</span> <span class="k">if</span> <span class="n">OK</span><span class="p">,</span> <span class="n">EOF</span> <span class="n">on</span> <span class="n">error</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<ul>
+<li><code>getchar()</code> は <code>getc(stdin)</code> と同じ</li>
+<li><code>getc()</code> はマクロの場合があるが、<code>fgetc()</code> は必ず関数である</li>
+<li><code>EOF</code> は多くの場合 -1 として定義される</li>
+</ul>
+
+
+<p><code>EOF</code> が返ってきたときに、EOF なのかエラーなのかわからないため、それを判別する関数が用意されている。</p>
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+</pre></td><td class='code'><pre><code class='c'><span class='line'><span class="cp">#include &lt;stdio.h&gt;</span>
+</span><span class='line'>
+</span><span class='line'><span class="kt">int</span> <span class="n">ferror</span><span class="p">(</span><span class="kt">FILE</span> <span class="o">*</span><span class="n">fp</span><span class="p">);</span>
+</span><span class='line'><span class="kt">int</span> <span class="n">feof</span><span class="p">(</span><span class="kt">FILE</span> <span class="o">*</span><span class="n">fp</span><span class="p">);</span>
+</span><span class='line'>
+</span><span class='line'><span class="k">return</span> <span class="n">nonzero</span> <span class="k">if</span> <span class="n">condition</span> <span class="n">is</span> <span class="nb">true</span><span class="p">,</span> <span class="mi">0</span> <span class="n">otherwise</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<ul>
+<li>FILE Object の中で、error flag や end-of-file flag が管理されている。</li>
+<li><code>clearerr()</code> でそれらの flag をクリアできる。</li>
+</ul>
+
+
+<p><code>ungetc()</code> で1文字読み戻すことができる。</p>
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+</pre></td><td class='code'><pre><code class='c'><span class='line'><span class="cp">#include &lt;stdio.h&gt;</span>
+</span><span class='line'>
+</span><span class='line'><span class="kt">int</span> <span class="n">ungetc</span><span class="p">(</span><span class="kt">int</span> <span class="n">c</span><span class="p">,</span> <span class="kt">FILE</span> <span class="o">*</span><span class="n">fp</span><span class="p">);</span>
+</span><span class='line'>
+</span><span class='line'><span class="k">return</span> <span class="n">c</span> <span class="k">if</span> <span class="n">OK</span><span class="p">,</span> <span class="n">EOF</span> <span class="n">on</span> <span class="n">error</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<ul>
+<li>読み戻せるのは1文字まで</li>
+</ul>
+
+
+<h3>Line-at-a-time I/O</h3>
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+</pre></td><td class='code'><pre><code class='c'><span class='line'><span class="cp">#include &lt;stdio.h&gt;</span>
+</span><span class='line'>
+</span><span class='line'><span class="kt">char</span> <span class="o">*</span><span class="n">fgets</span><span class="p">(</span><span class="kt">char</span> <span class="o">*</span><span class="kr">restrict</span> <span class="n">buf</span><span class="p">,</span> <span class="kt">int</span> <span class="n">n</span><span class="p">,</span> <span class="kt">FILE</span> <span class="o">*</span><span class="kr">restrict</span> <span class="n">fp</span><span class="p">);</span>
+</span><span class='line'><span class="kt">char</span> <span class="o">*</span><span class="n">gets</span><span class="p">(</span><span class="kt">char</span> <span class="o">*</span><span class="n">buf</span><span class="p">);</span>
+</span><span class='line'>
+</span><span class='line'><span class="k">return</span> <span class="n">buf</span> <span class="k">if</span> <span class="n">OK</span><span class="p">,</span> <span class="nb">NULL</span> <span class="n">on</span> <span class="n">end</span> <span class="n">of</span> <span class="n">file</span> <span class="n">or</span> <span class="n">error</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<ul>
+<li>改行記号に達するか、<em>n - 1</em> byte まで読み込む (最後に null byte を入れるため)</li>
+<li><code>gets()</code> は buffer size を指定できないため、使ってはいけない</li>
+</ul>
+
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+</pre></td><td class='code'><pre><code class='c'><span class='line'><span class="cp">#include &lt;stdio.h&gt;</span>
+</span><span class='line'>
+</span><span class='line'><span class="kt">int</span> <span class="n">fputs</span><span class="p">(</span><span class="k">const</span> <span class="kt">char</span> <span class="o">*</span><span class="kr">restrict</span> <span class="n">str</span><span class="p">,</span> <span class="kt">FILE</span> <span class="o">*</span><span class="kr">restrict</span> <span class="n">fp</span><span class="p">);</span>
+</span><span class='line'><span class="kt">int</span> <span class="n">puts</span><span class="p">(</span><span class="k">const</span> <span class="kt">char</span> <span class="o">*</span><span class="n">str</span><span class="p">);</span>
+</span><span class='line'>
+</span><span class='line'><span class="k">return</span> <span class="n">non</span><span class="o">-</span><span class="n">negative</span> <span class="n">value</span> <span class="k">if</span> <span class="n">OK</span><span class="p">,</span> <span class="n">EOF</span> <span class="n">on</span> <span class="n">error</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<ul>
+<li>null byte まで書きだす (null byte は書き出されない)</li>
+<li>改行記号が入っている必要はない</li>
+<li><code>puts()</code> に <code>gets()</code> のような脆弱性は無いが、使わない方がいいだろう</li>
+</ul>
+
+
+<h3>Binary I/O</h3>
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+</pre></td><td class='code'><pre><code class='c'><span class='line'><span class="cp">#include &lt;stdio.h&gt;</span>
+</span><span class='line'>
+</span><span class='line'><span class="kt">size_t</span> <span class="n">fread</span><span class="p">(</span><span class="kt">void</span> <span class="o">*</span><span class="kr">restrict</span> <span class="n">ptr</span><span class="p">,</span> <span class="kt">size_t</span> <span class="n">size</span><span class="p">,</span> <span class="kt">size_t</span> <span class="n">nobj</span><span class="p">,</span> <span class="kt">FILE</span> <span class="o">*</span><span class="kr">restrict</span> <span class="n">fp</span><span class="p">);</span>
+</span><span class='line'><span class="kt">size_t</span> <span class="n">fwrite</span><span class="p">(</span><span class="k">const</span> <span class="kt">void</span> <span class="o">*</span><span class="kr">restrict</span> <span class="n">ptr</span><span class="p">,</span> <span class="kt">size_t</span> <span class="n">size</span><span class="p">,</span> <span class="kt">size_t</span> <span class="n">nobj</span><span class="p">,</span> <span class="kt">FILE</span> <span class="o">*</span><span class="kr">restrict</span> <span class="n">fp</span><span class="p">);</span>
+</span><span class='line'>
+</span><span class='line'><span class="k">return</span> <span class="n">number</span> <span class="n">of</span> <span class="n">objects</span> <span class="n">read</span> <span class="n">or</span> <span class="n">written</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<ul>
+<li>1単位あたりのサイズを <em>size</em> で指定して、読み書きする単位数を <em>nobj</em> で指定する
+
+<ul>
+<li><em>size</em> は <code>sizeof(float)</code> や構造体のサイズなど</li>
+</ul>
+</li>
+<li>バイナリや、構造体を読み書きするのに使う
+
+<ul>
+<li>システムによってデータ構造が違ったりするので、異なるシステム間ではうまく動作しない</li>
+</ul>
+</li>
+</ul>
+
+
+<h2>Standard I/O Efficiency</h2>
+
+<ul>
+<li>システムコールを呼ぶのが一番コストがかかる</li>
+<li>standard I/O を使うと、システムコールを呼ぶ回数を減らすように buffering してくれるので、
+直接システムコールを呼ぶより高速になることが多い
+
+<ul>
+<li>効率良くなるように自分でシステムコールを呼ぶ調整をしている場合は別</li>
+</ul>
+</li>
+</ul>
+
+
+<h2>Positioning a Stream</h2>
+
+<p>standard I/O stream の位置を調べる関数は3種類ある:
+1. <code>ftell()</code>, <code>fseek()</code>: 位置は <code>long</code> で表す
+2. <code>ftello()</code>, <code>fseeko()</code>: <code>ftell()</code> と <code>fseek()</code> の <code>long</code> が <code>off_t</code> に置き換わったもの
+3. <code>fgetpos()</code>, fsetpos()<code>:</code>fpos_t` を使って位置を表す。UNIX でないシステムではこれを使う</p>
+
+<h2>Formatted I/O</h2>
+
+<h3>Formatted Output</h3>
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+<span class='line-number'>7</span>
+<span class='line-number'>8</span>
+<span class='line-number'>9</span>
+<span class='line-number'>10</span>
+<span class='line-number'>11</span>
+</pre></td><td class='code'><pre><code class='c'><span class='line'><span class="cp">#include &lt;stdio.h&gt;</span>
+</span><span class='line'>
+</span><span class='line'><span class="kt">int</span> <span class="n">printf</span><span class="p">(</span><span class="k">const</span> <span class="kt">char</span> <span class="o">*</span><span class="kr">restrict</span> <span class="n">format</span><span class="p">,</span> <span class="p">...);</span>
+</span><span class='line'><span class="kt">int</span> <span class="n">fprintf</span><span class="p">(</span><span class="kt">FILE</span> <span class="o">*</span><span class="kr">restrict</span> <span class="n">fp</span><span class="p">,</span> <span class="k">const</span> <span class="kt">char</span> <span class="o">*</span><span class="kr">restrict</span> <span class="n">format</span><span class="p">,</span> <span class="p">...);</span>
+</span><span class='line'>
+</span><span class='line'><span class="k">return</span> <span class="n">number</span> <span class="n">of</span> <span class="n">characters</span> <span class="n">output</span> <span class="k">if</span> <span class="n">OK</span><span class="p">,</span> <span class="n">nagative</span> <span class="n">value</span> <span class="k">if</span> <span class="n">output</span> <span class="n">error</span>
+</span><span class='line'>
+</span><span class='line'><span class="kt">int</span> <span class="n">sprintf</span><span class="p">(</span><span class="kt">char</span> <span class="o">*</span><span class="kr">restrict</span> <span class="n">buf</span><span class="p">,</span> <span class="k">const</span> <span class="kt">char</span> <span class="o">*</span><span class="kr">restrict</span> <span class="n">format</span><span class="p">,</span> <span class="p">...);</span>
+</span><span class='line'><span class="kt">int</span> <span class="n">snprintf</span><span class="p">(</span><span class="kt">char</span> <span class="o">*</span><span class="kr">restrict</span> <span class="n">buf</span><span class="p">,</span> <span class="kt">size_t</span> <span class="n">n</span><span class="p">,</span> <span class="k">const</span> <span class="kt">char</span> <span class="o">*</span><span class="kr">restrict</span> <span class="n">format</span><span class="p">,</span> <span class="p">...);</span>
+</span><span class='line'>
+</span><span class='line'><span class="k">return</span> <span class="n">number</span> <span class="n">of</span> <span class="n">characters</span> <span class="n">stored</span> <span class="n">in</span> <span class="n">array</span> <span class="k">if</span> <span class="n">OK</span><span class="p">,</span> <span class="n">negative</span> <span class="n">value</span> <span class="k">if</span> <span class="n">encoding</span> <span class="n">error</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<ul>
+<li><code>sprintf()</code> はオーバーフローする恐れがあるので、<code>snprintf()</code> を使うこと。</li>
+<li>% 記号で始まるやつ (conversion specification) のフォーマットは以下の通り</li>
+</ul>
+
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+</pre></td><td class='code'><pre><code class='c'><span class='line'><span class="o">%</span><span class="p">[</span><span class="n">flags</span><span class="p">][</span><span class="n">fldwidth</span><span class="p">][</span><span class="n">precision</span><span class="p">][</span><span class="n">lenmodifier</span><span class="p">]</span><span class="n">convtype</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<ul>
+<li>&#8220;&#8230;&#8221; の代わりに、<code>va_list</code> になった <code>vprintf()</code> 系の関数もある (<code>&lt;stdarg.h&gt;</code> を includeする)。</li>
+</ul>
+
+
+<h3>Formatted Input</h3>
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+</pre></td><td class='code'><pre><code class='c'><span class='line'><span class="cp">#include &lt;stdio.h&gt;</span>
+</span><span class='line'><span class="kt">int</span> <span class="n">scanf</span><span class="p">(</span><span class="k">const</span> <span class="kt">char</span> <span class="o">*</span><span class="kr">restrict</span> <span class="n">format</span><span class="p">,</span> <span class="p">...);</span>
+</span><span class='line'><span class="kt">int</span> <span class="n">fscanf</span><span class="p">(</span><span class="kt">FILE</span> <span class="o">*</span><span class="kr">restrict</span> <span class="n">fp</span><span class="p">,</span> <span class="k">const</span> <span class="kt">char</span> <span class="o">*</span><span class="kr">restrict</span> <span class="n">format</span><span class="p">,</span> <span class="p">...);</span>
+</span><span class='line'><span class="kt">int</span> <span class="n">sscanf</span><span class="p">(</span><span class="k">const</span> <span class="kt">char</span> <span class="o">*</span><span class="kr">restrict</span> <span class="n">buf</span><span class="p">,</span> <span class="k">const</span> <span class="kt">char</span> <span class="o">*</span><span class="kr">restrict</span> <span class="n">format</span><span class="p">,</span> <span class="p">...);</span>
+</span><span class='line'>
+</span><span class='line'><span class="k">return</span> <span class="n">number</span> <span class="n">of</span> <span class="n">input</span> <span class="n">items</span> <span class="n">assigned</span><span class="p">,</span> <span class="n">EOF</span> <span class="k">if</span> <span class="n">input</span> <span class="n">error</span> <span class="n">or</span> <span class="n">end</span> <span class="n">of</span> <span class="n">file</span> <span class="n">before</span> <span class="n">any</span> <span class="n">conversion</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<ul>
+<li>conversion specification のフォーマットは以下の通り</li>
+</ul>
+
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+</pre></td><td class='code'><pre><code class='c'><span class='line'><span class="o">%</span><span class="p">[</span><span class="o">*</span><span class="p">][</span><span class="n">fldwidth</span><span class="p">][</span><span class="n">lenmodifier</span><span class="p">]</span><span class="n">convtype</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<ul>
+<li>頭にアスタリスクがついているやつについては conversion 結果が変数に格納されない</li>
+<li>&#8220;&#8230;&#8221; の代わりに、<code>va_list</code> になった <code>vscanf()</code> 系の関数もある (<code>&lt;stdarg.h&gt;</code> を includeする)。</li>
+</ul>
+
+
+<h2>Implementation Details</h2>
+
+<ul>
+<li><code>fileno()</code> 関数で file pointer に対応する file descriptor が取得できる。</li>
+</ul>
+
+
+<h2>Temporary Files</h2>
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+<span class='line-number'>7</span>
+</pre></td><td class='code'><pre><code class='c'><span class='line'><span class="cp">#include &lt;stdio.h&gt;</span>
+</span><span class='line'>
+</span><span class='line'><span class="kt">char</span> <span class="o">*</span><span class="n">tmpnam</span><span class="p">(</span><span class="kt">char</span> <span class="o">*</span><span class="n">ptr</span><span class="p">);</span>
+</span><span class='line'><span class="n">returns</span> <span class="n">pointer</span> <span class="n">to</span> <span class="n">unique</span> <span class="n">pathname</span>
+</span><span class='line'>
+</span><span class='line'><span class="kt">FILE</span> <span class="o">*</span><span class="n">tmpfile</span><span class="p">(</span><span class="kt">void</span><span class="p">);</span>
+</span><span class='line'><span class="n">returns</span> <span class="n">file</span> <span class="n">pointer</span> <span class="k">if</span> <span class="n">OK</span><span class="p">,</span> <span class="nb">NULL</span> <span class="n">on</span> <span class="n">error</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<ul>
+<li><code>tmpnam()</code> は存在しているファイル名とかぶらないパス名を作成する。
+
+<ul>
+<li>最大 <code>TMP_MAX</code> 回は異なるパス名が生成される (<code>TMP_MAX</code> は <code>&lt;stdio.h&gt;</code> で定義されている)。</li>
+<li><em>ptr</em> が <code>NULL</code> の場合、作られたパス名は static area に格納される。</li>
+<li><em>ptr</em> が <code>NULL</code> でない場合、その参照先の buffer は少なくとも
+<code>L_tmpnam</code> 以上のサイズがある必要がある (<code>L_tmpnam</code> は <code>&lt;stdio.h&gt;</code> で定義されている)。</li>
+</ul>
+</li>
+<li><code>tmpfile()</code> は type が <code>wb+</code> の一時ファイルを作成する。これはプログラム終了時に削除される。</li>
+</ul>
+
+
+<p>以下の2つの関数が XSI で定義されている</p>
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+<span class='line-number'>7</span>
+</pre></td><td class='code'><pre><code class='c'><span class='line'><span class="cp">#include &lt;stdio.h&gt;</span>
+</span><span class='line'><span class="kt">char</span> <span class="o">*</span><span class="n">tempnam</span><span class="p">(</span><span class="k">const</span> <span class="kt">char</span> <span class="o">*</span><span class="n">directory</span><span class="p">,</span> <span class="k">const</span> <span class="kt">char</span> <span class="o">*</span><span class="n">prefix</span><span class="p">);</span>
+</span><span class='line'><span class="n">returns</span> <span class="n">pointer</span> <span class="n">to</span> <span class="n">unique</span> <span class="n">pathname</span>
+</span><span class='line'>
+</span><span class='line'><span class="cp">#include &lt;stdio.h&gt;</span>
+</span><span class='line'><span class="kt">int</span> <span class="n">mkstemp</span><span class="p">(</span><span class="kt">char</span> <span class="o">*</span><span class="n">template</span><span class="p">);</span>
+</span><span class='line'><span class="n">returns</span> <span class="n">file</span> <span class="n">descriptor</span> <span class="k">if</span> <span class="n">OK</span><span class="p">,</span> <span class="o">-</span><span class="mi">1</span> <span class="n">on</span> <span class="n">error</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<ul>
+<li><code>tempnam()</code> はディレクトリとプレフィックスが指定できる <code>tmpnam()</code> である。
+
+<ul>
+<li><em>directory</em> は環境変数 <code>TMP_DIR</code> が最優先される。
+<code>TMP_DIR</code> が参照するディレクトリが存在しない場合、スキップされる。</li>
+<li><em>directory</em> が <code>NULL</code> の場合、<code>P_tmpdir</code> が使われる。</li>
+<li><em>prefix</em> にはファイル名の先頭を最大5文字まで指定することができる。</li>
+</ul>
+</li>
+<li><code>mkstemp()</code> は一時ファイルを作るが、file pointer の代わりに file descriptor を返す。
+
+<ul>
+<li><em>template</em> には、最後が <code>XXXXXX</code> で終わるような文字列を渡す。そこにユニークな文字が入る。</li>
+</ul>
+</li>
+</ul>
+
+</div>
+
+
+  <footer>
+    <p class="meta">
+      
+  
+
+<span class="byline author vcard">Posted by <span class="fn">kentaktwo</span></span>
+
+      
+
+
+
+
+
+
+
+
+  
+
+
+<time datetime="2013-01-18T21:10:00+09:00" pubdate data-updated="true">Jan 18<span>th</span>, 2013</time>
+      
+
+<span class="categories">
+  
+    <a class='category' href='/blog/categories/apue/'>apue</a>, <a class='category' href='/blog/categories/unix/'>unix</a>
+  
+</span>
+
+
+    </p>
+    
+      <div class="sharing">
+  
+  <a href="http://twitter.com/share" class="twitter-share-button" data-url="http://kentaktwo.github.com/blog/2013/01/18/apue-chapter-5/" data-via="" data-counturl="http://kentaktwo.github.com/blog/2013/01/18/apue-chapter-5/" >Tweet</a>
+  
+  
+  
+</div>
+
+    
+    <p class="meta">
+      
+        <a class="basic-alignment left" href="/blog/2012/10/14/apue-chapter-4/" title="Previous Post: Advanced Programming in the UNIX enviroment Chapter 4">&laquo; Advanced Programming in the UNIX enviroment Chapter 4</a>
+      
+      
+    </p>
+  </footer>
+</article>
+
+  <section>
+    <h1>Comments</h1>
+    <div id="disqus_thread" aria-live="polite"><noscript>Please enable JavaScript to view the <a href="http://disqus.com/?ref_noscript">comments powered by Disqus.</a></noscript>
+</div>
+  </section>
+
+</div>
+
+<aside class="sidebar">
+  
+    <section>
+  <h1>Recent Posts</h1>
+  <ul id="recent_posts">
+    
+      <li class="post">
+        <a href="/blog/2013/01/18/apue-chapter-5/">Advanced Programming in the UNIX environment Chapter 5</a>
+      </li>
+    
+      <li class="post">
+        <a href="/blog/2012/10/14/apue-chapter-4/">Advanced Programming in the UNIX enviroment Chapter 4</a>
+      </li>
+    
+      <li class="post">
+        <a href="/blog/2012/10/14/disable-iptables/">iptables を無効にする</a>
+      </li>
+    
+      <li class="post">
+        <a href="/blog/2012/08/11/lua-chapter-2/">Programming In Lua Chapter 2</a>
+      </li>
+    
+      <li class="post">
+        <a href="/blog/2012/07/24/lua-chapter-1/">Programming In Lua Chapter 1</a>
+      </li>
+    
+  </ul>
+</section>
+
+
+
+
+
+
+  
+</aside>
+
+
+    </div>
+  </div>
+  <footer role="contentinfo"><p>
+  Copyright &copy; 2013 - kentaktwo -
+  <span class="credit">Powered by <a href="http://octopress.org">Octopress</a></span>
+</p>
+
+</footer>
+  
+
+<script type="text/javascript">
+      var disqus_shortname = 'apprengineerlog';
+      
+        
+        // var disqus_developer = 1;
+        var disqus_identifier = 'http://kentaktwo.github.com/blog/2013/01/18/apue-chapter-5/';
+        var disqus_url = 'http://kentaktwo.github.com/blog/2013/01/18/apue-chapter-5/';
+        var disqus_script = 'embed.js';
+      
+    (function () {
+      var dsq = document.createElement('script'); dsq.type = 'text/javascript'; dsq.async = true;
+      dsq.src = 'http://' + disqus_shortname + '.disqus.com/' + disqus_script;
+      (document.getElementsByTagName('head')[0] || document.getElementsByTagName('body')[0]).appendChild(dsq);
+    }());
+</script>
+
+
+
+
+
+
+
+  <script type="text/javascript">
+    (function(){
+      var twitterWidgets = document.createElement('script');
+      twitterWidgets.type = 'text/javascript';
+      twitterWidgets.async = true;
+      twitterWidgets.src = 'http://platform.twitter.com/widgets.js';
+      document.getElementsByTagName('head')[0].appendChild(twitterWidgets);
+    })();
+  </script>
+
+
+
+
+
+</body>
+</html>

@@ -4,7 +4,7 @@
   <title><![CDATA[Category: apue | ApprEngineer.log]]></title>
   <link href="http://kentaktwo.github.com/blog/categories/apue/atom.xml" rel="self"/>
   <link href="http://kentaktwo.github.com/"/>
-  <updated>2013-01-07T00:47:58+09:00</updated>
+  <updated>2013-04-07T18:12:15+09:00</updated>
   <id>http://kentaktwo.github.com/</id>
   <author>
     <name><![CDATA[kentaktwo]]></name>
@@ -12,6 +12,346 @@
   </author>
   <generator uri="http://octopress.org/">Octopress</generator>
 
+  
+  <entry>
+    <title type="html"><![CDATA[Advanced Programming in the UNIX environment Chapter 5]]></title>
+    <link href="http://kentaktwo.github.com/blog/2013/01/18/apue-chapter-5/"/>
+    <updated>2013-01-18T21:10:00+09:00</updated>
+    <id>http://kentaktwo.github.com/blog/2013/01/18/apue-chapter-5</id>
+    <content type="html"><![CDATA[<h1>Standard I/O Library</h1>
+
+<!--more-->
+
+
+<h2>Stream</h2>
+
+<ul>
+<li>システムコールでの I/O は file descriptor を使用していた。</li>
+<li>standard I/O library では、<em>stream</em> と呼ばれるものを使用する。</li>
+<li>stream は single-byte, multibyte ("wide") 両方の文字セットで使用できる。</li>
+<li>read や write を single-byte か multibyte どちらで行うかを決めるものを stream's orientation と呼ぶ。</li>
+<li><code>fwide()</code> 関数で stream's orientation を変更することができる。</li>
+</ul>
+
+
+<h2>FILE Object</h2>
+
+<ul>
+<li><code>fopen()</code> などで stream を open すると、<code>FILE</code> オブジェクトのポインタが返ってくる。</li>
+<li><code>FILE</code> には standard I/O library が stream を扱うのに必要な情報が入っている。</li>
+<li><code>FILE *</code> を file pointer と呼ぶ。</li>
+</ul>
+
+
+<h2>Standard Input, Standard Output, and Standard Error</h2>
+
+<p><code>STDIN_FILENO</code>, <code>STDOUT_FILENO</code>, <code>STDERR_FILENO</code> file descriptor に対応する file pointer として、
+<code>stdin</code>, <code>stdout</code>, <code>stderr</code> が <code>&lt;stdio.h&gt;</code> で定義されている。</p>
+
+<h2>Buffering</h2>
+
+<p>standard I/O library は <code>read()</code> や <code>write()</code> の呼び出し回数をできるだけ少なくするために、
+buffering を行なっている。3種類の buffering が提供されている:</p>
+
+<ol>
+<li>Fully buffered: 実際の I/O は buffer がいっぱいになったときに実行される。<br/>
+ディスクの読み込みなどは fully buffered である。</li>
+<li>Line buffered: input や output で改行記号を検出したときに I/O が行われる。<br/>
+stdin や stdout などのターミナル関連での buffering は Line buffered である。</li>
+<li>Unbuffered: buffering しない。<br/>
+standard error stream などは Unbuffered である (すぐに表示してほしいため)。</li>
+</ol>
+
+
+<!--dummy comment line for breaking list-->
+
+
+<ul>
+<li>buffering は <code>setbuf()</code> や <code>setvbuf()</code> で変更することができる。</li>
+<li>standard I/O buffer の中身を書きだすことを <em>flush</em> と呼ぶ。
+
+<ul>
+<li>flush は buffer がいっぱいになったときなどに standard I/O が自動的に行なってくれるが、
+<code>fflush()</code> を呼ぶことで明示的に行うこともできる。</li>
+</ul>
+</li>
+</ul>
+
+
+<h2>Opening a Stream</h2>
+
+<p>``` c
+FILE <em>fopen(const char </em>restrict pathname, const char <em>restrict type);
+FILE </em>freopen(const char <em>restrict pathname, const char </em>restrict type, FILE <em>restrict fp);
+FILE </em>fdopen(int filedes, const char *restrict type);</p>
+
+<p>return file pointer if OK, NULL on error
+<code>``
+-</code>fopen()<code>はファイル名を指定して open する。
+-</code>freopen()` はファイル名を指定して、指定した stream に open する。</p>
+
+<pre><code>- stdin, stdout, stderr などに open したい場合に使う。
+</code></pre>
+
+<ul>
+<li><code>fdopen()</code> は file descriptor を指定して open する。</li>
+<li><em>type</em> は
+
+<ul>
+<li><code>r</code> はそのまま、<code>w</code> は truncate する、<code>a</code> は追記する</li>
+<li><code>+</code> をつけると read, write 両方になる</li>
+<li><code>fdopen()</code> の場合、既にファイルが open されているため、truncate は行われない。</li>
+</ul>
+</li>
+</ul>
+
+
+<h2>Closing a Stream</h2>
+
+<ul>
+<li>open stream を close するには <code>fclose()</code> を使う。</li>
+<li>buffering された output data は close される前に flush される。</li>
+<li>buffering された input data は破棄される。</li>
+<li>standard I/O library が自動的に確保した buffer は解放される。</li>
+<li><code>exit()</code> が呼ばれると自動的に <code>close()</code> される。</li>
+</ul>
+
+
+<h2>Reading and Writing a Stream</h2>
+
+<p>unformatted I/O を行う関数には、3種類ある。</p>
+
+<h3>Character-at-a-time I/O</h3>
+
+<p>文字単位で入出力する。
+``` c</p>
+
+<h1>include &lt;stdio.h></h1>
+
+<p>/<em> Input Functions </em>/
+int getc(FILE <em>fp);
+int fgetc(FILE </em>fp);
+int getchar(void);</p>
+
+<p>return next character if OK, EOF on end of file or error</p>
+
+<p>/<em> Output Functions </em>/
+int putc(int c, FILE <em>fp);
+int fputc(int c, FILE </em>fp);
+int putchar(int c);</p>
+
+<p>return c if OK, EOF on error
+<code>``
+-</code>getchar()<code>は</code>getc(stdin)<code>と同じ
+-</code>getc()<code>はマクロの場合があるが、</code>fgetc()<code>は必ず関数である
+-</code>EOF` は多くの場合 -1 として定義される</p>
+
+<p><code>EOF</code> が返ってきたときに、EOF なのかエラーなのかわからないため、それを判別する関数が用意されている。
+``` c</p>
+
+<h1>include &lt;stdio.h></h1>
+
+<p>int ferror(FILE <em>fp);
+int feof(FILE </em>fp);</p>
+
+<p>return nonzero if condition is true, 0 otherwise
+<code>``
+- FILE Object の中で、error flag や end-of-file flag が管理されている。
+-</code>clearerr()` でそれらの flag をクリアできる。</p>
+
+<p><code>ungetc()</code> で1文字読み戻すことができる。
+``` c</p>
+
+<h1>include &lt;stdio.h></h1>
+
+<p>int ungetc(int c, FILE *fp);</p>
+
+<p>return c if OK, EOF on error
+```
+- 読み戻せるのは1文字まで</p>
+
+<h3>Line-at-a-time I/O</h3>
+
+<p>``` c</p>
+
+<h1>include &lt;stdio.h></h1>
+
+<p>char <em>fgets(char </em>restrict buf, int n, FILE <em>restrict fp);
+char </em>gets(char *buf);</p>
+
+<p>return buf if OK, NULL on end of file or error
+<code>``
+- 改行記号に達するか、_n - 1_ byte まで読み込む (最後に null byte を入れるため)
+-</code>gets()` は buffer size を指定できないため、使ってはいけない</p>
+
+<p>```</p>
+
+<h1>include &lt;stdio.h></h1>
+
+<p>int fputs(const char <em>restrict str, FILE </em>restrict fp);
+int puts(const char *str);</p>
+
+<p>return non-negative value if OK, EOF on error
+<code>``
+- null byte まで書きだす (null byte は書き出されない)
+- 改行記号が入っている必要はない
+-</code>puts()<code>に</code>gets()` のような脆弱性は無いが、使わない方がいいだろう</p>
+
+<h3>Binary I/O</h3>
+
+<p>``` c</p>
+
+<h1>include &lt;stdio.h></h1>
+
+<p>size_t fread(void <em>restrict ptr, size_t size, size_t nobj, FILE </em>restrict fp);
+size_t fwrite(const void <em>restrict ptr, size_t size, size_t nobj, FILE </em>restrict fp);</p>
+
+<p>return number of objects read or written
+```
+- 1単位あたりのサイズを <em>size</em> で指定して、読み書きする単位数を <em>nobj</em> で指定する</p>
+
+<pre><code>- _size_ は `sizeof(float)` や構造体のサイズなど
+</code></pre>
+
+<ul>
+<li>バイナリや、構造体を読み書きするのに使う
+
+<ul>
+<li>システムによってデータ構造が違ったりするので、異なるシステム間ではうまく動作しない</li>
+</ul>
+</li>
+</ul>
+
+
+<h2>Standard I/O Efficiency</h2>
+
+<ul>
+<li>システムコールを呼ぶのが一番コストがかかる</li>
+<li>standard I/O を使うと、システムコールを呼ぶ回数を減らすように buffering してくれるので、
+直接システムコールを呼ぶより高速になることが多い
+
+<ul>
+<li>効率良くなるように自分でシステムコールを呼ぶ調整をしている場合は別</li>
+</ul>
+</li>
+</ul>
+
+
+<h2>Positioning a Stream</h2>
+
+<p>standard I/O stream の位置を調べる関数は3種類ある:
+1. <code>ftell()</code>, <code>fseek()</code>: 位置は <code>long</code> で表す
+2. <code>ftello()</code>, <code>fseeko()</code>: <code>ftell()</code> と <code>fseek()</code> の <code>long</code> が <code>off_t</code> に置き換わったもの
+3. <code>fgetpos()</code>, fsetpos()<code>:</code>fpos_t` を使って位置を表す。UNIX でないシステムではこれを使う</p>
+
+<h2>Formatted I/O</h2>
+
+<h3>Formatted Output</h3>
+
+<p>``` c</p>
+
+<h1>include &lt;stdio.h></h1>
+
+<p>int printf(const char <em>restrict format, ...);
+int fprintf(FILE </em>restrict fp, const char *restrict format, ...);</p>
+
+<p>return number of characters output if OK, nagative value if output error</p>
+
+<p>int sprintf(char <em>restrict buf, const char </em>restrict format, ...);
+int snprintf(char <em>restrict buf, size_t n, const char </em>restrict format, ...);</p>
+
+<p>return number of characters stored in array if OK, negative value if encoding error
+<code>
+- `sprintf()` はオーバーフローする恐れがあるので、`snprintf()` を使うこと。
+- % 記号で始まるやつ (conversion specification) のフォーマットは以下の通り
+</code> c
+%[flags][fldwidth][precision][lenmodifier]convtype
+<code>``
+- "..." の代わりに、</code>va_list<code>になった</code>vprintf()<code>系の関数もある (</code>&lt;stdarg.h>` を includeする)。</p>
+
+<h3>Formatted Input</h3>
+
+<p>``` c</p>
+
+<h1>include &lt;stdio.h></h1>
+
+<p>int scanf(const char <em>restrict format, ...);
+int fscanf(FILE </em>restrict fp, const char <em>restrict format, ...);
+int sscanf(const char </em>restrict buf, const char *restrict format, ...);</p>
+
+<p>return number of input items assigned, EOF if input error or end of file before any conversion
+<code>
+- conversion specification のフォーマットは以下の通り
+</code> c
+%[*][fldwidth][lenmodifier]convtype
+<code>``
+- 頭にアスタリスクがついているやつについては conversion 結果が変数に格納されない
+- "..." の代わりに、</code>va_list<code>になった</code>vscanf()<code>系の関数もある (</code>&lt;stdarg.h>` を includeする)。</p>
+
+<h2>Implementation Details</h2>
+
+<ul>
+<li><code>fileno()</code> 関数で file pointer に対応する file descriptor が取得できる。</li>
+</ul>
+
+
+<h2>Temporary Files</h2>
+
+<p>``` c</p>
+
+<h1>include &lt;stdio.h></h1>
+
+<p>char <em>tmpnam(char </em>ptr);
+returns pointer to unique pathname</p>
+
+<p>FILE *tmpfile(void);
+returns file pointer if OK, NULL on error
+<code>``
+-</code>tmpnam()` は存在しているファイル名とかぶらないパス名を作成する。</p>
+
+<pre><code>- 最大 `TMP_MAX` 回は異なるパス名が生成される (`TMP_MAX` は `&lt;stdio.h&gt;` で定義されている)。
+- _ptr_ が `NULL` の場合、作られたパス名は static area に格納される。
+- _ptr_ が `NULL` でない場合、その参照先の buffer は少なくとも
+ `L_tmpnam` 以上のサイズがある必要がある (`L_tmpnam` は `&lt;stdio.h&gt;` で定義されている)。
+</code></pre>
+
+<ul>
+<li><code>tmpfile()</code> は type が <code>wb+</code> の一時ファイルを作成する。これはプログラム終了時に削除される。</li>
+</ul>
+
+
+<p>以下の2つの関数が XSI で定義されている
+``` c</p>
+
+<h1>include &lt;stdio.h></h1>
+
+<p>char <em>tempnam(const char </em>directory, const char *prefix);
+returns pointer to unique pathname</p>
+
+<h1>include &lt;stdio.h></h1>
+
+<p>int mkstemp(char *template);
+returns file descriptor if OK, -1 on error
+<code>``
+-</code>tempnam()<code>はディレクトリとプレフィックスが指定できる</code>tmpnam()` である。</p>
+
+<pre><code>- _directory_ は環境変数 `TMP_DIR` が最優先される。
+`TMP_DIR` が参照するディレクトリが存在しない場合、スキップされる。
+- _directory_ が `NULL` の場合、`P_tmpdir` が使われる。
+- _prefix_ にはファイル名の先頭を最大5文字まで指定することができる。
+</code></pre>
+
+<ul>
+<li><code>mkstemp()</code> は一時ファイルを作るが、file pointer の代わりに file descriptor を返す。
+
+<ul>
+<li><em>template</em> には、最後が <code>XXXXXX</code> で終わるような文字列を渡す。そこにユニークな文字が入る。</li>
+</ul>
+</li>
+</ul>
+
+]]></content>
+  </entry>
   
   <entry>
     <title type="html"><![CDATA[Advanced Programming in the UNIX enviroment Chapter 4]]></title>

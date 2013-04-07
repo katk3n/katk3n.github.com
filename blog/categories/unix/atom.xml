@@ -4,7 +4,7 @@
   <title><![CDATA[Category: unix | ApprEngineer.log]]></title>
   <link href="http://kentaktwo.github.com/blog/categories/unix/atom.xml" rel="self"/>
   <link href="http://kentaktwo.github.com/"/>
-  <updated>2013-01-07T00:47:58+09:00</updated>
+  <updated>2013-04-07T18:12:15+09:00</updated>
   <id>http://kentaktwo.github.com/</id>
   <author>
     <name><![CDATA[kentaktwo]]></name>
@@ -12,6 +12,346 @@
   </author>
   <generator uri="http://octopress.org/">Octopress</generator>
 
+  
+  <entry>
+    <title type="html"><![CDATA[Advanced Programming in the UNIX environment Chapter 5]]></title>
+    <link href="http://kentaktwo.github.com/blog/2013/01/18/apue-chapter-5/"/>
+    <updated>2013-01-18T21:10:00+09:00</updated>
+    <id>http://kentaktwo.github.com/blog/2013/01/18/apue-chapter-5</id>
+    <content type="html"><![CDATA[<h1>Standard I/O Library</h1>
+
+<!--more-->
+
+
+<h2>Stream</h2>
+
+<ul>
+<li>システムコールでの I/O は file descriptor を使用していた。</li>
+<li>standard I/O library では、<em>stream</em> と呼ばれるものを使用する。</li>
+<li>stream は single-byte, multibyte ("wide") 両方の文字セットで使用できる。</li>
+<li>read や write を single-byte か multibyte どちらで行うかを決めるものを stream's orientation と呼ぶ。</li>
+<li><code>fwide()</code> 関数で stream's orientation を変更することができる。</li>
+</ul>
+
+
+<h2>FILE Object</h2>
+
+<ul>
+<li><code>fopen()</code> などで stream を open すると、<code>FILE</code> オブジェクトのポインタが返ってくる。</li>
+<li><code>FILE</code> には standard I/O library が stream を扱うのに必要な情報が入っている。</li>
+<li><code>FILE *</code> を file pointer と呼ぶ。</li>
+</ul>
+
+
+<h2>Standard Input, Standard Output, and Standard Error</h2>
+
+<p><code>STDIN_FILENO</code>, <code>STDOUT_FILENO</code>, <code>STDERR_FILENO</code> file descriptor に対応する file pointer として、
+<code>stdin</code>, <code>stdout</code>, <code>stderr</code> が <code>&lt;stdio.h&gt;</code> で定義されている。</p>
+
+<h2>Buffering</h2>
+
+<p>standard I/O library は <code>read()</code> や <code>write()</code> の呼び出し回数をできるだけ少なくするために、
+buffering を行なっている。3種類の buffering が提供されている:</p>
+
+<ol>
+<li>Fully buffered: 実際の I/O は buffer がいっぱいになったときに実行される。<br/>
+ディスクの読み込みなどは fully buffered である。</li>
+<li>Line buffered: input や output で改行記号を検出したときに I/O が行われる。<br/>
+stdin や stdout などのターミナル関連での buffering は Line buffered である。</li>
+<li>Unbuffered: buffering しない。<br/>
+standard error stream などは Unbuffered である (すぐに表示してほしいため)。</li>
+</ol>
+
+
+<!--dummy comment line for breaking list-->
+
+
+<ul>
+<li>buffering は <code>setbuf()</code> や <code>setvbuf()</code> で変更することができる。</li>
+<li>standard I/O buffer の中身を書きだすことを <em>flush</em> と呼ぶ。
+
+<ul>
+<li>flush は buffer がいっぱいになったときなどに standard I/O が自動的に行なってくれるが、
+<code>fflush()</code> を呼ぶことで明示的に行うこともできる。</li>
+</ul>
+</li>
+</ul>
+
+
+<h2>Opening a Stream</h2>
+
+<p>``` c
+FILE <em>fopen(const char </em>restrict pathname, const char <em>restrict type);
+FILE </em>freopen(const char <em>restrict pathname, const char </em>restrict type, FILE <em>restrict fp);
+FILE </em>fdopen(int filedes, const char *restrict type);</p>
+
+<p>return file pointer if OK, NULL on error
+<code>``
+-</code>fopen()<code>はファイル名を指定して open する。
+-</code>freopen()` はファイル名を指定して、指定した stream に open する。</p>
+
+<pre><code>- stdin, stdout, stderr などに open したい場合に使う。
+</code></pre>
+
+<ul>
+<li><code>fdopen()</code> は file descriptor を指定して open する。</li>
+<li><em>type</em> は
+
+<ul>
+<li><code>r</code> はそのまま、<code>w</code> は truncate する、<code>a</code> は追記する</li>
+<li><code>+</code> をつけると read, write 両方になる</li>
+<li><code>fdopen()</code> の場合、既にファイルが open されているため、truncate は行われない。</li>
+</ul>
+</li>
+</ul>
+
+
+<h2>Closing a Stream</h2>
+
+<ul>
+<li>open stream を close するには <code>fclose()</code> を使う。</li>
+<li>buffering された output data は close される前に flush される。</li>
+<li>buffering された input data は破棄される。</li>
+<li>standard I/O library が自動的に確保した buffer は解放される。</li>
+<li><code>exit()</code> が呼ばれると自動的に <code>close()</code> される。</li>
+</ul>
+
+
+<h2>Reading and Writing a Stream</h2>
+
+<p>unformatted I/O を行う関数には、3種類ある。</p>
+
+<h3>Character-at-a-time I/O</h3>
+
+<p>文字単位で入出力する。
+``` c</p>
+
+<h1>include &lt;stdio.h></h1>
+
+<p>/<em> Input Functions </em>/
+int getc(FILE <em>fp);
+int fgetc(FILE </em>fp);
+int getchar(void);</p>
+
+<p>return next character if OK, EOF on end of file or error</p>
+
+<p>/<em> Output Functions </em>/
+int putc(int c, FILE <em>fp);
+int fputc(int c, FILE </em>fp);
+int putchar(int c);</p>
+
+<p>return c if OK, EOF on error
+<code>``
+-</code>getchar()<code>は</code>getc(stdin)<code>と同じ
+-</code>getc()<code>はマクロの場合があるが、</code>fgetc()<code>は必ず関数である
+-</code>EOF` は多くの場合 -1 として定義される</p>
+
+<p><code>EOF</code> が返ってきたときに、EOF なのかエラーなのかわからないため、それを判別する関数が用意されている。
+``` c</p>
+
+<h1>include &lt;stdio.h></h1>
+
+<p>int ferror(FILE <em>fp);
+int feof(FILE </em>fp);</p>
+
+<p>return nonzero if condition is true, 0 otherwise
+<code>``
+- FILE Object の中で、error flag や end-of-file flag が管理されている。
+-</code>clearerr()` でそれらの flag をクリアできる。</p>
+
+<p><code>ungetc()</code> で1文字読み戻すことができる。
+``` c</p>
+
+<h1>include &lt;stdio.h></h1>
+
+<p>int ungetc(int c, FILE *fp);</p>
+
+<p>return c if OK, EOF on error
+```
+- 読み戻せるのは1文字まで</p>
+
+<h3>Line-at-a-time I/O</h3>
+
+<p>``` c</p>
+
+<h1>include &lt;stdio.h></h1>
+
+<p>char <em>fgets(char </em>restrict buf, int n, FILE <em>restrict fp);
+char </em>gets(char *buf);</p>
+
+<p>return buf if OK, NULL on end of file or error
+<code>``
+- 改行記号に達するか、_n - 1_ byte まで読み込む (最後に null byte を入れるため)
+-</code>gets()` は buffer size を指定できないため、使ってはいけない</p>
+
+<p>```</p>
+
+<h1>include &lt;stdio.h></h1>
+
+<p>int fputs(const char <em>restrict str, FILE </em>restrict fp);
+int puts(const char *str);</p>
+
+<p>return non-negative value if OK, EOF on error
+<code>``
+- null byte まで書きだす (null byte は書き出されない)
+- 改行記号が入っている必要はない
+-</code>puts()<code>に</code>gets()` のような脆弱性は無いが、使わない方がいいだろう</p>
+
+<h3>Binary I/O</h3>
+
+<p>``` c</p>
+
+<h1>include &lt;stdio.h></h1>
+
+<p>size_t fread(void <em>restrict ptr, size_t size, size_t nobj, FILE </em>restrict fp);
+size_t fwrite(const void <em>restrict ptr, size_t size, size_t nobj, FILE </em>restrict fp);</p>
+
+<p>return number of objects read or written
+```
+- 1単位あたりのサイズを <em>size</em> で指定して、読み書きする単位数を <em>nobj</em> で指定する</p>
+
+<pre><code>- _size_ は `sizeof(float)` や構造体のサイズなど
+</code></pre>
+
+<ul>
+<li>バイナリや、構造体を読み書きするのに使う
+
+<ul>
+<li>システムによってデータ構造が違ったりするので、異なるシステム間ではうまく動作しない</li>
+</ul>
+</li>
+</ul>
+
+
+<h2>Standard I/O Efficiency</h2>
+
+<ul>
+<li>システムコールを呼ぶのが一番コストがかかる</li>
+<li>standard I/O を使うと、システムコールを呼ぶ回数を減らすように buffering してくれるので、
+直接システムコールを呼ぶより高速になることが多い
+
+<ul>
+<li>効率良くなるように自分でシステムコールを呼ぶ調整をしている場合は別</li>
+</ul>
+</li>
+</ul>
+
+
+<h2>Positioning a Stream</h2>
+
+<p>standard I/O stream の位置を調べる関数は3種類ある:
+1. <code>ftell()</code>, <code>fseek()</code>: 位置は <code>long</code> で表す
+2. <code>ftello()</code>, <code>fseeko()</code>: <code>ftell()</code> と <code>fseek()</code> の <code>long</code> が <code>off_t</code> に置き換わったもの
+3. <code>fgetpos()</code>, fsetpos()<code>:</code>fpos_t` を使って位置を表す。UNIX でないシステムではこれを使う</p>
+
+<h2>Formatted I/O</h2>
+
+<h3>Formatted Output</h3>
+
+<p>``` c</p>
+
+<h1>include &lt;stdio.h></h1>
+
+<p>int printf(const char <em>restrict format, ...);
+int fprintf(FILE </em>restrict fp, const char *restrict format, ...);</p>
+
+<p>return number of characters output if OK, nagative value if output error</p>
+
+<p>int sprintf(char <em>restrict buf, const char </em>restrict format, ...);
+int snprintf(char <em>restrict buf, size_t n, const char </em>restrict format, ...);</p>
+
+<p>return number of characters stored in array if OK, negative value if encoding error
+<code>
+- `sprintf()` はオーバーフローする恐れがあるので、`snprintf()` を使うこと。
+- % 記号で始まるやつ (conversion specification) のフォーマットは以下の通り
+</code> c
+%[flags][fldwidth][precision][lenmodifier]convtype
+<code>``
+- "..." の代わりに、</code>va_list<code>になった</code>vprintf()<code>系の関数もある (</code>&lt;stdarg.h>` を includeする)。</p>
+
+<h3>Formatted Input</h3>
+
+<p>``` c</p>
+
+<h1>include &lt;stdio.h></h1>
+
+<p>int scanf(const char <em>restrict format, ...);
+int fscanf(FILE </em>restrict fp, const char <em>restrict format, ...);
+int sscanf(const char </em>restrict buf, const char *restrict format, ...);</p>
+
+<p>return number of input items assigned, EOF if input error or end of file before any conversion
+<code>
+- conversion specification のフォーマットは以下の通り
+</code> c
+%[*][fldwidth][lenmodifier]convtype
+<code>``
+- 頭にアスタリスクがついているやつについては conversion 結果が変数に格納されない
+- "..." の代わりに、</code>va_list<code>になった</code>vscanf()<code>系の関数もある (</code>&lt;stdarg.h>` を includeする)。</p>
+
+<h2>Implementation Details</h2>
+
+<ul>
+<li><code>fileno()</code> 関数で file pointer に対応する file descriptor が取得できる。</li>
+</ul>
+
+
+<h2>Temporary Files</h2>
+
+<p>``` c</p>
+
+<h1>include &lt;stdio.h></h1>
+
+<p>char <em>tmpnam(char </em>ptr);
+returns pointer to unique pathname</p>
+
+<p>FILE *tmpfile(void);
+returns file pointer if OK, NULL on error
+<code>``
+-</code>tmpnam()` は存在しているファイル名とかぶらないパス名を作成する。</p>
+
+<pre><code>- 最大 `TMP_MAX` 回は異なるパス名が生成される (`TMP_MAX` は `&lt;stdio.h&gt;` で定義されている)。
+- _ptr_ が `NULL` の場合、作られたパス名は static area に格納される。
+- _ptr_ が `NULL` でない場合、その参照先の buffer は少なくとも
+ `L_tmpnam` 以上のサイズがある必要がある (`L_tmpnam` は `&lt;stdio.h&gt;` で定義されている)。
+</code></pre>
+
+<ul>
+<li><code>tmpfile()</code> は type が <code>wb+</code> の一時ファイルを作成する。これはプログラム終了時に削除される。</li>
+</ul>
+
+
+<p>以下の2つの関数が XSI で定義されている
+``` c</p>
+
+<h1>include &lt;stdio.h></h1>
+
+<p>char <em>tempnam(const char </em>directory, const char *prefix);
+returns pointer to unique pathname</p>
+
+<h1>include &lt;stdio.h></h1>
+
+<p>int mkstemp(char *template);
+returns file descriptor if OK, -1 on error
+<code>``
+-</code>tempnam()<code>はディレクトリとプレフィックスが指定できる</code>tmpnam()` である。</p>
+
+<pre><code>- _directory_ は環境変数 `TMP_DIR` が最優先される。
+`TMP_DIR` が参照するディレクトリが存在しない場合、スキップされる。
+- _directory_ が `NULL` の場合、`P_tmpdir` が使われる。
+- _prefix_ にはファイル名の先頭を最大5文字まで指定することができる。
+</code></pre>
+
+<ul>
+<li><code>mkstemp()</code> は一時ファイルを作るが、file pointer の代わりに file descriptor を返す。
+
+<ul>
+<li><em>template</em> には、最後が <code>XXXXXX</code> で終わるような文字列を渡す。そこにユニークな文字が入る。</li>
+</ul>
+</li>
+</ul>
+
+]]></content>
+  </entry>
   
   <entry>
     <title type="html"><![CDATA[Advanced Programming in the UNIX enviroment Chapter 4]]></title>
@@ -653,7 +993,7 @@ int fchdir(int filedes);</p></li>
     <link href="http://kentaktwo.github.com/blog/2012/10/14/disable-iptables/"/>
     <updated>2012-10-14T00:37:00+09:00</updated>
     <id>http://kentaktwo.github.com/blog/2012/10/14/disable-iptables</id>
-    <content type="html"><![CDATA[<p>家でネットワークの勉強するために、VM に Cent OS 入れたのだが、外からアクセスできない。
+    <content type="html"><![CDATA[<p>VM に Cent OS 入れたのだが、外からアクセスできない。
 どうもインストール時には iptables が動いてて、外からのアクセスを拒否してるらしい。</p>
 
 <pre><code>$ sudo /etc/rc.d/init.d/iptables stop
@@ -1169,221 +1509,6 @@ filter file2 | cat file1 - file3 | lpr
 filter file2 | cat file1 /dev/fd/0 file3 | lpr
 </code>
 として明確に書くことができる。</li>
-</ul>
-
-]]></content>
-  </entry>
-  
-  <entry>
-    <title type="html"><![CDATA[Unix Network Programming Chapter 2]]></title>
-    <link href="http://kentaktwo.github.com/blog/2012/05/07/unp-chapter-2/"/>
-    <updated>2012-05-07T23:41:00+09:00</updated>
-    <id>http://kentaktwo.github.com/blog/2012/05/07/unp-chapter-2</id>
-    <content type="html"><![CDATA[<h1>The Transport Layer: TCP, UDP, and SCTP</h1>
-
-<!--more-->
-
-
-<h2>User Datagram Protocol (UDP)</h2>
-
-<ul>
-<li>シンプルなプロトコル
-
-<ol>
-<li>アプリケーションがメッセージを UDP socket に書く</li>
-<li>UDP socket は UDP datagram にカプセル化される</li>
-<li>UDP datagram は IP datagram にカプセル化される</li>
-<li>IP datagram が目的地に送信される</li>
-</ol>
-</li>
-<li>UDP datagram が目的地に届けられる補償は無い</li>
-<li>UDP datagram は長さを持つ
-
-<ul>
-<li>datagram の長さの情報はデータと一緒に受信者に届けられる</li>
-</ul>
-</li>
-<li>UDP は <em>connectionless</em> service とも言われる
-
-<ul>
-<li>client - server 間に長期間の依存を持たないため</li>
-<li>例えば UDP client が socket を作って datagram を server に送り、その後すぐに別の datagram を別の servevr に同じ socket で送ることが可能</li>
-</ul>
-</li>
-</ul>
-
-
-<h2>Transmission Control Protocol (TCP)</h2>
-
-<ul>
-<li>クライアント・サーバ間でコネクションを張る</li>
-<li>信頼性 <em>(reliability)</em> がある
-
-<ul>
-<li>TCP がデータを送信すると、応答 (acknowledgment) が来るのを待つ</li>
-<li>応答が来ない場合、TCP は自動的にデータを再送信し、さらに待つ</li>
-<li>しばらく繰り返しても来ない場合は諦める</li>
-</ul>
-</li>
-<li>RTT <em>(round trip time)</em> を推測するアルゴリズムを含んでいる
-
-<ul>
-<li>応答にどれだけ時間がかかりそうかを推測する</li>
-</ul>
-</li>
-<li>TCP が送信するデータには各 byte に連番 <em>(sequence numbers)</em> が振られている
-
-<ul>
-<li>到着したセグメント（TCP が IP に渡すデータの単位）が壊れていた場合、セグメントを再要求する</li>
-<li>データが重複していた場合、番号を見て重複しているデータを削除する</li>
-</ul>
-</li>
-<li><em>flow control</em> を提供する
-
-<ul>
-<li>peer に対して何バイトのサイズのデータを受け入れられるか <em>(advertised window)</em> 伝える</li>
-<li>送信者が受信バッファを超えるデータを送ることを防ぐ</li>
-<li>送信者からデータを受信すると window サイズは小さくなり、受信アプリケーションがバッファからデータを読むと window サイズは大きくなる</li>
-</ul>
-</li>
-<li>TCP コネクションは <em>full-duplex</em> である
-
-<ul>
-<li>アプリケーションはいつでもデータの送信と受信ができる</li>
-<li>sequence number や window size の状態の経過を追い続ける</li>
-</ul>
-</li>
-</ul>
-
-
-<h2>Stream Control Transmission Protocol (SCTP)</h2>
-
-<ul>
-<li>クライアント・サーバ間の接続は connection ではなく、 <em>association</em> と呼ばれる
-
-<ul>
-<li>2システム間の通信が2つ以上のアドレスを使用することができる</li>
-</ul>
-</li>
-<li><em>message-oriented</em> である
-
-<ul>
-<li>TCP は byte 指向</li>
-</ul>
-</li>
-<li>接続間で複数のストリーム (multiple stream) を提供する
-
-<ul>
-<li>ストリームの1つに含まれる message が失われても、他のストリームの message の配信に影響しない</li>
-</ul>
-</li>
-<li>マルチホーミング (multihoming) を提供する
-
-<ul>
-<li>1つの SCTP エンドポイントが複数の IP アドレスをサポートする</li>
-<li>ネットワークの不安定さに対するロバスト性を向上させる</li>
-</ul>
-</li>
-</ul>
-
-
-<h2>Three-Way Handshake</h2>
-
-<p>TCP connection を張るときには以下のような処理が行われる：</p>
-
-<ol>
-<li>サーバは <code>socket</code>, <code>bind</code>, <code>listen</code> を呼び、接続を受け入れる準備をする <em>(passive open)</em></li>
-<li>クライアントは <code>connect</code> を呼び <em>active open</em> を発行する。
-クライアント TCP は SYN (synchronize) segment を送信して、サーバにクライアントが送る予定のデータサイズを教える。</li>
-<li>サーバはクライアントの SYN を受け入れ、ACK (acknowledge) と自分の SYN を送る。
-SYN にはサーバが送る予定のデータサイズが含まれている。
-サーバの SYN とクライアントの SYN に対する ACK は1つのセグメントで送られる。</li>
-<li>クライアントはサーバの SYN を受け入れる (ACK)</li>
-</ol>
-
-
-<h2>TCP Connection Termination</h2>
-
-<p>接続を切るときは以下のような処理で行われる：</p>
-
-<ol>
-<li>片方のアプリケーションが <code>close</code> を呼び <em>(active close)</em>、TCP は FIN segment を送る。</li>
-<li>もう片方の TCP が FIN を受け入れる <em>(passive close)</em>。FIN は end-of-file としてアプリケーションに通知される。</li>
-<li>しばらくして、end-of-file を受信したアプリケーションはソケットを <code>close</code> し、FIN を送る。</li>
-<li>active close を行った側の TCP が FIN を受け入れる。</li>
-</ol>
-
-
-<p>2 から 3 の間で passive close を行った側から active close を行った側にデータが送られることがある <em>(half-close)</em>。</p>
-
-<h2>TIME_WAIT State</h2>
-
-<ul>
-<li>active close を行った側が close を受け取ったあとのタイムアウト待ち状態
-
-<ul>
-<li>タイムアウト時間は MSL <em>(maximum segment lifetime)</em> の2倍 (2MSL)</li>
-</ul>
-</li>
-<li>TCP のコネクションを確実に切断する
-
-<ul>
-<li>ルータの異常によりループが発生すると古いパケットが残り続ける</li>
-<li>そこで TCP がパケットを再送すると、ループが解消されたときに重複してパケットが送られる</li>
-</ul>
-</li>
-<li>古い重複したセグメントをネットワークから expire させる
-
-<ul>
-<li>コネクションを再接続するときに、古いパケットが残らないようにする</li>
-</ul>
-</li>
-</ul>
-
-
-<h2>Four-Way Handshake</h2>
-
-<p>SCTP connection を張るときには以下のような処理が行われる：</p>
-
-<ol>
-<li>サーバは <code>socket</code>, <code>bind</code>, <code>listen</code> を呼び、passive open を行う</li>
-<li>クライアントは <code>connect</code> を呼び、active open を行う。
-これによりクライアントは IP のリスト、初期シーケンス番号、この association での全てのパケットを識別するためのタグ、
-クライアントがリクエストするストリーム量、クライアントが受け入れることのできるストリーム量を含んだ INIT メッセージを送る。</li>
-<li>サーバはクライアントの INIT を受け取り、 INIT-ACK メッセージを送る。
-INIT-ACK には 2. で述べた INIT が持つ情報に加えて state cookie が含まれる。
-state cookie にはサーバが association が正当であることを補償するための全ての状態が含まれている。</li>
-<li>クライアントはサーバの state cookie を COOKIE-ECHO メッセージとして返す。</li>
-<li>サーバは cookie が正しいことを確かめ、COOKIE-ACK メッセージを送り association を成立させる。</li>
-</ol>
-
-
-<p>four-way handshake は SCTP が DoS 攻撃を防ぐために用いられる。</p>
-
-<h2>Association Terminate</h2>
-
-<ul>
-<li>SCTP では TCP とは違い half-closed は受け入れられず、片方が association を切断した時にはもう片方はデータの送信をやめなければならない。</li>
-<li>SCTP では verification tags があるため、TIME_WAIT state は存在しない。</li>
-</ul>
-
-
-<h2>Port Numbers</h2>
-
-<ul>
-<li>UDP, SCTP, TCP はプロセスを区別するために 16-bit integer のポート番号を使用する。</li>
-<li>ポート番号は以下の3つのレンジに分かれる
-
-<ul>
-<li><em>well-known ports</em>: 0 - 1023<br/>
-IANA によって管理されているポート</li>
-<li><em>registered ports</em>: 1024 - 49151<br/>
-IANA によって管理はされていないが、使い方を決めているポート</li>
-<li><em>dynamic (private) ports</em>: 49152 - 65535<br/>
-IANA が管理していないポート。 <em>ephemeral ports</em> （transport protocol によってクライアントに割り当てられるポート）に使われる。</li>
-</ul>
-</li>
-<li>接続先を決めるための2つの値である IP アドレスとポート番号の組は <em>socket</em> と呼ばれる</li>
 </ul>
 
 ]]></content>
