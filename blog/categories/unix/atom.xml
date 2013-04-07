@@ -4,7 +4,7 @@
   <title><![CDATA[Category: unix | ApprEngineer.log]]></title>
   <link href="http://kentaktwo.github.com/blog/categories/unix/atom.xml" rel="self"/>
   <link href="http://kentaktwo.github.com/"/>
-  <updated>2013-04-07T18:12:15+09:00</updated>
+  <updated>2013-04-07T23:21:18+09:00</updated>
   <id>http://kentaktwo.github.com/</id>
   <author>
     <name><![CDATA[kentaktwo]]></name>
@@ -12,6 +12,84 @@
   </author>
   <generator uri="http://octopress.org/">Octopress</generator>
 
+  
+  <entry>
+    <title type="html"><![CDATA[CentOS6.4 インストール]]></title>
+    <link href="http://kentaktwo.github.com/blog/2013/04/07/centos6-install/"/>
+    <updated>2013-04-07T18:18:00+09:00</updated>
+    <id>http://kentaktwo.github.com/blog/2013/04/07/centos6-install</id>
+    <content type="html"><![CDATA[<p>CentOS 6.4 (64-bit) を Virtual Box VM にインストール</p>
+
+<!--more-->
+
+
+<h1>VirtualBox VM 準備</h1>
+
+<p>ネットワークの設定は</p>
+
+<ul>
+<li>ネットワークアダプタ1: NAT</li>
+<li>ネットワークアダプタ2: ホストオンリーアダプタ</li>
+</ul>
+
+
+<p>ストレージにインストーラをセットして起動</p>
+
+<h1>インストール</h1>
+
+<p>"Install or Update an existing System" を選択して開始</p>
+
+<h2>Disk Found</h2>
+
+<p>Skip を選択</p>
+
+<h2>Warning, Error processing Drive</h2>
+
+<p>"Re-initialize all" を選択</p>
+
+<h2>Time Zone Selection</h2>
+
+<p>"System clock uses UTC" にチェックを入れ、"Asia/Tokyo" を選択し、OK</p>
+
+<h2>Partitioning Type</h2>
+
+<p>"Use entire drive" を選択</p>
+
+<h1>初期設定</h1>
+
+<h2>ユーザの追加</h2>
+
+<pre><code># adduser &lt;username&gt;
+# passwd &lt;username&gt;
+</code></pre>
+
+<h2>iptables, SELinux 無効化</h2>
+
+<pre><code># chkconfig iptables off
+# chkconfig ip6tables off
+# vi /etc/sysconfig/selinux
+SELINUX=disabled
+</code></pre>
+
+<h2>ホスト名変更</h2>
+
+<p><code>/etc/sysconfig/network</code> を編集</p>
+
+<h2>ネットワーク設定</h2>
+
+<p>ホストマシンと通信するため、ホストオンリーアダプタをセットしたデバイスの設定ファイルを編集
+``` sh /etc/sysconfig/network-scripts/ifcfg-eth1</p>
+
+<h1>追加・変更箇所</h1>
+
+<p>ONBOOT=yes
+BOOTPROTO=none
+IPADDR=192.168.56.101
+NETMASK=255.255.255.0
+GATEWAY=192.168.56.0
+```</p>
+]]></content>
+  </entry>
   
   <entry>
     <title type="html"><![CDATA[Advanced Programming in the UNIX environment Chapter 5]]></title>
@@ -1222,293 +1300,6 @@ const char <em>inet_ntop(int family, const void </em>addrptr, char *strptr, size
 <li><em>strptr</em> に null は入れられない。メモリを確保してそのサイズを指定する必要がある。</li>
 <li><code>inet_pton()</code> に成功すると 1, 失敗すると 0 が返ってくる</li>
 <li><code>inet_ntop()</code> に成功すると、戻り値として <em>strptr</em> が返る</li>
-</ul>
-
-]]></content>
-  </entry>
-  
-  <entry>
-    <title type="html"><![CDATA[Advanced Programming in the UNIX enviroment Chapter 3]]></title>
-    <link href="http://kentaktwo.github.com/blog/2012/06/30/apue-chapter-3/"/>
-    <updated>2012-06-30T13:49:00+09:00</updated>
-    <id>http://kentaktwo.github.com/blog/2012/06/30/apue-chapter-3</id>
-    <content type="html"><![CDATA[<h1>File I/O</h1>
-
-<!--more-->
-
-
-<h2>File Descriptors</h2>
-
-<ul>
-<li>標準入出力は <code>&lt;unistd.h&gt;</code> に定義されている
-
-<ul>
-<li><code>STDIN_FILENO</code>: 0</li>
-<li><code>STDOUT_FILENO</code>: 1</li>
-<li><code>STDERR_FILENO</code>: 2</li>
-<li>0, 1, 2 に割り当てられているのは慣習であり、UNIX の取り決めではない</li>
-</ul>
-</li>
-<li>File descriptor の範囲は 0 から <code>OPEN_MAX</code> まで
-
-<ul>
-<li>昔は 19 までだったが最近は 63 まであるシステムが多い</li>
-</ul>
-</li>
-</ul>
-
-
-<h2>open Function</h2>
-
-<p>``` c</p>
-
-<h1>include &lt;fcntl.h></h1>
-
-<p>int open(const char <em>pathname, int oflag, ... /</em> mode_t mode */ );
-<code>``
-- ファイルを開いたり作成したりする
-- 第二引数 (_oflag_) に入れるオプションは</code>&lt;fcntl.h>` に定義されている</p>
-
-<pre><code>- `O_RDONLY`, `O_WRONLY`, `O_RDWR` のいずれかは必須
-</code></pre>
-
-<ul>
-<li>open される file descriptor は使われていないもののうち最小のものになる
-
-<ul>
-<li>なので、標準出力(1) を close して open すると 1番に割り当てられたりする</li>
-</ul>
-</li>
-<li>ファイル名が長すぎた (<code>NAME_MAX</code>以上) ときどうするかは OS 依存
-
-<ul>
-<li>System V 系だと勝手にはみ出た分を切り捨てる</li>
-<li>BSD 系だとエラー (<code>ENAMETOOLONG</code>) を出す</li>
-<li>POSIX.1 なら <code>_POSIX_NO_TRUNC</code> を定義すればエラーを出すようにできる</li>
-</ul>
-</li>
-</ul>
-
-
-<h2>creat Function</h2>
-
-<p>``` c</p>
-
-<h1>include &lt;fcntl.h></h1>
-
-<p>int creat(const char *pathname, mode_t mode);
-<code>``
--</code>open(pathname, O_WRONLY | O_CREAT | O_TRUNC, mode);` と同じ</p>
-
-<h2>close Function</h2>
-
-<p>``` c</p>
-
-<h1>include &lt;unistd.h></h1>
-
-<p>int close(int filedes);
-```
-- プロセスが終了するときにはカーネルによって自動的に close される</p>
-
-<h2>lseek Function</h2>
-
-<p>``` c</p>
-
-<h1>include &lt;unistd.h></h1>
-
-<p>off_t lseek(int filedes, off_t offset, int whence);
-<code>``
-- オフセットの位置を指定する
-- open されたファイルは現在のファイルの始めからのオフセットを非負整数で持っている
-- デフォルトでは open されたときオフセットは 0 に設定される (</code>O_APPEND` を設定している場合を除く)
-- <em>offset</em> の値の適用の仕方は <em>whence</em> の値による</p>
-
-<pre><code>- `SEEK_SET`: ファイルの始めから _offset_ 進めたところ
-- `SEEK_CUR`: 現在のオフセットから _offset_ 進めたところ
-- `SEEK_END`: ファイルの終わり（正確には現在のファイルサイズ）から _offset_ 進めたところ
-</code></pre>
-
-<ul>
-<li><code>lseek</code> は新しいファイルオフセットを返すので、これを利用して現在のオフセットを取得することができる
-<code>c
-off_t currpos = lseek(fd, 0, SEEK_CUR);
-</code></li>
-<li>ファイルオフセットをファイルサイズより大きくして write すると、その間は 0 で埋められるが、ディスクブロックは割り当てられない</li>
-</ul>
-
-
-<h2>od command</h2>
-
-<ul>
-<li>ファイルコンテンツを見る</li>
-<li><code>-c</code> オプションをつけるとコンテンツを文字として表示する</li>
-</ul>
-
-
-<h2>read Function</h2>
-
-<p>``` c</p>
-
-<h1>include &lt;unistd.h></h1>
-
-<p>ssize_t read(int filedes, void *buf, size_t nbytes);
-```
-- 戻り値は実際に読み込んだバイト数</p>
-
-<pre><code>- EOF のときは 0
-</code></pre>
-
-<h2>write Function</h2>
-
-<p>``` c</p>
-
-<h1>include &lt;unistd.h></h1>
-
-<p>ssize_t write(int filedes, const void *buf, size_t nbytes);
-```
-- ディスクがいっぱいで書き込めなくなったときはエラー (-1) を返す</p>
-
-<h2>File Sharing</h2>
-
-<ul>
-<li>カーネルは open されたファイルを3種類のデータ構造で管理している
-
-<ul>
-<li>process table
-
-<ul>
-<li>各プロセスが持つ</li>
-<li>open された file descriptor のテーブル</li>
-<li>各 descriptor は file table へのポインタを持つ</li>
-</ul>
-</li>
-<li>file table
-
-<ul>
-<li>ファイルステータス (read, write, append, sync など)、現在のファイルオフセットを持つ</li>
-<li>v-node table へのポインタを持つ</li>
-</ul>
-</li>
-<li>v-node table
-
-<ul>
-<li>ファイルタイプ、i-node 情報を持つ</li>
-<li>i-node はファイルのオーナー、サイズ、実データの格納場所へのポインタなどを持っている</li>
-</ul>
-</li>
-</ul>
-</li>
-<li>Linux には v-node は無いが、その代わりに generic i-node が使われる</li>
-<li>2つのプロセスが同じファイルを open すると、file table は2つできるが、それらが同じ v-node table を指す</li>
-</ul>
-
-
-<h2>Atomic Operations</h2>
-
-<p>``` c</p>
-
-<h1>include &lt;unistd.h></h1>
-
-<p>ssize_t pread(int filedes, void <em>buf, size_t nbytes, off_t offset);
-ssize_t pwrite(int filedes, const void </em>buf, size_t nbytes, off_t offset);
-<code>``
-</code>lseek<code>と</code>read<code>または</code>write` を atomic に行なってくれる</p>
-
-<h2>dup and dup2 Functions</h2>
-
-<p>``` c</p>
-
-<h1>include &lt;unistd.h></h1>
-
-<p>int dup(int filedes);
-int dup2(int filedes, int filedes2);
-```
-- file descriptor を複製する</p>
-
-<pre><code>- dup では複製されたディスクリプタは使用可能なディスクリプタのうち最小のものとなる
-- dup2 では複製されたディスクリプタの番号を _filedes2_ で指定する
-</code></pre>
-
-<ul>
-<li>元のディスクリプタと複製されたディスクリプタは同じ file table を指す
-
-<ul>
-<li>なので、ファイルステータスやファイルオフセットなどが共有される</li>
-</ul>
-</li>
-</ul>
-
-
-<h2>sync, fsync, and fdatasync Functions</h2>
-
-<p>``` c</p>
-
-<h1>include &lt;unistd.h></h1>
-
-<p>int fsync(int filedes);
-int fdatasync(int filedes);
-int sync(void);
-<code>``
-- UNIX の実装では、write されたデータはカーネルによって一旦バッファにコピーされ、少し後にディスクに書き込まれる
--</code>sync` を呼ぶと、すべての変更されたブロックを書き込む</p>
-
-<pre><code>- 通常デーモンによって30秒に1回 `sync` が呼ばれている
-- ディスクの書き込みが終わるのを待たずに return する
-</code></pre>
-
-<ul>
-<li><code>fsync</code> は特定のファイルディスクリプタに対して行う
-
-<ul>
-<li>ディスクへの書き込みが終わるのを待つ</li>
-</ul>
-</li>
-<li><code>fdatasync</code> はデータの更新のみを行う
-
-<ul>
-<li><code>fsync</code> はファイル属性の更新も行う</li>
-</ul>
-</li>
-</ul>
-
-
-<h2>fcntl Function</h2>
-
-<p>``` c</p>
-
-<h1>include &lt;fcntl.h></h1>
-
-<p>int fcntl(int filedes, int cmd, ... /<em> int arg </em>/ );
-```
-- open されたファイルのプロパティを変更する
-- 以下のようなことができる (<em>cmd</em> で指定)</p>
-
-<pre><code>- descriptor の複製
-- descriptor flag の取得・設定
-- file status flag の取得・設定
-- オーナーシップ (process ID, group ID) の取得・設定
-- record lock の取得・設定（詳しくは14章）
-</code></pre>
-
-<h2>/dev/fd</h2>
-
-<ul>
-<li><code>/dev/fd</code> に 0, 1, 2 と呼ばれるファイルがあり、それぞれ file descriptor 0, 1, 2 に対応している</li>
-<li><code>/dev/fd/n</code> を open する際、<em>mode</em> の値は無視される。 <code>/dev/fd/0</code> は read only であり、
-<code>c
-  fd = open("/dev/fd/0", O_RDWR);
-</code>
-としても fd に書き込むことはできない</li>
-<li>shell で使われることが多い
-<code>sh
-filter file2 | cat file1 - file3 | lpr
-</code>
-は file1, filter file2, file3 を cat しているが (<code>-</code> は標準入力)、
-<code>-</code> は場合によって標準入力だったり出力だったりわかりにくいので、
-<code>sh
-filter file2 | cat file1 /dev/fd/0 file3 | lpr
-</code>
-として明確に書くことができる。</li>
 </ul>
 
 ]]></content>

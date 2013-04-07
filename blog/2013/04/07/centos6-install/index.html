@@ -5,12 +5,12 @@
 <!--[if (gt IE 8)|(gt IEMobile 7)|!(IEMobile)|!(IE)]><!--><html class="no-js" lang="en"><!--<![endif]-->
 <head>
   <meta charset="utf-8">
-  <title>iptables を無効にする - ApprEngineer.log</title>
+  <title>CentOS6.4 インストール - ApprEngineer.log</title>
   <meta name="author" content="kentaktwo">
 
   
-  <meta name="description" content="VM に Cent OS 入れたのだが、外からアクセスできない。
-どうもインストール時には iptables が動いてて、外からのアクセスを拒否してるらしい。 $ sudo /etc/rc.d/init.d/iptables stop で iptables を無効にできる。 参考: http:// &hellip;">
+  <meta name="description" content="CentOS 6.4 (64-bit) を Virtual Box VM にインストール VirtualBox VM 準備 ネットワークの設定は ネットワークアダプタ1: NAT
+ネットワークアダプタ2: ホストオンリーアダプタ ストレージにインストーラをセットして起動 インストール &#8220 &hellip;">
   
 
   <!-- http://t.co/dKP3o1e -->
@@ -19,7 +19,7 @@
   <meta name="viewport" content="width=device-width, initial-scale=1">
 
   
-  <link rel="canonical" href="http://kentaktwo.github.com/blog/2012/10/14/disable-iptables">
+  <link rel="canonical" href="http://kentaktwo.github.com/blog/2013/04/07/centos6-install">
   <link href="/favicon.png" rel="icon">
   <link href="/stylesheets/screen.css" media="screen, projection" rel="stylesheet" type="text/css">
   <script src="/javascripts/modernizr-2.0.js"></script>
@@ -69,7 +69,7 @@
   
   <header>
     
-      <h1 class="entry-title">Iptables を無効にする</h1>
+      <h1 class="entry-title">CentOS6.4 インストール</h1>
     
     
       <p class="meta">
@@ -85,7 +85,7 @@
   
 
 
-<time datetime="2012-10-14T00:37:00+09:00" pubdate data-updated="true">Oct 14<span>th</span>, 2012</time>
+<time datetime="2013-04-07T18:18:00+09:00" pubdate data-updated="true">Apr 7<span>th</span>, 2013</time>
         
          | <a href="#disqus_thread">Comments</a>
         
@@ -94,15 +94,83 @@
   </header>
 
 
-<div class="entry-content"><p>VM に Cent OS 入れたのだが、外からアクセスできない。
-どうもインストール時には iptables が動いてて、外からのアクセスを拒否してるらしい。</p>
+<div class="entry-content"><p>CentOS 6.4 (64-bit) を Virtual Box VM にインストール</p>
 
-<pre><code>$ sudo /etc/rc.d/init.d/iptables stop
+<!--more-->
+
+
+<h1>VirtualBox VM 準備</h1>
+
+<p>ネットワークの設定は</p>
+
+<ul>
+<li>ネットワークアダプタ1: NAT</li>
+<li>ネットワークアダプタ2: ホストオンリーアダプタ</li>
+</ul>
+
+
+<p>ストレージにインストーラをセットして起動</p>
+
+<h1>インストール</h1>
+
+<p>&#8220;Install or Update an existing System&#8221; を選択して開始</p>
+
+<h2>Disk Found</h2>
+
+<p>Skip を選択</p>
+
+<h2>Warning, Error processing Drive</h2>
+
+<p>&#8220;Re-initialize all&#8221; を選択</p>
+
+<h2>Time Zone Selection</h2>
+
+<p>&#8220;System clock uses UTC&#8221; にチェックを入れ、&#8221;Asia/Tokyo&#8221; を選択し、OK</p>
+
+<h2>Partitioning Type</h2>
+
+<p>&#8220;Use entire drive&#8221; を選択</p>
+
+<h1>初期設定</h1>
+
+<h2>ユーザの追加</h2>
+
+<pre><code># adduser &lt;username&gt;
+# passwd &lt;username&gt;
 </code></pre>
 
-<p>で iptables を無効にできる。</p>
+<h2>iptables, SELinux 無効化</h2>
 
-<p>参考: <a href="http://www.server-world.info/query?os=CentOS_6&amp;p=initial_conf&amp;f=2">http://www.server-world.info/query?os=CentOS_6&amp;p=initial_conf&amp;f=2</a></p>
+<pre><code># chkconfig iptables off
+# chkconfig ip6tables off
+# vi /etc/sysconfig/selinux
+SELINUX=disabled
+</code></pre>
+
+<h2>ホスト名変更</h2>
+
+<p><code>/etc/sysconfig/network</code> を編集</p>
+
+<h2>ネットワーク設定</h2>
+
+<p>ホストマシンと通信するため、ホストオンリーアダプタをセットしたデバイスの設定ファイルを編集</p>
+
+<figure class='code'><figcaption><span>/etc/sysconfig/network-scripts/ifcfg-eth1</span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+</pre></td><td class='code'><pre><code class='sh'><span class='line'><span class="c"># 追加・変更箇所</span>
+</span><span class='line'><span class="nv">ONBOOT</span><span class="o">=</span>yes
+</span><span class='line'><span class="nv">BOOTPROTO</span><span class="o">=</span>none
+</span><span class='line'><span class="nv">IPADDR</span><span class="o">=</span>192.168.56.101
+</span><span class='line'><span class="nv">NETMASK</span><span class="o">=</span>255.255.255.0
+</span><span class='line'><span class="nv">GATEWAY</span><span class="o">=</span>192.168.56.0
+</span></code></pre></td></tr></table></div></figure>
+
+
+
 </div>
 
 
@@ -125,7 +193,7 @@
   
 
 
-<time datetime="2012-10-14T00:37:00+09:00" pubdate data-updated="true">Oct 14<span>th</span>, 2012</time>
+<time datetime="2013-04-07T18:18:00+09:00" pubdate data-updated="true">Apr 7<span>th</span>, 2013</time>
       
 
 <span class="categories">
@@ -139,7 +207,7 @@
     
       <div class="sharing">
   
-  <a href="http://twitter.com/share" class="twitter-share-button" data-url="http://kentaktwo.github.com/blog/2012/10/14/disable-iptables/" data-via="" data-counturl="http://kentaktwo.github.com/blog/2012/10/14/disable-iptables/" >Tweet</a>
+  <a href="http://twitter.com/share" class="twitter-share-button" data-url="http://kentaktwo.github.com/blog/2013/04/07/centos6-install/" data-via="" data-counturl="http://kentaktwo.github.com/blog/2013/04/07/centos6-install/" >Tweet</a>
   
   
   
@@ -148,10 +216,8 @@
     
     <p class="meta">
       
-        <a class="basic-alignment left" href="/blog/2012/08/11/lua-chapter-2/" title="Previous Post: Programming In Lua Chapter 2">&laquo; Programming In Lua Chapter 2</a>
+        <a class="basic-alignment left" href="/blog/2013/01/18/apue-chapter-5/" title="Previous Post: Advanced Programming in the UNIX environment Chapter 5">&laquo; Advanced Programming in the UNIX environment Chapter 5</a>
       
-      
-        <a class="basic-alignment right" href="/blog/2012/10/14/apue-chapter-4/" title="Next Post: Advanced Programming in the UNIX enviroment Chapter 4">Advanced Programming in the UNIX enviroment Chapter 4 &raquo;</a>
       
     </p>
   </footer>
@@ -218,8 +284,8 @@
       
         
         // var disqus_developer = 1;
-        var disqus_identifier = 'http://kentaktwo.github.com/blog/2012/10/14/disable-iptables/';
-        var disqus_url = 'http://kentaktwo.github.com/blog/2012/10/14/disable-iptables/';
+        var disqus_identifier = 'http://kentaktwo.github.com/blog/2013/04/07/centos6-install/';
+        var disqus_url = 'http://kentaktwo.github.com/blog/2013/04/07/centos6-install/';
         var disqus_script = 'embed.js';
       
     (function () {

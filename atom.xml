@@ -4,7 +4,7 @@
   <title><![CDATA[ApprEngineer.log]]></title>
   <link href="http://kentaktwo.github.com/atom.xml" rel="self"/>
   <link href="http://kentaktwo.github.com/"/>
-  <updated>2013-04-07T18:12:15+09:00</updated>
+  <updated>2013-04-07T23:21:18+09:00</updated>
   <id>http://kentaktwo.github.com/</id>
   <author>
     <name><![CDATA[kentaktwo]]></name>
@@ -12,6 +12,91 @@
   </author>
   <generator uri="http://octopress.org/">Octopress</generator>
 
+  
+  <entry>
+    <title type="html"><![CDATA[CentOS6.4 インストール]]></title>
+    <link href="http://kentaktwo.github.com/blog/2013/04/07/centos6-install/"/>
+    <updated>2013-04-07T18:18:00+09:00</updated>
+    <id>http://kentaktwo.github.com/blog/2013/04/07/centos6-install</id>
+    <content type="html"><![CDATA[<p>CentOS 6.4 (64-bit) を Virtual Box VM にインストール</p>
+
+<!--more-->
+
+
+<h1>VirtualBox VM 準備</h1>
+
+<p>ネットワークの設定は</p>
+
+<ul>
+<li>ネットワークアダプタ1: NAT</li>
+<li>ネットワークアダプタ2: ホストオンリーアダプタ</li>
+</ul>
+
+
+<p>ストレージにインストーラをセットして起動</p>
+
+<h1>インストール</h1>
+
+<p>&#8220;Install or Update an existing System&#8221; を選択して開始</p>
+
+<h2>Disk Found</h2>
+
+<p>Skip を選択</p>
+
+<h2>Warning, Error processing Drive</h2>
+
+<p>&#8220;Re-initialize all&#8221; を選択</p>
+
+<h2>Time Zone Selection</h2>
+
+<p>&#8220;System clock uses UTC&#8221; にチェックを入れ、&#8221;Asia/Tokyo&#8221; を選択し、OK</p>
+
+<h2>Partitioning Type</h2>
+
+<p>&#8220;Use entire drive&#8221; を選択</p>
+
+<h1>初期設定</h1>
+
+<h2>ユーザの追加</h2>
+
+<pre><code># adduser &lt;username&gt;
+# passwd &lt;username&gt;
+</code></pre>
+
+<h2>iptables, SELinux 無効化</h2>
+
+<pre><code># chkconfig iptables off
+# chkconfig ip6tables off
+# vi /etc/sysconfig/selinux
+SELINUX=disabled
+</code></pre>
+
+<h2>ホスト名変更</h2>
+
+<p><code>/etc/sysconfig/network</code> を編集</p>
+
+<h2>ネットワーク設定</h2>
+
+<p>ホストマシンと通信するため、ホストオンリーアダプタをセットしたデバイスの設定ファイルを編集</p>
+
+<figure class='code'><figcaption><span>/etc/sysconfig/network-scripts/ifcfg-eth1</span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+</pre></td><td class='code'><pre><code class='sh'><span class='line'><span class="c"># 追加・変更箇所</span>
+</span><span class='line'><span class="nv">ONBOOT</span><span class="o">=</span>yes
+</span><span class='line'><span class="nv">BOOTPROTO</span><span class="o">=</span>none
+</span><span class='line'><span class="nv">IPADDR</span><span class="o">=</span>192.168.56.101
+</span><span class='line'><span class="nv">NETMASK</span><span class="o">=</span>255.255.255.0
+</span><span class='line'><span class="nv">GATEWAY</span><span class="o">=</span>192.168.56.0
+</span></code></pre></td></tr></table></div></figure>
+
+
+
+]]></content>
+  </entry>
   
   <entry>
     <title type="html"><![CDATA[Advanced Programming in the UNIX environment Chapter 5]]></title>
