@@ -4,7 +4,7 @@
   <title><![CDATA[Category: unix | ApprEngineer.log]]></title>
   <link href="http://kentaktwo.github.com/blog/categories/unix/atom.xml" rel="self"/>
   <link href="http://kentaktwo.github.com/"/>
-  <updated>2013-04-07T23:21:18+09:00</updated>
+  <updated>2013-04-07T23:42:37+09:00</updated>
   <id>http://kentaktwo.github.com/</id>
   <author>
     <name><![CDATA[kentaktwo]]></name>
@@ -59,8 +59,10 @@
 
 <h2>ユーザの追加</h2>
 
-<pre><code># adduser &lt;username&gt;
+<pre><code># useradd -g wheel &lt;username&gt;
 # passwd &lt;username&gt;
+# vi /etc/sudoers  # wheel に sudo 権限を与える
+# usermod -G wheel &lt;username&gt;  # useradd で wheel group に入れ忘れた場合
 </code></pre>
 
 <h2>iptables, SELinux 無効化</h2>
@@ -70,6 +72,10 @@
 # vi /etc/sysconfig/selinux
 SELINUX=disabled
 </code></pre>
+
+<p>SELINUX を無効にすると、kernel panic を起こすことがあるので、<br/>
+<code>/boot/grub/grub.conf</code> の <code>kernel</code> 行に <code>enforcing=0</code> を追記する。<br/>
+kernel panic を起こしてしまった場合は <a href="http://h2np.net/mynotebook/post/130">http://h2np.net/mynotebook/post/130</a></p>
 
 <h2>ホスト名変更</h2>
 
