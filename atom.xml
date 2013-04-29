@@ -4,7 +4,7 @@
   <title><![CDATA[ApprEngineer.log]]></title>
   <link href="http://kentaktwo.github.com/atom.xml" rel="self"/>
   <link href="http://kentaktwo.github.com/"/>
-  <updated>2013-04-07T23:42:37+09:00</updated>
+  <updated>2013-04-30T00:31:02+09:00</updated>
   <id>http://kentaktwo.github.com/</id>
   <author>
     <name><![CDATA[kentaktwo]]></name>
@@ -12,6 +12,366 @@
   </author>
   <generator uri="http://octopress.org/">Octopress</generator>
 
+  
+  <entry>
+    <title type="html"><![CDATA[Programming In Lua Chapter 4]]></title>
+    <link href="http://kentaktwo.github.com/blog/2013/04/29/lua-chapter-4/"/>
+    <updated>2013-04-29T23:48:00+09:00</updated>
+    <id>http://kentaktwo.github.com/blog/2013/04/29/lua-chapter-4</id>
+    <content type="html"><![CDATA[<h1>Statements</h1>
+
+<!--more-->
+
+
+<h2>Assignment</h2>
+
+<ul>
+<li>Lua は複数の変数への代入を同時にできる。</li>
+</ul>
+
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+</pre></td><td class='code'><pre><code class='lua'><span class='line'><span class="n">x</span><span class="p">,</span> <span class="n">y</span> <span class="o">=</span> <span class="n">y</span><span class="p">,</span> <span class="n">x</span>  <span class="c1">-- swap &#39;x&#39; for &#39;y&#39;</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<ul>
+<li>変数の数の方が多かった場合、多かった分の変数には nil が入る。</li>
+</ul>
+
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+</pre></td><td class='code'><pre><code class='lua'><span class='line'><span class="n">a</span><span class="p">,</span> <span class="n">b</span><span class="p">,</span> <span class="n">c</span> <span class="o">=</span> <span class="mi">0</span><span class="p">,</span> <span class="mi">1</span>
+</span><span class='line'><span class="nb">print</span><span class="p">(</span><span class="n">a</span><span class="p">,</span> <span class="n">b</span><span class="p">,</span> <span class="n">c</span><span class="p">)</span>  <span class="c1">--&gt; 0  1  nil</span>
+</span><span class='line'>
+</span><span class='line'><span class="c1">-- 初期化するときは注意</span>
+</span><span class='line'><span class="n">a</span><span class="p">,</span> <span class="n">b</span><span class="p">,</span> <span class="n">c</span> <span class="o">=</span> <span class="mi">0</span>
+</span><span class='line'><span class="nb">print</span><span class="p">(</span><span class="n">a</span><span class="p">,</span> <span class="n">b</span><span class="p">,</span> <span class="n">c</span><span class="p">)</span>  <span class="c1">--&gt; 0  nil  nil</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<ul>
+<li>代入値の方が多かった場合、多かった分の値は無視される。</li>
+</ul>
+
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+</pre></td><td class='code'><pre><code class='lua'><span class='line'><span class="n">a</span><span class="p">,</span> <span class="n">b</span> <span class="o">=</span> <span class="mi">3</span><span class="p">,</span> <span class="mi">4</span><span class="p">,</span> <span class="mi">5</span>
+</span><span class='line'><span class="nb">print</span><span class="p">(</span><span class="n">a</span><span class="p">,</span> <span class="n">b</span><span class="p">)</span>  <span class="c1">--&gt; 3  4</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<h2>Local Variables and Blocks</h2>
+
+<ul>
+<li>ローカル変数を使うには <code>local</code> を頭につけて宣言する。</li>
+</ul>
+
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+</pre></td><td class='code'><pre><code class='lua'><span class='line'><span class="n">j</span> <span class="o">=</span> <span class="mi">10</span>          <span class="c1">-- global variable</span>
+</span><span class='line'><span class="kd">local</span> <span class="n">i</span> <span class="o">=</span> <span class="mi">1</span>     <span class="c1">-- local variable</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<ul>
+<li><code>do-end</code> を使ってブロックが作れる。</li>
+</ul>
+
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+<span class='line-number'>7</span>
+</pre></td><td class='code'><pre><code class='lua'><span class='line'><span class="n">a</span> <span class="o">=</span> <span class="s2">&quot;</span><span class="s">foo&quot;</span>
+</span><span class='line'><span class="k">do</span>
+</span><span class='line'>    <span class="nb">print</span><span class="p">(</span><span class="n">a</span><span class="p">)</span>        <span class="c1">--&gt; foo</span>
+</span><span class='line'>    <span class="kd">local</span> <span class="n">a</span> <span class="o">=</span> <span class="s1">&#39;</span><span class="s">bar&#39;</span>
+</span><span class='line'>    <span class="nb">print</span><span class="p">(</span><span class="n">a</span><span class="p">)</span>        <span class="c1">--&gt; bar</span>
+</span><span class='line'><span class="k">end</span>
+</span><span class='line'><span class="nb">print</span><span class="p">(</span><span class="n">a</span><span class="p">)</span>            <span class="c1">--&gt; foo</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<ul>
+<li><code>local foo = foo</code> とすれば、グローバル変数の foo を変えずにローカル変数の foo を操作できる。</li>
+<li>ローカル変数の方がアクセスがスコープが限定されていて、アクセスも速いので、できるだけローカル変数を使うようにする。</li>
+</ul>
+
+
+<h2>Control Structures</h2>
+
+<h3>if then else</h3>
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+<span class='line-number'>7</span>
+</pre></td><td class='code'><pre><code class='lua'><span class='line'><span class="k">if</span> <span class="n">op</span> <span class="o">==</span> <span class="s2">&quot;</span><span class="s">+&quot;</span> <span class="k">then</span>
+</span><span class='line'>    <span class="n">r</span> <span class="o">=</span> <span class="n">a</span> <span class="o">+</span> <span class="n">b</span>
+</span><span class='line'><span class="k">elseif</span> <span class="n">op</span> <span class="o">==</span> <span class="s2">&quot;</span><span class="s">-&quot;</span> <span class="k">then</span>
+</span><span class='line'>    <span class="n">r</span> <span class="o">=</span> <span class="n">a</span> <span class="o">-</span> <span class="n">b</span>
+</span><span class='line'><span class="k">else</span>
+</span><span class='line'>    <span class="n">r</span> <span class="o">=</span> <span class="kc">nil</span>
+</span><span class='line'><span class="k">end</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<ul>
+<li><code>else if</code> ではなく <code>elseif</code></li>
+</ul>
+
+
+<h3>while</h3>
+
+<p><code>while-do-end</code> の形で使う</p>
+
+<h3>repeat</h3>
+
+<p>C 言語でいう do-while みたいなやつ</p>
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+</pre></td><td class='code'><pre><code class='lua'><span class='line'><span class="k">repeat</span>
+</span><span class='line'>    <span class="n">line</span> <span class="o">=</span> <span class="n">os</span><span class="p">.</span><span class="n">read</span><span class="p">()</span>
+</span><span class='line'><span class="k">until</span> <span class="n">line</span> <span class="o">~=</span> <span class="s2">&quot;</span><span class="s">&quot;</span>
+</span><span class='line'><span class="nb">print</span><span class="p">(</span><span class="n">line</span><span class="p">)</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<ul>
+<li>他の多くのプログラミング言語と違い、repeat 内のローカル変数は until の中でも有効。</li>
+</ul>
+
+
+<h3>Numeric for</h3>
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+<span class='line-number'>7</span>
+<span class='line-number'>8</span>
+<span class='line-number'>9</span>
+</pre></td><td class='code'><pre><code class='lua'><span class='line'><span class="c1">-- i=10 から始めて、1 まで -1 刻みで &lt;something&gt; をする。</span>
+</span><span class='line'><span class="k">for</span> <span class="n">i</span><span class="o">=</span><span class="mi">10</span><span class="p">,</span> <span class="mi">1</span><span class="p">,</span> <span class="o">-</span><span class="mi">1</span> <span class="k">do</span>
+</span><span class='line'>    <span class="o">&lt;</span><span class="n">something</span><span class="o">&gt;</span>
+</span><span class='line'><span class="k">end</span>
+</span><span class='line'>
+</span><span class='line'><span class="c1">-- 3つ目を省略すると 1 刻みになる。</span>
+</span><span class='line'><span class="k">for</span> <span class="n">i</span><span class="o">=</span><span class="mi">1</span><span class="p">,</span> <span class="o">#</span><span class="n">a</span> <span class="k">do</span>
+</span><span class='line'>    <span class="n">a</span><span class="p">[</span><span class="n">i</span><span class="p">]</span> <span class="o">=</span> <span class="n">a</span><span class="p">[</span><span class="n">i</span><span class="p">]</span> <span class="o">+</span> <span class="mi">1</span>     <span class="c1">-- すべての a[i] に1をたす</span>
+</span><span class='line'><span class="k">end</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<ul>
+<li><code>break</code> が使える。</li>
+</ul>
+
+
+<h3>Generic for</h3>
+
+<p>イテレータ関数を使って要素を回す</p>
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+</pre></td><td class='code'><pre><code class='lua'><span class='line'><span class="c1">-- 配列 &#39;a&#39; の全要素を表示する</span>
+</span><span class='line'><span class="k">for</span> <span class="n">i</span><span class="p">,</span> <span class="n">v</span> <span class="k">in</span> <span class="nb">ipairs</span><span class="p">(</span><span class="n">a</span><span class="p">)</span> <span class="k">do</span>
+</span><span class='line'>    <span class="nb">print</span><span class="p">(</span><span class="n">v</span><span class="p">)</span>
+</span><span class='line'><span class="k">end</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<h2>break and return</h2>
+
+<ul>
+<li><code>break</code> と <code>return</code> が使える。</li>
+<li><code>end</code>, <code>else</code>, <code>until</code> のいずれかの直前にしか置いてはいけない。</li>
+</ul>
+
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+</pre></td><td class='code'><pre><code class='lua'><span class='line'><span class="k">function</span> <span class="nf">foo</span><span class="p">()</span>
+</span><span class='line'>    <span class="k">return</span>          <span class="c1">--&lt;&lt; SYNTAX ERROR</span>
+</span><span class='line'>    <span class="o">&lt;</span><span class="n">something</span><span class="o">&gt;</span>
+</span><span class='line'><span class="k">end</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p>デバッグ用途などで return を書きたい場合は、<code>do-end</code> を使う。</p>
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+</pre></td><td class='code'><pre><code class='lua'><span class='line'><span class="k">function</span> <span class="nf">foo</span><span class="p">()</span>
+</span><span class='line'>    <span class="k">do</span> <span class="k">return</span> <span class="k">end</span>  <span class="c1">-- end の直前にあるので OK</span>
+</span><span class='line'>    <span class="o">&lt;</span><span class="n">something</span><span class="o">&gt;</span>
+</span><span class='line'><span class="k">end</span>
+</span></code></pre></td></tr></table></div></figure>
+
+]]></content>
+  </entry>
+  
+  <entry>
+    <title type="html"><![CDATA[Programming In Lua Chapter 3]]></title>
+    <link href="http://kentaktwo.github.com/blog/2013/04/29/lua-chapter-3/"/>
+    <updated>2013-04-29T23:04:00+09:00</updated>
+    <id>http://kentaktwo.github.com/blog/2013/04/29/lua-chapter-3</id>
+    <content type="html"><![CDATA[<h1>Expressions</h1>
+
+<!--more-->
+
+
+<h2>Arithmetic Operations</h2>
+
+<p>Lua がサポートしている演算子は<br/>
+<code>+</code>, <code>-</code> (二項演算子), <code>*</code>, <code>/</code>, <code>^</code> (累乗), <code>%</code>, <code>-</code> (単項演算子)</p>
+
+<p><code>%</code> の定義は</p>
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+</pre></td><td class='code'><pre><code class='lua'><span class='line'><span class="n">a</span> <span class="o">%</span> <span class="n">b</span> <span class="o">==</span> <span class="n">a</span> <span class="o">-</span> <span class="n">floor</span><span class="p">(</span><span class="n">a</span><span class="o">/</span><span class="n">b</span><span class="p">)</span><span class="o">*</span><span class="n">b</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p><code>%</code> 演算子は小数でも有効で、例えば <code>x - x%0.01</code> とすれば、<code>x</code> の小数第二位までが取れる。</p>
+
+<h2>Relational Operators</h2>
+
+<p>Lua の比較演算子は、型の一致も含めてチェックする。<br/>
+よって <code>1 == "1"</code> は false。<br/>
+ちなみに &#8220;等しくない&#8221; は <code>!=</code> ではなく <code>~=</code>。<br/>
+table, userdata, function の比較は参照単位で行われる。</p>
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+</pre></td><td class='code'><pre><code class='lua'><span class='line'><span class="o">&gt;</span> <span class="n">a</span> <span class="o">=</span> <span class="p">{};</span> <span class="n">a</span><span class="p">.</span><span class="n">x</span> <span class="o">=</span> <span class="mi">1</span><span class="p">;</span> <span class="n">a</span><span class="p">.</span><span class="n">y</span> <span class="o">=</span> <span class="mi">0</span>
+</span><span class='line'><span class="o">&gt;</span> <span class="n">b</span> <span class="o">=</span> <span class="p">{};</span> <span class="n">b</span><span class="p">.</span><span class="n">x</span> <span class="o">=</span> <span class="mi">1</span><span class="p">;</span> <span class="n">b</span><span class="p">.</span><span class="n">y</span> <span class="o">=</span> <span class="mi">0</span>
+</span><span class='line'><span class="o">&gt;</span> <span class="n">c</span> <span class="o">=</span> <span class="n">a</span>
+</span><span class='line'><span class="o">&gt;</span> <span class="o">=</span> <span class="n">a</span> <span class="o">==</span> <span class="n">b</span>  <span class="c1">--&gt; false</span>
+</span><span class='line'><span class="o">&gt;</span> <span class="o">=</span> <span class="n">a</span> <span class="o">==</span> <span class="n">c</span>  <span class="c1">--&gt; true</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p><code>2 &lt; "15"</code> のように型が違う値の大小関係を調べようとするとエラーになる。</p>
+
+<h2>Logical Operators</h2>
+
+<p><code>and</code>, <code>or</code>, <code>not</code> がある。<br/>
+<code>x and y</code> は、x が true なら y, false なら x<br/>
+<code>x or y</code> は、x が true なら x, false なら y</p>
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+</pre></td><td class='code'><pre><code class='lua'><span class='line'><span class="n">x</span> <span class="o">=</span> <span class="n">x</span> <span class="ow">or</span> <span class="n">v</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p>は <code>if not x then x = v end</code> と同じで、x にデフォルト値を入れるときなどに使える。</p>
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+</pre></td><td class='code'><pre><code class='lua'><span class='line'><span class="p">(</span><span class="n">a</span> <span class="ow">and</span> <span class="n">b</span><span class="p">)</span> <span class="ow">or</span> <span class="n">c</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p>で、C 言語の <code>a ? b : c</code> と同じことができる。</p>
+
+<h2>Table Constructors</h2>
+
+<p>table を作るときに初期値が入れられる。index は 1 始まり。</p>
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+<span class='line-number'>7</span>
+<span class='line-number'>8</span>
+<span class='line-number'>9</span>
+<span class='line-number'>10</span>
+<span class='line-number'>11</span>
+<span class='line-number'>12</span>
+<span class='line-number'>13</span>
+<span class='line-number'>14</span>
+<span class='line-number'>15</span>
+<span class='line-number'>16</span>
+<span class='line-number'>17</span>
+<span class='line-number'>18</span>
+<span class='line-number'>19</span>
+<span class='line-number'>20</span>
+<span class='line-number'>21</span>
+<span class='line-number'>22</span>
+<span class='line-number'>23</span>
+<span class='line-number'>24</span>
+<span class='line-number'>25</span>
+<span class='line-number'>26</span>
+<span class='line-number'>27</span>
+<span class='line-number'>28</span>
+<span class='line-number'>29</span>
+<span class='line-number'>30</span>
+<span class='line-number'>31</span>
+</pre></td><td class='code'><pre><code class='lua'><span class='line'><span class="cm">--[[</span>
+</span><span class='line'><span class="cm">t1[1] = &quot;a&quot; (t[0] ではない)</span>
+</span><span class='line'><span class="cm">t1[2] = &quot;b&quot;</span>
+</span><span class='line'><span class="cm">t1[3] = &quot;c&quot;</span>
+</span><span class='line'><span class="cm">t1[&quot;x&quot;] = &quot;d&quot; (t.x = &quot;d&quot;)</span>
+</span><span class='line'><span class="cm">t1[&quot;y&quot;] = &quot;e&quot; (t.y = &quot;e&quot;)</span>
+</span><span class='line'><span class="cm">--]]</span>
+</span><span class='line'><span class="n">t1</span> <span class="o">=</span> <span class="p">{</span><span class="s2">&quot;</span><span class="s">a&quot;</span><span class="p">,</span> <span class="s2">&quot;</span><span class="s">b&quot;</span><span class="p">,</span> <span class="s2">&quot;</span><span class="s">c&quot;</span><span class="p">,</span> <span class="n">x</span><span class="o">=</span><span class="s2">&quot;</span><span class="s">d&quot;</span><span class="p">,</span> <span class="n">y</span><span class="o">=</span><span class="s2">&quot;</span><span class="s">e&quot;</span><span class="p">}</span>
+</span><span class='line'>
+</span><span class='line'><span class="cm">--[[</span>
+</span><span class='line'><span class="cm">[] を使うと複雑な index も作れる</span>
+</span><span class='line'><span class="cm">{[&quot;x&quot;] = 0} と {x=0} は同じ</span>
+</span><span class='line'>
+</span><span class='line'><span class="cm">t2[-1] = &quot;a&quot;</span>
+</span><span class='line'><span class="cm">t2[&quot;+&quot;] = &quot;add&quot;</span>
+</span><span class='line'><span class="cm">t[22] = &quot;s&quot;</span>
+</span><span class='line'><span class="cm">--]]</span>
+</span><span class='line'><span class="n">i</span> <span class="o">=</span> <span class="mi">20</span>
+</span><span class='line'><span class="n">t2</span> <span class="o">=</span> <span class="p">{[</span><span class="o">-</span><span class="mi">1</span><span class="p">]</span> <span class="o">=</span> <span class="s2">&quot;</span><span class="s">a&quot;</span><span class="p">,</span> <span class="p">[</span><span class="s2">&quot;</span><span class="s">+&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="s2">&quot;</span><span class="s">add&quot;</span><span class="p">,</span> <span class="p">[</span><span class="n">i</span><span class="o">+</span><span class="mi">2</span><span class="p">]</span> <span class="o">=</span> <span class="s2">&quot;</span><span class="s">s&quot;</span><span class="p">}</span>
+</span><span class='line'>
+</span><span class='line'>
+</span><span class='line'><span class="cm">--[[</span>
+</span><span class='line'><span class="cm">0 始まりの table を作ることもできるが、</span>
+</span><span class='line'><span class="cm">ほとんどの関数等は 1 始まりを想定して作られているのでやめたほうがいい。</span>
+</span><span class='line'><span class="cm">--]]</span>
+</span><span class='line'><span class="n">t3</span> <span class="o">=</span> <span class="p">{[</span><span class="mi">0</span><span class="p">]</span><span class="o">=</span><span class="s2">&quot;</span><span class="s">a&quot;</span><span class="p">,</span> <span class="s2">&quot;</span><span class="s">b&quot;</span><span class="p">,</span> <span class="s2">&quot;</span><span class="s">c&quot;</span><span class="p">,</span> <span class="s2">&quot;</span><span class="s">d&quot;</span><span class="p">}</span>
+</span><span class='line'>
+</span><span class='line'><span class="cm">--[[</span>
+</span><span class='line'><span class="cm">要素の区切りにカンマの代わりにセミコロンが使える。</span>
+</span><span class='line'><span class="cm">--]]</span>
+</span><span class='line'><span class="n">t4</span> <span class="o">=</span> <span class="p">{</span><span class="n">x</span><span class="o">=</span><span class="mi">10</span><span class="p">,</span> <span class="n">y</span><span class="o">=</span><span class="mi">45</span><span class="p">;</span> <span class="s2">&quot;</span><span class="s">one&quot;</span><span class="p">,</span> <span class="s2">&quot;</span><span class="s">two&quot;</span><span class="p">,</span> <span class="s2">&quot;</span><span class="s">three&quot;</span><span class="p">}</span>
+</span></code></pre></td></tr></table></div></figure>
+
+]]></content>
+  </entry>
   
   <entry>
     <title type="html"><![CDATA[CentOS6.4 インストール]]></title>
@@ -3639,113 +3999,6 @@ $ sudo make install clean
 </code></pre>
 
 <p>を追加する。</p>
-]]></content>
-  </entry>
-  
-  <entry>
-    <title type="html"><![CDATA[VirtualBox に入れたゲスト OS に ssh login]]></title>
-    <link href="http://kentaktwo.github.com/blog/2012/01/25/vbox-portforwarding/"/>
-    <updated>2012-01-25T23:51:00+09:00</updated>
-    <id>http://kentaktwo.github.com/blog/2012/01/25/vbox-portforwarding</id>
-    <content type="html"><![CDATA[<p>家の Mac OS X の VirtualBox に FreeBSD 9.0 を入れました。<br/>
-Host から Guest に ssh する設定をしました。</p>
-
-<!-- more -->
-
-
-<h2>ゲスト OS のポートフォワーディング設定</h2>
-
-<pre><code># ssh の設定
-$ VBoxManage setextradata "f1" "VBoxInternal/Devices/e1000/0/LUN#0/Config/guestssh/Protocol" TCP
-$ VBoxManage setextradata "f1" "VBoxInternal/Devices/e1000/0/LUN#0/Config/guestssh/GuestPort" 22
-$ VBoxManage setextradata "f1" "VBoxInternal/Devices/e1000/0/LUN#0/Config/guestssh/HostPort" 60022
-
-# http の設定
-$ VBoxManage setextradata "f1" "VBoxInternal/Devices/e1000/0/LUN#0/Config/guesthttp/Protocol" TCP
-$ VBoxManage setextradata "f1" "VBoxInternal/Devices/e1000/0/LUN#0/Config/guesthttp/GuestPort" 80
-$ VBoxManage setextradata "f1" "VBoxInternal/Devices/e1000/0/LUN#0/Config/guesthttp/HostPort" 60080
-</code></pre>
-
-<ul>
-<li>Guest の 22 番ポートを Host の 60022 番ポートへ</li>
-<li>Guest の 80 番ポートを Host の 60080 番ポートへ</li>
-</ul>
-
-
-<p>転送する。f1 は VM の名前。<br/>
-自由に使用できるポート番号は 49152 〜 65535 らしい。
-50000 番台は CentOS が使っているので、FreeBSD は 60000 番台に割り当てました。</p>
-
-<h2>ゲスト OS の起動</h2>
-
-<pre><code>$ VBoxManage startvm --type vrdp f1
-</code></pre>
-
-<h2>ゲスト OS に ssh</h2>
-
-<pre><code>$ ssh -p 60022 localhost
-</code></pre>
-
-<h2>ゲスト OS に scp</h2>
-
-<pre><code>$ scp -P 60022 file username@localhost:/home/uername/path
-</code></pre>
-]]></content>
-  </entry>
-  
-  <entry>
-    <title type="html"><![CDATA[Octopress を使ってみる]]></title>
-    <link href="http://kentaktwo.github.com/blog/2012/01/09/octopress/"/>
-    <updated>2012-01-09T18:03:00+09:00</updated>
-    <id>http://kentaktwo.github.com/blog/2012/01/09/octopress</id>
-    <content type="html"><![CDATA[<p>Tumblr を使って自分が勉強した事のメモとかを書いていましたが、
-Octopress という技術ブログ向けフレームワークがあるということなので、使ってみました。</p>
-
-<p><a href="http://octopress.org/">http://octopress.org/</a></p>
-
-<!--more-->
-
-
-<h2>インストール</h2>
-
-<p>以下を参考にしながらインストール。
-<a href="http://tokkonopapa.github.com/blog/2011/12/30/octopress-on-github-and-bitbucket/">http://tokkonopapa.github.com/blog/2011/12/30/octopress-on-github-and-bitbucket/</a></p>
-
-<h2>新規投稿</h2>
-
-<pre><code>rake new_post['title']
-</code></pre>
-
-<p>なお、自分の環境だとファイルが作られたときのフォーマットが iso-2022-jp になっているようなので、初回は</p>
-
-<pre><code># In vim
-:set fileencoding=utf-8
-</code></pre>
-
-<p>で文字コードを直す。</p>
-
-<h2>デプロイ</h2>
-
-<pre><code># ページの作成
-rake generate
-# プレビュー
-rake preview
-# デプロイ
-rake deploy
-# 作成とデプロイを同時にやる場合
-rake_gendeploy
-</code></pre>
-
-<h2>markdown 記法</h2>
-
-<p>記事は markdown 記法と呼ばれる記法で書くらしい。</p>
-
-<p>参考：<br/>
-<a href="http://www.kotono8.com/wiki/Markdown#.E8.A6.8B.E5.87.BA.E3.81.97">http://www.kotono8.com/wiki/Markdown#.E8.A6.8B.E5.87.BA.E3.81.97</a>
-<a href="http://nakama.cc.sophia.ac.jp/help.php?file=advanced_markdown.html">http://nakama.cc.sophia.ac.jp/help.php?file=advanced_markdown.html</a></p>
-
-<p>見た目の変更とかは後々やろうと思います。<br/>
-とりあえず、前に書いた記事のうちいくつかを移してみよう。</p>
 ]]></content>
   </entry>
   
