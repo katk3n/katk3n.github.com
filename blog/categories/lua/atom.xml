@@ -4,7 +4,7 @@
   <title><![CDATA[Category: lua | ApprEngineer.log]]></title>
   <link href="http://kentaktwo.github.com/blog/categories/lua/atom.xml" rel="self"/>
   <link href="http://kentaktwo.github.com/"/>
-  <updated>2013-04-30T00:31:02+09:00</updated>
+  <updated>2013-05-01T00:12:45+09:00</updated>
   <id>http://kentaktwo.github.com/</id>
   <author>
     <name><![CDATA[kentaktwo]]></name>
@@ -12,6 +12,109 @@
   </author>
   <generator uri="http://octopress.org/">Octopress</generator>
 
+  
+  <entry>
+    <title type="html"><![CDATA[Programming In Lua Chapter 5]]></title>
+    <link href="http://kentaktwo.github.com/blog/2013/04/30/lua-chapter-5/"/>
+    <updated>2013-04-30T23:34:00+09:00</updated>
+    <id>http://kentaktwo.github.com/blog/2013/04/30/lua-chapter-5</id>
+    <content type="html"><![CDATA[<h1>Functions</h1>
+
+<!--more-->
+
+
+<ul>
+<li>関数の引数が1つのみで、かつ引数が文字列リテラルまたは table のコンストラクタのときのみ、
+関数の括弧を省略してよい。
+<code>lua
+print "Hello World"     -- print("Hello World")
+f{x=10, y=20}           -- f({x=10, y=20})
+</code></li>
+<li>table obj の関数 foo() に対し、<code>obj:foo(x)</code> は <code>obj.foo(obj, x)</code> と同じ。<br/>
+これはオブジェクト指向のような書き方をするときに使える。</li>
+<li>関数の引数より少なく値が渡された場合は、値が渡されなかった引数には nil が入る。<br/>
+また、引数より多く値が渡された場合は、余分な値は無視される。
+<code>lua
+function f(a, b)
+  &lt;something&gt;
+end
+f(3, 4)     --&gt; a=3, b=4
+f(3)        --&gt; a=3, b=nil
+f(3, 4, 5)  --&gt; a=3, b=4 (5 は無視される)
+</code></li>
+</ul>
+
+
+<h2>Multiple Results</h2>
+
+<ul>
+<li>Lua の関数は複数の値を返すことができる。
+<code>lua
+function foo() return "a", "b" end
+x, y = foo()        -- x="a", y="b"
+x = foo()           -- x="a"
+x, y, z = foo()     -- x="a", y="b", z=nil
+</code></li>
+<li>複数の戻り値を受け取れるのは、その関数が文の中で最後に呼ばれたときのみ。
+<code>lua
+x, y, z = 10, foo()     -- x=10, y="a", z="b"
+x. y, z = foo(), 10     -- x="a", y=10, z=nil
+print(foo())            --&gt; a    b
+print(foo(), 1)         --&gt; a    1
+t = {foo(), 4}          -- t[1] = "a", t[2] = 4
+</code></li>
+<li>関数を余分に括弧で囲んで呼び出すと、戻り値を1つのみにすることができる。
+<code>lua
+print((foo()))          --&gt; a
+</code></li>
+</ul>
+
+
+<h2>Variable Number of Arguments</h2>
+
+<ul>
+<li><code>...</code> で可変引数が扱える。
+``` lua
+function add(...)
+  local s = 0
+  for i, v in ipairs{...} do
+
+<pre><code>  s = s + v
+</code></pre>
+
+<p>  end
+  return s
+end</p></li>
+</ul>
+
+
+<p>print(add(3, 4, 10, 25, 12))    --> 54
+<code>
+- printf() のような関数が書ける
+</code> lua
+function fwrite(fmt, ...)</p>
+
+<pre><code>return io.write(string.format(fmt, ...))
+</code></pre>
+
+<p>end
+```</p>
+
+<h2>Named Arguments</h2>
+
+<ul>
+<li>Lua に <code>foo(x="a", y="b")</code> のように引数に名前をつけて関数を呼び出す機能は無いが、table を用いて似たようなことができる。
+``` lua
+function foo1(arg)
+  return foo(arg.x, arg.y)
+end</li>
+</ul>
+
+
+<p>foo1{x="a", y="b"}
+```</p>
+]]></content>
+  </entry>
   
   <entry>
     <title type="html"><![CDATA[Programming In Lua Chapter 4]]></title>

@@ -1,0 +1,393 @@
+
+<!DOCTYPE html>
+<!--[if IEMobile 7 ]><html class="no-js iem7"><![endif]-->
+<!--[if lt IE 9]><html class="no-js lte-ie8"><![endif]-->
+<!--[if (gt IE 8)|(gt IEMobile 7)|!(IEMobile)|!(IE)]><!--><html class="no-js" lang="en"><!--<![endif]-->
+<head>
+  <meta charset="utf-8">
+  <title>Programming In Lua Chapter 5 - ApprEngineer.log</title>
+  <meta name="author" content="kentaktwo">
+
+  
+  <meta name="description" content="Functions 関数の引数が1つのみで、かつ引数が文字列リテラルまたは table のコンストラクタのときのみ、
+関数の括弧を省略してよい。 1
+2
+print &quot;Hello World&quot; -- print(&quot;Hello World&quot;)
+f{x=10, &hellip;">
+  
+
+  <!-- http://t.co/dKP3o1e -->
+  <meta name="HandheldFriendly" content="True">
+  <meta name="MobileOptimized" content="320">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+
+  
+  <link rel="canonical" href="http://kentaktwo.github.com/blog/2013/04/30/lua-chapter-5">
+  <link href="/favicon.png" rel="icon">
+  <link href="/stylesheets/screen.css" media="screen, projection" rel="stylesheet" type="text/css">
+  <script src="/javascripts/modernizr-2.0.js"></script>
+  <script src="/javascripts/ender.js"></script>
+  <script src="/javascripts/octopress.js" type="text/javascript"></script>
+  <link href="/atom.xml" rel="alternate" title="ApprEngineer.log" type="application/atom+xml">
+  <!--Fonts from Google"s Web font directory at http://google.com/webfonts -->
+<link href="http://fonts.googleapis.com/css?family=PT+Serif:regular,italic,bold,bolditalic" rel="stylesheet" type="text/css">
+<link href="http://fonts.googleapis.com/css?family=PT+Sans:regular,italic,bold,bolditalic" rel="stylesheet" type="text/css">
+<link href='http://fonts.googleapis.com/css?family=Lato:400,700,400italic,700italic' rel='stylesheet' type='text/css'>
+
+  
+
+</head>
+
+<body   >
+  <header role="banner"><hgroup>
+  <h1><a href="/">ApprEngineer.log</a></h1>
+  
+    <h2>Apprentice web engineer's study log</h2>
+  
+</hgroup>
+
+</header>
+  <nav role="navigation"><ul class="subscription" data-subscription="rss">
+  <li><a href="/atom.xml" rel="subscribe-rss" title="subscribe via RSS">RSS</a></li>
+  
+</ul>
+  
+<form action="http://google.com/search" method="get">
+  <fieldset role="search">
+    <input type="hidden" name="q" value="site:kentaktwo.github.com" />
+    <input class="search" type="text" name="q" results="0" placeholder="Search"/>
+  </fieldset>
+</form>
+  
+<ul class="main-navigation">
+  <li><a href="/">Blog</a></li>
+  <li><a href="/blog/archives">Archives</a></li>
+</ul>
+
+</nav>
+  <div id="main">
+    <div id="content">
+      <div>
+<article class="hentry" role="article">
+  
+  <header>
+    
+      <h1 class="entry-title">Programming in Lua Chapter 5</h1>
+    
+    
+      <p class="meta">
+        
+
+
+
+
+
+
+
+
+  
+
+
+<time datetime="2013-04-30T23:34:00+09:00" pubdate data-updated="true">Apr 30<span>th</span>, 2013</time>
+        
+         | <a href="#disqus_thread">Comments</a>
+        
+      </p>
+    
+  </header>
+
+
+<div class="entry-content"><h1>Functions</h1>
+
+<!--more-->
+
+
+<ul>
+<li>関数の引数が1つのみで、かつ引数が文字列リテラルまたは table のコンストラクタのときのみ、
+関数の括弧を省略してよい。</li>
+</ul>
+
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+</pre></td><td class='code'><pre><code class='lua'><span class='line'><span class="nb">print</span> <span class="s2">&quot;</span><span class="s">Hello World&quot;</span>     <span class="c1">-- print(&quot;Hello World&quot;)</span>
+</span><span class='line'><span class="n">f</span><span class="p">{</span><span class="n">x</span><span class="o">=</span><span class="mi">10</span><span class="p">,</span> <span class="n">y</span><span class="o">=</span><span class="mi">20</span><span class="p">}</span>           <span class="c1">-- f({x=10, y=20})</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<ul>
+<li>table obj の関数 foo() に対し、<code>obj:foo(x)</code> は <code>obj.foo(obj, x)</code> と同じ。<br/>
+これはオブジェクト指向のような書き方をするときに使える。</li>
+<li>関数の引数より少なく値が渡された場合は、値が渡されなかった引数には nil が入る。<br/>
+また、引数より多く値が渡された場合は、余分な値は無視される。</li>
+</ul>
+
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+</pre></td><td class='code'><pre><code class='lua'><span class='line'><span class="k">function</span> <span class="nf">f</span><span class="p">(</span><span class="n">a</span><span class="p">,</span> <span class="n">b</span><span class="p">)</span>
+</span><span class='line'>    <span class="o">&lt;</span><span class="n">something</span><span class="o">&gt;</span>
+</span><span class='line'><span class="k">end</span>
+</span><span class='line'><span class="n">f</span><span class="p">(</span><span class="mi">3</span><span class="p">,</span> <span class="mi">4</span><span class="p">)</span>     <span class="c1">--&gt; a=3, b=4</span>
+</span><span class='line'><span class="n">f</span><span class="p">(</span><span class="mi">3</span><span class="p">)</span>        <span class="c1">--&gt; a=3, b=nil</span>
+</span><span class='line'><span class="n">f</span><span class="p">(</span><span class="mi">3</span><span class="p">,</span> <span class="mi">4</span><span class="p">,</span> <span class="mi">5</span><span class="p">)</span>  <span class="c1">--&gt; a=3, b=4 (5 は無視される)</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<h2>Multiple Results</h2>
+
+<ul>
+<li>Lua の関数は複数の値を返すことができる。</li>
+</ul>
+
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+</pre></td><td class='code'><pre><code class='lua'><span class='line'><span class="k">function</span> <span class="nf">foo</span><span class="p">()</span> <span class="k">return</span> <span class="s2">&quot;</span><span class="s">a&quot;</span><span class="p">,</span> <span class="s2">&quot;</span><span class="s">b&quot;</span> <span class="k">end</span>
+</span><span class='line'><span class="n">x</span><span class="p">,</span> <span class="n">y</span> <span class="o">=</span> <span class="n">foo</span><span class="p">()</span>        <span class="c1">-- x=&quot;a&quot;, y=&quot;b&quot;</span>
+</span><span class='line'><span class="n">x</span> <span class="o">=</span> <span class="n">foo</span><span class="p">()</span>           <span class="c1">-- x=&quot;a&quot;</span>
+</span><span class='line'><span class="n">x</span><span class="p">,</span> <span class="n">y</span><span class="p">,</span> <span class="n">z</span> <span class="o">=</span> <span class="n">foo</span><span class="p">()</span>     <span class="c1">-- x=&quot;a&quot;, y=&quot;b&quot;, z=nil</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<ul>
+<li>複数の戻り値を受け取れるのは、その関数が文の中で最後に呼ばれたときのみ。</li>
+</ul>
+
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+</pre></td><td class='code'><pre><code class='lua'><span class='line'><span class="n">x</span><span class="p">,</span> <span class="n">y</span><span class="p">,</span> <span class="n">z</span> <span class="o">=</span> <span class="mi">10</span><span class="p">,</span> <span class="n">foo</span><span class="p">()</span>     <span class="c1">-- x=10, y=&quot;a&quot;, z=&quot;b&quot;</span>
+</span><span class='line'><span class="n">x</span><span class="p">.</span> <span class="n">y</span><span class="p">,</span> <span class="n">z</span> <span class="o">=</span> <span class="n">foo</span><span class="p">(),</span> <span class="mi">10</span>     <span class="c1">-- x=&quot;a&quot;, y=10, z=nil</span>
+</span><span class='line'><span class="nb">print</span><span class="p">(</span><span class="n">foo</span><span class="p">())</span>            <span class="c1">--&gt; a    b</span>
+</span><span class='line'><span class="nb">print</span><span class="p">(</span><span class="n">foo</span><span class="p">(),</span> <span class="mi">1</span><span class="p">)</span>         <span class="c1">--&gt; a    1</span>
+</span><span class='line'><span class="n">t</span> <span class="o">=</span> <span class="p">{</span><span class="n">foo</span><span class="p">(),</span> <span class="mi">4</span><span class="p">}</span>          <span class="c1">-- t[1] = &quot;a&quot;, t[2] = 4</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<ul>
+<li>関数を余分に括弧で囲んで呼び出すと、戻り値を1つのみにすることができる。</li>
+</ul>
+
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+</pre></td><td class='code'><pre><code class='lua'><span class='line'><span class="nb">print</span><span class="p">((</span><span class="n">foo</span><span class="p">()))</span>          <span class="c1">--&gt; a</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<h2>Variable Number of Arguments</h2>
+
+<ul>
+<li><code>...</code> で可変引数が扱える。</li>
+</ul>
+
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+<span class='line-number'>7</span>
+<span class='line-number'>8</span>
+<span class='line-number'>9</span>
+</pre></td><td class='code'><pre><code class='lua'><span class='line'><span class="k">function</span> <span class="nf">add</span><span class="p">(</span><span class="o">..</span><span class="p">.)</span>
+</span><span class='line'>    <span class="kd">local</span> <span class="n">s</span> <span class="o">=</span> <span class="mi">0</span>
+</span><span class='line'>    <span class="k">for</span> <span class="n">i</span><span class="p">,</span> <span class="n">v</span> <span class="k">in</span> <span class="nb">ipairs</span><span class="p">{</span><span class="o">..</span><span class="p">.}</span> <span class="k">do</span>
+</span><span class='line'>        <span class="n">s</span> <span class="o">=</span> <span class="n">s</span> <span class="o">+</span> <span class="n">v</span>
+</span><span class='line'>    <span class="k">end</span>
+</span><span class='line'>    <span class="k">return</span> <span class="n">s</span>
+</span><span class='line'><span class="k">end</span>
+</span><span class='line'>
+</span><span class='line'><span class="nb">print</span><span class="p">(</span><span class="n">add</span><span class="p">(</span><span class="mi">3</span><span class="p">,</span> <span class="mi">4</span><span class="p">,</span> <span class="mi">10</span><span class="p">,</span> <span class="mi">25</span><span class="p">,</span> <span class="mi">12</span><span class="p">))</span>    <span class="c1">--&gt; 54</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<ul>
+<li>printf() のような関数が書ける</li>
+</ul>
+
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+</pre></td><td class='code'><pre><code class='lua'><span class='line'><span class="k">function</span> <span class="nf">fwrite</span><span class="p">(</span><span class="n">fmt</span><span class="p">,</span> <span class="o">..</span><span class="p">.)</span>
+</span><span class='line'>    <span class="k">return</span> <span class="nb">io.write</span><span class="p">(</span><span class="nb">string.format</span><span class="p">(</span><span class="n">fmt</span><span class="p">,</span> <span class="o">..</span><span class="p">.))</span>
+</span><span class='line'><span class="k">end</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<h2>Named Arguments</h2>
+
+<ul>
+<li>Lua に <code>foo(x="a", y="b")</code> のように引数に名前をつけて関数を呼び出す機能は無いが、table を用いて似たようなことができる。</li>
+</ul>
+
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+</pre></td><td class='code'><pre><code class='lua'><span class='line'><span class="k">function</span> <span class="nf">foo1</span><span class="p">(</span><span class="n">arg</span><span class="p">)</span>
+</span><span class='line'>    <span class="k">return</span> <span class="n">foo</span><span class="p">(</span><span class="n">arg</span><span class="p">.</span><span class="n">x</span><span class="p">,</span> <span class="n">arg</span><span class="p">.</span><span class="n">y</span><span class="p">)</span>
+</span><span class='line'><span class="k">end</span>
+</span><span class='line'>
+</span><span class='line'><span class="n">foo1</span><span class="p">{</span><span class="n">x</span><span class="o">=</span><span class="s2">&quot;</span><span class="s">a&quot;</span><span class="p">,</span> <span class="n">y</span><span class="o">=</span><span class="s2">&quot;</span><span class="s">b&quot;</span><span class="p">}</span>
+</span></code></pre></td></tr></table></div></figure>
+
+</div>
+
+
+  <footer>
+    <p class="meta">
+      
+  
+
+<span class="byline author vcard">Posted by <span class="fn">kentaktwo</span></span>
+
+      
+
+
+
+
+
+
+
+
+  
+
+
+<time datetime="2013-04-30T23:34:00+09:00" pubdate data-updated="true">Apr 30<span>th</span>, 2013</time>
+      
+
+<span class="categories">
+  
+    <a class='category' href='/blog/categories/lua/'>lua</a>
+  
+</span>
+
+
+    </p>
+    
+      <div class="sharing">
+  
+  <a href="http://twitter.com/share" class="twitter-share-button" data-url="http://kentaktwo.github.com/blog/2013/04/30/lua-chapter-5/" data-via="" data-counturl="http://kentaktwo.github.com/blog/2013/04/30/lua-chapter-5/" >Tweet</a>
+  
+  
+  
+</div>
+
+    
+    <p class="meta">
+      
+        <a class="basic-alignment left" href="/blog/2013/04/29/lua-chapter-4/" title="Previous Post: Programming In Lua Chapter 4">&laquo; Programming In Lua Chapter 4</a>
+      
+      
+    </p>
+  </footer>
+</article>
+
+  <section>
+    <h1>Comments</h1>
+    <div id="disqus_thread" aria-live="polite"><noscript>Please enable JavaScript to view the <a href="http://disqus.com/?ref_noscript">comments powered by Disqus.</a></noscript>
+</div>
+  </section>
+
+</div>
+
+<aside class="sidebar">
+  
+    <section>
+  <h1>Recent Posts</h1>
+  <ul id="recent_posts">
+    
+      <li class="post">
+        <a href="/blog/2013/04/30/lua-chapter-5/">Programming In Lua Chapter 5</a>
+      </li>
+    
+      <li class="post">
+        <a href="/blog/2013/04/29/lua-chapter-4/">Programming In Lua Chapter 4</a>
+      </li>
+    
+      <li class="post">
+        <a href="/blog/2013/04/29/lua-chapter-3/">Programming In Lua Chapter 3</a>
+      </li>
+    
+      <li class="post">
+        <a href="/blog/2013/04/07/centos6-install/">CentOS6.4 インストール</a>
+      </li>
+    
+      <li class="post">
+        <a href="/blog/2013/01/18/apue-chapter-5/">Advanced Programming in the UNIX environment Chapter 5</a>
+      </li>
+    
+  </ul>
+</section>
+
+
+
+
+
+
+  
+</aside>
+
+
+    </div>
+  </div>
+  <footer role="contentinfo"><p>
+  Copyright &copy; 2013 - kentaktwo -
+  <span class="credit">Powered by <a href="http://octopress.org">Octopress</a></span>
+</p>
+
+</footer>
+  
+
+<script type="text/javascript">
+      var disqus_shortname = 'apprengineerlog';
+      
+        
+        // var disqus_developer = 1;
+        var disqus_identifier = 'http://kentaktwo.github.com/blog/2013/04/30/lua-chapter-5/';
+        var disqus_url = 'http://kentaktwo.github.com/blog/2013/04/30/lua-chapter-5/';
+        var disqus_script = 'embed.js';
+      
+    (function () {
+      var dsq = document.createElement('script'); dsq.type = 'text/javascript'; dsq.async = true;
+      dsq.src = 'http://' + disqus_shortname + '.disqus.com/' + disqus_script;
+      (document.getElementsByTagName('head')[0] || document.getElementsByTagName('body')[0]).appendChild(dsq);
+    }());
+</script>
+
+
+
+
+
+
+
+  <script type="text/javascript">
+    (function(){
+      var twitterWidgets = document.createElement('script');
+      twitterWidgets.type = 'text/javascript';
+      twitterWidgets.async = true;
+      twitterWidgets.src = 'http://platform.twitter.com/widgets.js';
+      document.getElementsByTagName('head')[0].appendChild(twitterWidgets);
+    })();
+  </script>
+
+
+
+
+
+</body>
+</html>
