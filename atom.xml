@@ -4,7 +4,7 @@
   <title><![CDATA[ApprEngineer.log]]></title>
   <link href="http://kentaktwo.github.com/atom.xml" rel="self"/>
   <link href="http://kentaktwo.github.com/"/>
-  <updated>2013-05-01T00:12:45+09:00</updated>
+  <updated>2013-05-01T23:21:36+09:00</updated>
   <id>http://kentaktwo.github.com/</id>
   <author>
     <name><![CDATA[kentaktwo]]></name>
@@ -12,6 +12,232 @@
   </author>
   <generator uri="http://octopress.org/">Octopress</generator>
 
+  
+  <entry>
+    <title type="html"><![CDATA[lua-chapter-6]]></title>
+    <link href="http://kentaktwo.github.com/blog/2013/05/01/lua-chapter-6/"/>
+    <updated>2013-05-01T18:31:00+09:00</updated>
+    <id>http://kentaktwo.github.com/blog/2013/05/01/lua-chapter-6</id>
+    <content type="html"><![CDATA[<h1>More About Functions</h1>
+
+<!--more-->
+
+
+<ul>
+<li>Lua の関数は JavaScript みたいに変数や table に入れたり、引数に渡したり、関数の戻り値として返すことができる。</li>
+<li>Lua の関数は anonymous である</li>
+</ul>
+
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+</pre></td><td class='code'><pre><code class='lua'><span class='line'><span class="k">function</span> <span class="nf">foo</span><span class="p">(</span><span class="n">x</span><span class="p">)</span> <span class="k">return</span> <span class="mi">2</span><span class="o">*</span><span class="n">x</span> <span class="k">end</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p>は</p>
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+</pre></td><td class='code'><pre><code class='lua'><span class='line'><span class="n">foo</span> <span class="o">=</span> <span class="n">function</span><span class="p">(</span><span class="n">x</span><span class="p">)</span> <span class="k">return</span> <span class="mi">2</span><span class="o">*</span><span class="n">x</span> <span class="k">end</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p>の syntax suger である。</p>
+
+<h2>Closures</h2>
+
+<ul>
+<li>ある関数が他の関数の内部に書かれているとき、<br/>
+その内部の関数はその内包している関数のローカル変数にアクセスすることができる (<em>lexical scoping</em>)。
+
+<ul>
+<li>そのローカル変数のことを <em>non-local variable</em> あるいは、Lua の世界では <em>upvalues</em> と呼ぶ。</li>
+</ul>
+</li>
+<li>Lua の中では変数に入った関数は <em>closure</em> として振る舞う。</li>
+</ul>
+
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+<span class='line-number'>7</span>
+<span class='line-number'>8</span>
+<span class='line-number'>9</span>
+<span class='line-number'>10</span>
+<span class='line-number'>11</span>
+<span class='line-number'>12</span>
+<span class='line-number'>13</span>
+<span class='line-number'>14</span>
+<span class='line-number'>15</span>
+</pre></td><td class='code'><pre><code class='lua'><span class='line'><span class="k">function</span> <span class="nf">newCounter</span><span class="p">()</span>
+</span><span class='line'>    <span class="kd">local</span> <span class="n">i</span> <span class="o">=</span> <span class="mi">0</span>
+</span><span class='line'>    <span class="k">return</span> <span class="n">function</span><span class="p">()</span>  <span class="c1">-- anonymous function</span>
+</span><span class='line'>        <span class="n">i</span> <span class="o">=</span> <span class="n">i</span> <span class="o">+</span> <span class="mi">1</span>
+</span><span class='line'>        <span class="k">return</span> <span class="n">i</span>
+</span><span class='line'>    <span class="k">end</span>
+</span><span class='line'><span class="k">end</span>
+</span><span class='line'>
+</span><span class='line'><span class="n">c1</span> <span class="o">=</span> <span class="n">newCounter</span><span class="p">()</span>
+</span><span class='line'><span class="nb">print</span><span class="p">(</span><span class="n">c1</span><span class="p">())</span>  <span class="c1">--&gt; 1</span>
+</span><span class='line'><span class="nb">print</span><span class="p">(</span><span class="n">c1</span><span class="p">())</span>  <span class="c1">--&gt; 2</span>
+</span><span class='line'><span class="n">c2</span> <span class="o">=</span> <span class="n">newCounter</span><span class="p">()</span>
+</span><span class='line'><span class="nb">print</span><span class="p">(</span><span class="n">c2</span><span class="p">())</span>  <span class="c1">--&gt; 1</span>
+</span><span class='line'><span class="nb">print</span><span class="p">(</span><span class="n">c1</span><span class="p">())</span>  <span class="c1">--&gt; 3</span>
+</span><span class='line'><span class="nb">print</span><span class="p">(</span><span class="n">c2</span><span class="p">())</span>  <span class="c1">--&gt; 2</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p>関数自体は closure のプロトタイプのようなものである。</p>
+
+<ul>
+<li>関数を再定義することもできる。</li>
+</ul>
+
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+</pre></td><td class='code'><pre><code class='lua'><span class='line'><span class="n">oldSin</span> <span class="o">=</span> <span class="nb">math.sin</span>
+</span><span class='line'><span class="nb">math.sin</span> <span class="o">=</span> <span class="n">function</span><span class="p">(</span><span class="n">x</span><span class="p">)</span>
+</span><span class='line'>    <span class="k">return</span> <span class="n">oldSin</span><span class="p">(</span><span class="n">x</span><span class="o">*</span><span class="nb">math.pi</span><span class="o">/</span><span class="mi">180</span><span class="p">)</span>
+</span><span class='line'><span class="k">end</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<h2>Non-Global Functions</h2>
+
+<ul>
+<li>table のフィールドに関数を定義できる。</li>
+</ul>
+
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+</pre></td><td class='code'><pre><code class='lua'><span class='line'><span class="n">Lib</span> <span class="o">=</span> <span class="p">{}</span>
+</span><span class='line'><span class="n">Lib</span><span class="p">.</span><span class="n">foo</span> <span class="o">=</span> <span class="n">function</span><span class="p">(</span><span class="n">x</span><span class="p">,</span><span class="n">y</span><span class="p">)</span> <span class="k">return</span> <span class="n">x</span> <span class="o">+</span> <span class="n">y</span> <span class="k">end</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+</pre></td><td class='code'><pre><code class='lua'><span class='line'><span class="n">Lib</span> <span class="o">=</span> <span class="p">{</span>
+</span><span class='line'>    <span class="n">foo</span> <span class="o">=</span> <span class="n">function</span><span class="p">(</span><span class="n">x</span><span class="p">,</span><span class="n">y</span><span class="p">)</span> <span class="k">return</span> <span class="n">x</span> <span class="o">+</span> <span class="n">y</span> <span class="k">end</span>
+</span><span class='line'><span class="p">}</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+</pre></td><td class='code'><pre><code class='lua'><span class='line'><span class="n">Lib</span> <span class="o">=</span> <span class="p">{}</span>
+</span><span class='line'><span class="k">function</span> <span class="nc">Lib</span><span class="p">.</span><span class="nf">foo</span><span class="p">(</span><span class="n">x</span><span class="p">,</span><span class="n">y</span><span class="p">)</span> <span class="k">return</span> <span class="n">x</span> <span class="o">+</span> <span class="n">y</span> <span class="k">end</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<ul>
+<li>ローカル関数が定義できるが、再帰的に呼ぶときは注意。</li>
+</ul>
+
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+</pre></td><td class='code'><pre><code class='lua'><span class='line'><span class="kd">local</span> <span class="n">fact</span> <span class="o">=</span> <span class="n">function</span><span class="p">(</span><span class="n">n</span><span class="p">)</span>
+</span><span class='line'>    <span class="k">if</span> <span class="n">n</span> <span class="o">==</span> <span class="mi">0</span> <span class="k">then</span> <span class="k">return</span> <span class="mi">1</span>
+</span><span class='line'>    <span class="k">else</span> <span class="k">return</span> <span class="n">n</span> <span class="o">*</span> <span class="n">fact</span><span class="p">(</span><span class="n">n</span><span class="o">-</span><span class="mi">1</span><span class="p">)</span>  <span class="c1">-- does not work</span>
+</span><span class='line'>    <span class="k">end</span>
+</span><span class='line'><span class="k">end</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p><code>fact(n-1)</code> が呼ばれる時点で <code>fact</code> はまだ定義されていないので、グローバル変数の fact が呼ばれてしまう。
+先にローカル変数を宣言しておけばよい。</p>
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+</pre></td><td class='code'><pre><code class='lua'><span class='line'><span class="kd">local</span> <span class="n">fact</span>
+</span><span class='line'><span class="n">fact</span> <span class="o">=</span> <span class="n">function</span><span class="p">(</span><span class="n">n</span><span class="p">)</span>    <span class="c1">-- ここで local を書かないこと (新しくローカル変数が定義されてしまう)</span>
+</span><span class='line'>    <span class="k">if</span> <span class="n">n</span> <span class="o">==</span> <span class="mi">0</span> <span class="k">then</span> <span class="k">return</span> <span class="mi">1</span>
+</span><span class='line'>    <span class="k">else</span> <span class="k">return</span> <span class="n">n</span> <span class="o">*</span> <span class="n">fact</span><span class="p">(</span><span class="n">n</span><span class="o">-</span><span class="mi">1</span><span class="p">)</span>
+</span><span class='line'>    <span class="k">end</span>
+</span><span class='line'><span class="k">end</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p>ちなみに、</p>
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+</pre></td><td class='code'><pre><code class='lua'><span class='line'><span class="kd">local</span> <span class="k">function</span> <span class="nf">foo</span><span class="p">(</span><span class="o">&lt;</span><span class="n">params</span><span class="o">&gt;</span><span class="p">)</span> <span class="o">&lt;</span><span class="n">body</span><span class="o">&gt;</span> <span class="k">end</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p>は</p>
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+</pre></td><td class='code'><pre><code class='lua'><span class='line'><span class="kd">local</span> <span class="n">foo</span>
+</span><span class='line'><span class="n">foo</span> <span class="o">=</span> <span class="n">function</span><span class="p">(</span><span class="o">&lt;</span><span class="n">params</span><span class="o">&gt;</span><span class="p">)</span> <span class="o">&lt;</span><span class="n">body</span><span class="o">&gt;</span> <span class="k">end</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p>の syntax suger なので、この書き方をするなら上記のような心配はしなくてよい。</p>
+
+<h2>Proper Tail Calls</h2>
+
+<ul>
+<li>Lua は tail-call elimination (末尾呼出の最適化) を自動的に行う。
+
+<ul>
+<li>末尾再帰などで関数から関数を呼び出すときにスタックに積むのではなく、<br/>
+goto 文にすることでスタックオーバーフローしないようにする。</li>
+</ul>
+</li>
+</ul>
+
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+</pre></td><td class='code'><pre><code class='lua'><span class='line'><span class="c1">-- これはスタックオーバーフローしない</span>
+</span><span class='line'><span class="k">function</span> <span class="nf">foo</span><span class="p">(</span><span class="n">n</span><span class="p">)</span>
+</span><span class='line'>    <span class="k">if</span> <span class="n">n</span> <span class="o">&gt;</span> <span class="mi">0</span> <span class="k">then</span> <span class="k">return</span> <span class="n">foo</span><span class="p">(</span><span class="n">n</span> <span class="o">-</span> <span class="mi">1</span><span class="p">)</span> <span class="k">end</span>
+</span><span class='line'><span class="k">end</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<ul>
+<li>tail-call elimination が有効になるのは、</li>
+</ul>
+
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+</pre></td><td class='code'><pre><code class='lua'><span class='line'><span class="k">return</span> <span class="n">g</span><span class="p">(</span><span class="n">args</span><span class="p">)</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p>の形のときのみで、以下のように g() の結果を使って何かしている場合は tail call ではない</p>
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+</pre></td><td class='code'><pre><code class='lua'><span class='line'><span class="k">function</span> <span class="nf">f</span><span class="p">(</span><span class="n">x</span><span class="p">)</span> <span class="n">g</span><span class="p">(</span><span class="n">x</span><span class="p">)</span> <span class="k">end</span>                 <span class="c1">-- return しない</span>
+</span><span class='line'><span class="k">function</span> <span class="nf">f</span><span class="p">(</span><span class="n">x</span><span class="p">)</span> <span class="k">return</span> <span class="n">g</span><span class="p">(</span><span class="n">x</span><span class="p">)</span> <span class="o">+</span> <span class="mi">1</span> <span class="k">end</span>      <span class="c1">-- f(x) が g(x) の結果に1を足している</span>
+</span><span class='line'><span class="k">function</span> <span class="nf">f</span><span class="p">(</span><span class="n">x</span><span class="p">)</span> <span class="k">return</span> <span class="p">(</span><span class="n">g</span><span class="p">(</span><span class="n">x</span><span class="p">))</span> <span class="k">end</span>        <span class="c1">-- f(x) が g(x) の結果を1つにまるめている</span>
+</span></code></pre></td></tr></table></div></figure>
+
+]]></content>
+  </entry>
   
   <entry>
     <title type="html"><![CDATA[Programming In Lua Chapter 5]]></title>
@@ -3951,102 +4177,6 @@ $ nodebrew use v0.6.14
 <h3>Mojito のインストール</h3>
 
 <p><a href="http://developer.yahoo.com/cocktails/mojito/docs/quickstart/">http://developer.yahoo.com/cocktails/mojito/docs/quickstart/</a></p>
-]]></content>
-  </entry>
-  
-  <entry>
-    <title type="html"><![CDATA[mercurial & bitbucket で version 管理]]></title>
-    <link href="http://kentaktwo.github.com/blog/2012/01/28/mercurial-bitbucket/"/>
-    <updated>2012-01-28T18:35:00+09:00</updated>
-    <id>http://kentaktwo.github.com/blog/2012/01/28/mercurial-bitbucket</id>
-    <content type="html"><![CDATA[<p>Bitbucket は Mercurial と呼ばれる分散型のバージョン管理システムを使ったホスティングサービスです。
-分散型で有名なものには Git を使った Github などがあります。<br/>
-Github はプライベートリポジトリが有料ですが、
-Bitbucket は無料で無制限にプライベートリポジトリが使えます。</p>
-
-<!--more-->
-
-
-<h2>Mercurial とは</h2>
-
-<ul>
-<li>分散型バージョン管理システム</li>
-<li>Python で実装</li>
-<li>コマンドは <code>hg</code>  (mercury が水銀を意味し、その元素記号 Hg に由来するらしい)</li>
-<li>コマンドが subversion に似ており、Git より分かりやすい</li>
-<li>Google Code とかに使われてる</li>
-</ul>
-
-
-<h2>Bitbucket とは</h2>
-
-<ul>
-<li><a href="https://bitbucket.org/">https://bitbucket.org/</a></li>
-<li>Mercurial を使ったウェブホスティングサービス</li>
-<li>公開リポジトリ、プライベートリポジトリともに無料、容量無制限</li>
-<li>無料で使えるプライベートリポジトリのユーザ数は5人まで。それ以降は有料</li>
-</ul>
-
-
-<h2>使ってみる</h2>
-
-<p>Mac OS X で Mercurial と Bitbucket を使ってみました。</p>
-
-<h3>Mercurial のインストール</h3>
-
-<pre><code>$ brew install mercurial
-</code></pre>
-
-<h3>Bitbucket を使ったリポジトリの新規作成</h3>
-
-<ul>
-<li>Bitbucket 上にリポジトリを作成</li>
-<li>ローカルにリポジトリを clone</li>
-</ul>
-
-
-<pre><code>$ hg clone ssh://hg@bitbucket.org/username/repositoryname</code></pre>
-
-
-<ul>
-<li>ファイルを追加・変更</li>
-<li>リポジトリにファイルを追加</li>
-</ul>
-
-
-<pre><code>$ hg add * </code></pre>
-
-
-<ul>
-<li>ステータス確認</li>
-</ul>
-
-
-<pre><code>$ hg stat</code></pre>
-
-
-<ul>
-<li>コミット</li>
-</ul>
-
-
-<pre><code>$ hg commit -m "initial commit"</code></pre>
-
-
-<ul>
-<li>更新やコミットはローカルでの操作なので、リモートに更新を反映させるには push する</li>
-</ul>
-
-
-<pre><code>$ hg push</code></pre>
-
-
-<h2>参考</h2>
-
-<ul>
-<li><a href="http://www.slideshare.net/kenjis/mercurialbitbucket">http://www.slideshare.net/kenjis/mercurialbitbucket</a></li>
-</ul>
-
 ]]></content>
   </entry>
   

@@ -4,7 +4,7 @@
   <title><![CDATA[Category: lua | ApprEngineer.log]]></title>
   <link href="http://kentaktwo.github.com/blog/categories/lua/atom.xml" rel="self"/>
   <link href="http://kentaktwo.github.com/"/>
-  <updated>2013-05-01T00:12:45+09:00</updated>
+  <updated>2013-05-01T23:21:36+09:00</updated>
   <id>http://kentaktwo.github.com/</id>
   <author>
     <name><![CDATA[kentaktwo]]></name>
@@ -12,6 +12,155 @@
   </author>
   <generator uri="http://octopress.org/">Octopress</generator>
 
+  
+  <entry>
+    <title type="html"><![CDATA[lua-chapter-6]]></title>
+    <link href="http://kentaktwo.github.com/blog/2013/05/01/lua-chapter-6/"/>
+    <updated>2013-05-01T18:31:00+09:00</updated>
+    <id>http://kentaktwo.github.com/blog/2013/05/01/lua-chapter-6</id>
+    <content type="html"><![CDATA[<h1>More About Functions</h1>
+
+<!--more-->
+
+
+<ul>
+<li>Lua の関数は JavaScript みたいに変数や table に入れたり、引数に渡したり、関数の戻り値として返すことができる。</li>
+<li>Lua の関数は anonymous である
+<code>lua
+function foo(x) return 2*x end
+</code>
+は
+<code>lua
+foo = function(x) return 2*x end
+</code>
+の syntax suger である。</li>
+</ul>
+
+
+<h2>Closures</h2>
+
+<ul>
+<li>ある関数が他の関数の内部に書かれているとき、<br/>
+その内部の関数はその内包している関数のローカル変数にアクセスすることができる (<em>lexical scoping</em>)。
+
+<ul>
+<li>そのローカル変数のことを <em>non-local variable</em> あるいは、Lua の世界では <em>upvalues</em> と呼ぶ。</li>
+</ul>
+</li>
+<li>Lua の中では変数に入った関数は <em>closure</em> として振る舞う。
+``` lua
+function newCounter()
+  local i = 0
+  return function()  -- anonymous function
+
+<pre><code>  i = i + 1
+  return i
+</code></pre>
+
+<p>  end
+end</p></li>
+</ul>
+
+
+<p>c1 = newCounter()
+print(c1())  --> 1
+print(c1())  --> 2
+c2 = newCounter()
+print(c2())  --> 1
+print(c1())  --> 3
+print(c2())  --> 2
+```
+関数自体は closure のプロトタイプのようなものである。</p>
+
+<ul>
+<li>関数を再定義することもできる。
+<code>lua
+oldSin = math.sin
+math.sin = function(x)
+  return oldSin(x*math.pi/180)
+end
+</code></li>
+</ul>
+
+
+<h2>Non-Global Functions</h2>
+
+<ul>
+<li><p>table のフィールドに関数を定義できる。
+<code>lua
+Lib = {}
+Lib.foo = function(x,y) return x + y end
+</code>
+<code>lua
+Lib = {
+  foo = function(x,y) return x + y end
+}
+</code>
+<code>lua
+Lib = {}
+function Lib.foo(x,y) return x + y end
+</code></p></li>
+<li><p>ローカル関数が定義できるが、再帰的に呼ぶときは注意。
+<code>lua
+local fact = function(n)
+  if n == 0 then return 1
+  else return n * fact(n-1)  -- does not work
+  end
+end
+</code>
+<code>fact(n-1)</code> が呼ばれる時点で <code>fact</code> はまだ定義されていないので、グローバル変数の fact が呼ばれてしまう。
+先にローカル変数を宣言しておけばよい。
+<code>lua
+local fact
+fact = function(n)    -- ここで local を書かないこと (新しくローカル変数が定義されてしまう)
+  if n == 0 then return 1
+  else return n * fact(n-1)
+  end
+end
+</code>
+ちなみに、
+<code>lua
+local function foo(&lt;params&gt;) &lt;body&gt; end
+</code>
+は
+<code>lua
+local foo
+foo = function(&lt;params&gt;) &lt;body&gt; end
+</code>
+の syntax suger なので、この書き方をするなら上記のような心配はしなくてよい。</p></li>
+</ul>
+
+
+<h2>Proper Tail Calls</h2>
+
+<ul>
+<li>Lua は tail-call elimination (末尾呼出の最適化) を自動的に行う。
+
+<ul>
+<li>末尾再帰などで関数から関数を呼び出すときにスタックに積むのではなく、<br/>
+goto 文にすることでスタックオーバーフローしないようにする。
+<code>lua
+-- これはスタックオーバーフローしない
+function foo(n)
+if n &gt; 0 then return foo(n - 1) end
+end
+</code></li>
+</ul>
+</li>
+<li>tail-call elimination が有効になるのは、
+<code>lua
+return g(args)
+</code>
+の形のときのみで、以下のように g() の結果を使って何かしている場合は tail call ではない
+<code>lua
+function f(x) g(x) end                 -- return しない
+function f(x) return g(x) + 1 end      -- f(x) が g(x) の結果に1を足している
+function f(x) return (g(x)) end        -- f(x) が g(x) の結果を1つにまるめている
+</code></li>
+</ul>
+
+]]></content>
+  </entry>
   
   <entry>
     <title type="html"><![CDATA[Programming In Lua Chapter 5]]></title>
@@ -496,141 +645,6 @@ print(#a)  --&gt; 1
 <li>functions, userdata, threads は今後の章で詳しく扱う</li>
 </ul>
 
-]]></content>
-  </entry>
-  
-  <entry>
-    <title type="html"><![CDATA[Programming In Lua Chapter 1]]></title>
-    <link href="http://kentaktwo.github.com/blog/2012/07/24/lua-chapter-1/"/>
-    <updated>2012-07-24T01:05:00+09:00</updated>
-    <id>http://kentaktwo.github.com/blog/2012/07/24/lua-chapter-1</id>
-    <content type="html"><![CDATA[<h1>Getting Started</h1>
-
-<!--more-->
-
-
-<p>Lua はスクリプト言語の一つで、非常にシンプルなことが特徴です。<br/>
-組み込み系で使われることが多く、C 言語と簡単に連携することができます。<br/>
-また、nmap の拡張スクリプト(NSE, Nmap Script Engine) も Lua で記述されています。</p>
-
-<h2>Chunks</h2>
-
-<ul>
-<li>Lua を実行する1行の命令を <em>chunk</em> と呼ぶ</li>
-<li>行末のセミコロンはオプション
-<code>lua
-a = 1; b = a*2;
-a = 1  b = a*2  -- これでも OK
-</code></li>
-</ul>
-
-
-<h2>Interactive Mode</h2>
-
-<ul>
-<li>引数を与えずに lua を実行するとインタラクティブモードで起動する
-
-<ul>
-<li>終了するときは <code>EOF</code> を送る (<code>ctrl-D</code>) か、<code>exit</code> 関数を呼ぶ:
-``` lua
-
-<blockquote><p>os.exit()
-```</p></blockquote></li>
-</ul>
-</li>
-<li><code>-i</code> オプションでファイルに書いてある chunk を実行してからインタラクティブモードを起動する
-<code>sh
-$ lua -i prog
-</code></li>
-<li><code>dofile</code> 関数を使ってもできる
-``` lua
-
-<blockquote><p>dofile("lib1.lua")  -- load your library
-```</p></blockquote></li>
-</ul>
-
-
-<h2>Some Lexical Conventions</h2>
-
-<ul>
-<li>アンダースコアで始まり、大文字の変数名 (<code>_VERSION</code> など) は Lua 側で定義されているものが多いため、自分で定義するのは避けたほうがいい</li>
-<li>Lua の予約語は非常に少ない</li>
-<li><p>大文字と小文字は区別される。<code>and</code> は予約語だが、<code>And</code> や <code>AND</code> は使える</p></li>
-<li><p>ハイフン2つ (<code>--</code>) でコメント</p></li>
-<li><code>--[[</code> と <code>--]]</code> で挟むとブロックコメント
-<code>lua
---[[
-print(10)  -- 実行されない
---]]
-</code></li>
-<li>ハイフンを1つ付け足すだけでコメントを解除できる
-<code>lua
----[[
-print(10)  --&gt; 10
---]]
-</code></li>
-</ul>
-
-
-<h2>Global Variables</h2>
-
-<ul>
-<li>グローバル変数を使うのに宣言する必要はない</li>
-<li>グローバル変数は初期化しないと勝手に <code>nil</code> が入る
-<code>
-print(b)  --&gt; nil
-b = 10
-print(b)  --&gt; 10
-</code></li>
-<li>変数を消すには <code>nil</code> を代入する
-<code>lua
-b = nil
-</code>
-Lua では変数が存在するかどうかは、<code>nil</code> かどうかを調べることと同じになる</li>
-</ul>
-
-
-<h2>The Stand-Alone Interpreter</h2>
-
-<p>Lua 起動時に
-- <code>-e</code> オプションでコードを直接コマンドラインから動かせる
-<code>sh
-$ lua -e "print(math.sin(12))"
-</code>
-- <code>-l</code> オプションでライブラリを読み込む
-``` sh</p>
-
-<h1>a というライブラリを読み込み、x=10 を実行し、インタラクティブモードに入る</h1>
-
-<p>$ lua -i -l a -e "x = 10"
-<code>
-- プロンプトは `_PROMPT` に定義されているのでそれを変えればプロンプトが変えられる
-- インタラクティブモードでは、`=` を頭につけると結果を表示してくれる
-</code> lua</p>
-
-<blockquote><p>= math.sin(3)   --> math.sin(3) の値を表示
-a = 30
-= a             --> a の中身を表示
-<code>``
-- コマンドライン引数は</code>arg` というテーブルに格納される</p>
-
-<pre><code>- スクリプト名は `arg[0]` に入る
-- スクリプト名より先に引数を書くと、それらは負のインデックスに格納される
-</code></pre>
-
-<p><code>sh
-$ lua -e "sin=math.sin" script a b
-</code>
-とすると
-<code>lua
-arg[-3] = "lua"
-arg[-2] = "-e"
-arg[-1] = "sin=math.sin"
-arg[0] = "script"
-arg[1] = "a"
-arg[2] = "b"
-</code>
-になる。</p></blockquote>
 ]]></content>
   </entry>
   
