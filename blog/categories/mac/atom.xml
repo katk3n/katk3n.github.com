@@ -1,0 +1,58 @@
+<?xml version="1.0" encoding="utf-8"?>
+<feed xmlns="http://www.w3.org/2005/Atom">
+
+  <title><![CDATA[Category: mac | ApprEngineer.log]]></title>
+  <link href="http://kentaktwo.github.com/blog/categories/mac/atom.xml" rel="self"/>
+  <link href="http://kentaktwo.github.com/"/>
+  <updated>2013-05-03T13:12:06+09:00</updated>
+  <id>http://kentaktwo.github.com/</id>
+  <author>
+    <name><![CDATA[kentaktwo]]></name>
+    
+  </author>
+  <generator uri="http://octopress.org/">Octopress</generator>
+
+  
+  <entry>
+    <title type="html"><![CDATA[Mac で休止状態にする]]></title>
+    <link href="http://kentaktwo.github.com/blog/2013/05/03/mac-sleep/"/>
+    <updated>2013-05-03T13:05:00+09:00</updated>
+    <id>http://kentaktwo.github.com/blog/2013/05/03/mac-sleep</id>
+    <content type="html"><![CDATA[<p>Mac で Windows でいう休止状態にする方法。</p>
+
+<!--more-->
+
+
+<p>以下のコマンドで、スリープを選択したときの挙動が変わる。
+<code>
+$ pmset -a hibernatemode 3    # セーフスリープモード (デフォルト、バッテリーが無くなるまではスリープ、無くなったら休止状態)
+$ pmset -a hibernatemode 0    # スリープモード (Windows のスリープ)
+$ pmset -a hibernatemode 1    # ディープスリープモード (Windows の休止状態)
+</code></p>
+
+<p>現在の設定を確認するには、
+<code>
+$ pmset -g
+Active Profiles:
+Battery Power           -1
+AC Power                -1*
+Currently in use:
+standbydelay   4200
+standby        1
+womp           1
+halfdim        1
+panicrestart   157680000
+hibernatefile  /var/vm/sleepimage
+networkoversleep       0
+disksleep      10
+sleep          10
+hibernatemode  1             # ここがスリープの設定
+ttyskeepawake  1
+displaysleep   10
+acwake         0
+lidwake        1
+</code></p>
+]]></content>
+  </entry>
+  
+</feed>

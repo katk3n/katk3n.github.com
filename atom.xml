@@ -4,7 +4,7 @@
   <title><![CDATA[ApprEngineer.log]]></title>
   <link href="http://kentaktwo.github.com/atom.xml" rel="self"/>
   <link href="http://kentaktwo.github.com/"/>
-  <updated>2013-05-01T23:22:46+09:00</updated>
+  <updated>2013-05-03T13:12:06+09:00</updated>
   <id>http://kentaktwo.github.com/</id>
   <author>
     <name><![CDATA[kentaktwo]]></name>
@@ -12,6 +12,70 @@
   </author>
   <generator uri="http://octopress.org/">Octopress</generator>
 
+  
+  <entry>
+    <title type="html"><![CDATA[Mac で休止状態にする]]></title>
+    <link href="http://kentaktwo.github.com/blog/2013/05/03/mac-sleep/"/>
+    <updated>2013-05-03T13:05:00+09:00</updated>
+    <id>http://kentaktwo.github.com/blog/2013/05/03/mac-sleep</id>
+    <content type="html"><![CDATA[<p>Mac で Windows でいう休止状態にする方法。</p>
+
+<!--more-->
+
+
+<p>以下のコマンドで、スリープを選択したときの挙動が変わる。</p>
+
+<figure class='code'><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+</pre></td><td class='code'><pre><code class=''><span class='line'>$ pmset -a hibernatemode 3    # セーフスリープモード (デフォルト、バッテリーが無くなるまではスリープ、無くなったら休止状態)
+</span><span class='line'>$ pmset -a hibernatemode 0    # スリープモード (Windows のスリープ)
+</span><span class='line'>$ pmset -a hibernatemode 1    # ディープスリープモード (Windows の休止状態)</span></code></pre></td></tr></table></div></figure>
+
+
+<p>現在の設定を確認するには、</p>
+
+<figure class='code'><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+<span class='line-number'>7</span>
+<span class='line-number'>8</span>
+<span class='line-number'>9</span>
+<span class='line-number'>10</span>
+<span class='line-number'>11</span>
+<span class='line-number'>12</span>
+<span class='line-number'>13</span>
+<span class='line-number'>14</span>
+<span class='line-number'>15</span>
+<span class='line-number'>16</span>
+<span class='line-number'>17</span>
+<span class='line-number'>18</span>
+<span class='line-number'>19</span>
+</pre></td><td class='code'><pre><code class=''><span class='line'>$ pmset -g
+</span><span class='line'>Active Profiles:
+</span><span class='line'>Battery Power           -1
+</span><span class='line'>AC Power                -1*
+</span><span class='line'>Currently in use:
+</span><span class='line'>standbydelay   4200
+</span><span class='line'>standby        1
+</span><span class='line'>womp           1
+</span><span class='line'>halfdim        1
+</span><span class='line'>panicrestart   157680000
+</span><span class='line'>hibernatefile  /var/vm/sleepimage
+</span><span class='line'>networkoversleep       0
+</span><span class='line'>disksleep      10
+</span><span class='line'>sleep          10
+</span><span class='line'>hibernatemode  1             # ここがスリープの設定
+</span><span class='line'>ttyskeepawake  1
+</span><span class='line'>displaysleep   10
+</span><span class='line'>acwake         0
+</span><span class='line'>lidwake        1</span></code></pre></td></tr></table></div></figure>
+
+]]></content>
+  </entry>
   
   <entry>
     <title type="html"><![CDATA[Programming in Lua Chapter 6]]></title>
@@ -4120,63 +4184,6 @@ HelloMojit のインスタンス hello の index メソッドが呼ばれる。<
 </code></pre>
 
 <p><code>http://localhost:8666/</code> にアクセスするとアプリケーションの出力を見ることができる。</p>
-]]></content>
-  </entry>
-  
-  <entry>
-    <title type="html"><![CDATA[Mojito のインストール]]></title>
-    <link href="http://kentaktwo.github.com/blog/2012/04/11/install-mojito/"/>
-    <updated>2012-04-11T21:37:00+09:00</updated>
-    <id>http://kentaktwo.github.com/blog/2012/04/11/install-mojito</id>
-    <content type="html"><![CDATA[<p>Yahoo! Inc. がリリースした Web アプリケーションフレームワーク、Mojito をインストールしてみました。</p>
-
-<p><a href="http://developer.yahoo.com/cocktails/mojito/">http://developer.yahoo.com/cocktails/mojito/</a></p>
-
-<!--More-->
-
-
-<h2>Mojito とは</h2>
-
-<ul>
-<li>MVC モデルな Web アプリケーションフレームワーク</li>
-<li>YUI3 を使ってる</li>
-<li>JavaScript で記述</li>
-<li>1つのコードで複数のデバイス (PC, Android, iOS, etc.) での表示が可能</li>
-<li>Xcode に渡せば iOS アプリも作れる</li>
-</ul>
-
-
-<h2>インストール</h2>
-
-<h3>Node.js のインストール</h3>
-
-<p>Mojito を動かすためには Node.js が必要。<br/>
-Node.js の環境管理ツールには nvm などがあるが、<br/>
-nvm は zsh だとうまく動かないようなので、nodebrew を使う。</p>
-
-<p>参考： <a href="http://d.hatena.ne.jp/Jxck/20120224/1330035058">http://d.hatena.ne.jp/Jxck/20120224/1330035058</a></p>
-
-<p>nodebrew のインストール</p>
-
-<pre><code>$ curl https://raw.github.com/hokaccha/nodebrew/master/nodebrew | perl - setup
-$ wget https://raw.github.com/hokaccha/nodebrew/master/nodebrew
-$ perl nodebrew setup
-</code></pre>
-
-<p>.zshrc のパスの設定</p>
-
-<pre><code>export PATH=$HOME/.nodebrew/current/bin:/usr/local/bin:$PATH
-</code></pre>
-
-<p>Node.js のインストール</p>
-
-<pre><code>$ nodebrew install v0.6.14
-$ nodebrew use v0.6.14
-</code></pre>
-
-<h3>Mojito のインストール</h3>
-
-<p><a href="http://developer.yahoo.com/cocktails/mojito/docs/quickstart/">http://developer.yahoo.com/cocktails/mojito/docs/quickstart/</a></p>
 ]]></content>
   </entry>
   

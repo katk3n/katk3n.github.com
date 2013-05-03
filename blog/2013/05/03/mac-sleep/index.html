@@ -5,13 +5,15 @@
 <!--[if (gt IE 8)|(gt IEMobile 7)|!(IEMobile)|!(IE)]><!--><html class="no-js" lang="en"><!--<![endif]-->
 <head>
   <meta charset="utf-8">
-  <title>Octopress を使ってみる - ApprEngineer.log</title>
+  <title>Mac で休止状態にする - ApprEngineer.log</title>
   <meta name="author" content="kentaktwo">
 
   
-  <meta name="description" content="Tumblr を使って自分が勉強した事のメモとかを書いていましたが、
-Octopress という技術ブログ向けフレームワークがあるということなので、使ってみました。 http://octopress.org/ インストール 以下を参考にしながらインストール。
-http://tokkonopapa. &hellip;">
+  <meta name="description" content="Mac で Windows でいう休止状態にする方法。 以下のコマンドで、スリープを選択したときの挙動が変わる。 1
+2
+3
+$ pmset -a hibernatemode 3 # セーフスリープモード (デフォルト、バッテリーが無くなるまではスリープ、無くなったら休止状態)
+$ pmset - &hellip;">
   
 
   <!-- http://t.co/dKP3o1e -->
@@ -20,7 +22,7 @@ http://tokkonopapa. &hellip;">
   <meta name="viewport" content="width=device-width, initial-scale=1">
 
   
-  <link rel="canonical" href="http://kentaktwo.github.com/blog/2012/01/09/octopress">
+  <link rel="canonical" href="http://kentaktwo.github.com/blog/2013/05/03/mac-sleep">
   <link href="/favicon.png" rel="icon">
   <link href="/stylesheets/screen.css" media="screen, projection" rel="stylesheet" type="text/css">
   <script src="/javascripts/modernizr-2.0.js"></script>
@@ -70,7 +72,7 @@ http://tokkonopapa. &hellip;">
   
   <header>
     
-      <h1 class="entry-title">Octopress を使ってみる</h1>
+      <h1 class="entry-title">Mac で休止状態にする</h1>
     
     
       <p class="meta">
@@ -86,7 +88,7 @@ http://tokkonopapa. &hellip;">
   
 
 
-<time datetime="2012-01-09T18:03:00+09:00" pubdate data-updated="true">Jan 9<span>th</span>, 2012</time>
+<time datetime="2013-05-03T13:05:00+09:00" pubdate data-updated="true">May 3<span>rd</span>, 2013</time>
         
          | <a href="#disqus_thread">Comments</a>
         
@@ -95,54 +97,62 @@ http://tokkonopapa. &hellip;">
   </header>
 
 
-<div class="entry-content"><p>Tumblr を使って自分が勉強した事のメモとかを書いていましたが、
-Octopress という技術ブログ向けフレームワークがあるということなので、使ってみました。</p>
-
-<p><a href="http://octopress.org/">http://octopress.org/</a></p>
+<div class="entry-content"><p>Mac で Windows でいう休止状態にする方法。</p>
 
 <!--more-->
 
 
-<h2>インストール</h2>
+<p>以下のコマンドで、スリープを選択したときの挙動が変わる。</p>
 
-<p>以下を参考にしながらインストール。
-<a href="http://tokkonopapa.github.com/blog/2011/12/30/octopress-on-github-and-bitbucket/">http://tokkonopapa.github.com/blog/2011/12/30/octopress-on-github-and-bitbucket/</a></p>
+<figure class='code'><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+</pre></td><td class='code'><pre><code class=''><span class='line'>$ pmset -a hibernatemode 3    # セーフスリープモード (デフォルト、バッテリーが無くなるまではスリープ、無くなったら休止状態)
+</span><span class='line'>$ pmset -a hibernatemode 0    # スリープモード (Windows のスリープ)
+</span><span class='line'>$ pmset -a hibernatemode 1    # ディープスリープモード (Windows の休止状態)</span></code></pre></td></tr></table></div></figure>
 
-<h2>新規投稿</h2>
 
-<pre><code>rake new_post['title']
-</code></pre>
+<p>現在の設定を確認するには、</p>
 
-<p>なお、自分の環境だとファイルが作られたときのフォーマットが iso-2022-jp になっているようなので、初回は</p>
+<figure class='code'><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+<span class='line-number'>7</span>
+<span class='line-number'>8</span>
+<span class='line-number'>9</span>
+<span class='line-number'>10</span>
+<span class='line-number'>11</span>
+<span class='line-number'>12</span>
+<span class='line-number'>13</span>
+<span class='line-number'>14</span>
+<span class='line-number'>15</span>
+<span class='line-number'>16</span>
+<span class='line-number'>17</span>
+<span class='line-number'>18</span>
+<span class='line-number'>19</span>
+</pre></td><td class='code'><pre><code class=''><span class='line'>$ pmset -g
+</span><span class='line'>Active Profiles:
+</span><span class='line'>Battery Power           -1
+</span><span class='line'>AC Power                -1*
+</span><span class='line'>Currently in use:
+</span><span class='line'>standbydelay   4200
+</span><span class='line'>standby        1
+</span><span class='line'>womp           1
+</span><span class='line'>halfdim        1
+</span><span class='line'>panicrestart   157680000
+</span><span class='line'>hibernatefile  /var/vm/sleepimage
+</span><span class='line'>networkoversleep       0
+</span><span class='line'>disksleep      10
+</span><span class='line'>sleep          10
+</span><span class='line'>hibernatemode  1             # ここがスリープの設定
+</span><span class='line'>ttyskeepawake  1
+</span><span class='line'>displaysleep   10
+</span><span class='line'>acwake         0
+</span><span class='line'>lidwake        1</span></code></pre></td></tr></table></div></figure>
 
-<pre><code># In vim
-:set fileencoding=utf-8
-</code></pre>
-
-<p>で文字コードを直す。</p>
-
-<h2>デプロイ</h2>
-
-<pre><code># ページの作成
-rake generate
-# プレビュー
-rake preview
-# デプロイ
-rake deploy
-# 作成とデプロイを同時にやる場合
-rake_gendeploy
-</code></pre>
-
-<h2>markdown 記法</h2>
-
-<p>記事は markdown 記法と呼ばれる記法で書くらしい。</p>
-
-<p>参考：<br/>
-<a href="http://www.kotono8.com/wiki/Markdown#.E8.A6.8B.E5.87.BA.E3.81.97">http://www.kotono8.com/wiki/Markdown#.E8.A6.8B.E5.87.BA.E3.81.97</a>
-<a href="http://nakama.cc.sophia.ac.jp/help.php?file=advanced_markdown.html">http://nakama.cc.sophia.ac.jp/help.php?file=advanced_markdown.html</a></p>
-
-<p>見た目の変更とかは後々やろうと思います。<br/>
-とりあえず、前に書いた記事のうちいくつかを移してみよう。</p>
 </div>
 
 
@@ -165,12 +175,12 @@ rake_gendeploy
   
 
 
-<time datetime="2012-01-09T18:03:00+09:00" pubdate data-updated="true">Jan 9<span>th</span>, 2012</time>
+<time datetime="2013-05-03T13:05:00+09:00" pubdate data-updated="true">May 3<span>rd</span>, 2013</time>
       
 
 <span class="categories">
   
-    <a class='category' href='/blog/categories/octopress/'>octopress</a>
+    <a class='category' href='/blog/categories/mac/'>mac</a>
   
 </span>
 
@@ -179,7 +189,7 @@ rake_gendeploy
     
       <div class="sharing">
   
-  <a href="http://twitter.com/share" class="twitter-share-button" data-url="http://kentaktwo.github.com/blog/2012/01/09/octopress/" data-via="" data-counturl="http://kentaktwo.github.com/blog/2012/01/09/octopress/" >Tweet</a>
+  <a href="http://twitter.com/share" class="twitter-share-button" data-url="http://kentaktwo.github.com/blog/2013/05/03/mac-sleep/" data-via="" data-counturl="http://kentaktwo.github.com/blog/2013/05/03/mac-sleep/" >Tweet</a>
   
   
   
@@ -188,8 +198,8 @@ rake_gendeploy
     
     <p class="meta">
       
+        <a class="basic-alignment left" href="/blog/2013/05/01/lua-chapter-6/" title="Previous Post: Programming in Lua Chapter 6">&laquo; Programming in Lua Chapter 6</a>
       
-        <a class="basic-alignment right" href="/blog/2012/01/25/vbox-portforwarding/" title="Next Post: VirtualBox に入れたゲスト OS に ssh login">VirtualBox に入れたゲスト OS に ssh login &raquo;</a>
       
     </p>
   </footer>
@@ -256,8 +266,8 @@ rake_gendeploy
       
         
         // var disqus_developer = 1;
-        var disqus_identifier = 'http://kentaktwo.github.com/blog/2012/01/09/octopress/';
-        var disqus_url = 'http://kentaktwo.github.com/blog/2012/01/09/octopress/';
+        var disqus_identifier = 'http://kentaktwo.github.com/blog/2013/05/03/mac-sleep/';
+        var disqus_url = 'http://kentaktwo.github.com/blog/2013/05/03/mac-sleep/';
         var disqus_script = 'embed.js';
       
     (function () {
