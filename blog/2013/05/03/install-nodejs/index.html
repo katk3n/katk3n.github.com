@@ -1,0 +1,365 @@
+
+<!DOCTYPE html>
+<!--[if IEMobile 7 ]><html class="no-js iem7"><![endif]-->
+<!--[if lt IE 9]><html class="no-js lte-ie8"><![endif]-->
+<!--[if (gt IE 8)|(gt IEMobile 7)|!(IEMobile)|!(IE)]><!--><html class="no-js" lang="en"><!--<![endif]-->
+<head>
+  <meta charset="utf-8">
+  <title>nvm + Node.js + Mojito のインストール - ApprEngineer.log</title>
+  <meta name="author" content="kentaktwo">
+
+  
+  <meta name="description" content="Ubuntu 12.04 LTS に nvm + Node.js + Mojito をインストール nvm とは Node Version Manager
+複数のバージョンの Node.js をインストールし、必要に応じて切り替えることができる。 nvm のインストール ソースを取ってくるだけ 1 &hellip;">
+  
+
+  <!-- http://t.co/dKP3o1e -->
+  <meta name="HandheldFriendly" content="True">
+  <meta name="MobileOptimized" content="320">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+
+  
+  <link rel="canonical" href="http://kentaktwo.github.com/blog/2013/05/03/install-nodejs">
+  <link href="/favicon.png" rel="icon">
+  <link href="/stylesheets/screen.css" media="screen, projection" rel="stylesheet" type="text/css">
+  <script src="/javascripts/modernizr-2.0.js"></script>
+  <script src="/javascripts/ender.js"></script>
+  <script src="/javascripts/octopress.js" type="text/javascript"></script>
+  <link href="/atom.xml" rel="alternate" title="ApprEngineer.log" type="application/atom+xml">
+  <!--Fonts from Google"s Web font directory at http://google.com/webfonts -->
+<link href="http://fonts.googleapis.com/css?family=PT+Serif:regular,italic,bold,bolditalic" rel="stylesheet" type="text/css">
+<link href="http://fonts.googleapis.com/css?family=PT+Sans:regular,italic,bold,bolditalic" rel="stylesheet" type="text/css">
+<link href='http://fonts.googleapis.com/css?family=Lato:400,700,400italic,700italic' rel='stylesheet' type='text/css'>
+
+  
+
+</head>
+
+<body   >
+  <header role="banner"><hgroup>
+  <h1><a href="/">ApprEngineer.log</a></h1>
+  
+    <h2>Apprentice web engineer's study log</h2>
+  
+</hgroup>
+
+</header>
+  <nav role="navigation"><ul class="subscription" data-subscription="rss">
+  <li><a href="/atom.xml" rel="subscribe-rss" title="subscribe via RSS">RSS</a></li>
+  
+</ul>
+  
+<form action="http://google.com/search" method="get">
+  <fieldset role="search">
+    <input type="hidden" name="q" value="site:kentaktwo.github.com" />
+    <input class="search" type="text" name="q" results="0" placeholder="Search"/>
+  </fieldset>
+</form>
+  
+<ul class="main-navigation">
+  <li><a href="/">Blog</a></li>
+  <li><a href="/blog/archives">Archives</a></li>
+</ul>
+
+</nav>
+  <div id="main">
+    <div id="content">
+      <div>
+<article class="hentry" role="article">
+  
+  <header>
+    
+      <h1 class="entry-title">Nvm + Node.js + Mojito のインストール</h1>
+    
+    
+      <p class="meta">
+        
+
+
+
+
+
+
+
+
+  
+
+
+<time datetime="2013-05-03T13:17:00+09:00" pubdate data-updated="true">May 3<span>rd</span>, 2013</time>
+        
+         | <a href="#disqus_thread">Comments</a>
+        
+      </p>
+    
+  </header>
+
+
+<div class="entry-content"><p>Ubuntu 12.04 LTS に nvm + Node.js + Mojito をインストール</p>
+
+<!--more-->
+
+
+<h2>nvm とは</h2>
+
+<p>Node Version Manager<br/>
+複数のバージョンの Node.js をインストールし、必要に応じて切り替えることができる。</p>
+
+<h2>nvm のインストール</h2>
+
+<ul>
+<li>ソースを取ってくるだけ</li>
+</ul>
+
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+</pre></td><td class='code'><pre><code class='sh'><span class='line'><span class="nv">$ </span>mkdir .nvm
+</span><span class='line'><span class="nv">$ </span><span class="nb">cd</span> .nvm
+</span><span class='line'><span class="nv">$ </span>git clone git://github.com/creationix/nvm.git .
+</span></code></pre></td></tr></table></div></figure>
+
+
+<ul>
+<li>起動時に nvm コマンドが使えるようにする<br/>
+zsh の場合、nvm.sh の10行目で (修正されたはずなのに) エラーが出てしまったので、<br/>
+そこを通らないように、先に <code>NVM_DIR</code> も設定しておく。</li>
+</ul>
+
+
+<figure class='code'><figcaption><span>.zshrc</span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+</pre></td><td class='code'><pre><code class='sh'><span class='line'><span class="c">## NVM</span>
+</span><span class='line'><span class="nb">export </span><span class="nv">NVM_DIR</span><span class="o">=</span><span class="nv">$HOME</span>/.nvm/
+</span><span class='line'><span class="nb">source</span> <span class="nv">$HOME</span>/.nvm/nvm.sh
+</span></code></pre></td></tr></table></div></figure>
+
+
+<ul>
+<li>ヘルプ表示</li>
+</ul>
+
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+<span class='line-number'>7</span>
+<span class='line-number'>8</span>
+<span class='line-number'>9</span>
+<span class='line-number'>10</span>
+<span class='line-number'>11</span>
+<span class='line-number'>12</span>
+<span class='line-number'>13</span>
+<span class='line-number'>14</span>
+<span class='line-number'>15</span>
+<span class='line-number'>16</span>
+<span class='line-number'>17</span>
+<span class='line-number'>18</span>
+<span class='line-number'>19</span>
+<span class='line-number'>20</span>
+<span class='line-number'>21</span>
+<span class='line-number'>22</span>
+<span class='line-number'>23</span>
+</pre></td><td class='code'><pre><code class='sh'><span class='line'><span class="nv">$ </span>nvm
+</span><span class='line'>
+</span><span class='line'>Node Version Manager
+</span><span class='line'>
+</span><span class='line'>Usage:
+</span><span class='line'>    nvm <span class="nb">help                    </span>Show this message
+</span><span class='line'>    nvm install <span class="o">[</span>-s<span class="o">]</span> &lt;version&gt;  Download and install a &lt;version&gt;
+</span><span class='line'>    nvm uninstall &lt;version&gt;     Uninstall a version
+</span><span class='line'>    nvm use &lt;version&gt;           Modify PATH to use &lt;version&gt;    nvm run &lt;version&gt; <span class="o">[</span>&lt;args&gt;<span class="o">]</span>  Run &lt;version&gt; with &lt;args&gt; as arguments
+</span><span class='line'>    nvm ls                      List installed versions
+</span><span class='line'>    nvm ls &lt;version&gt;            List versions matching a given description
+</span><span class='line'>    nvm ls-remote               List remote versions available <span class="k">for </span>install
+</span><span class='line'>    nvm deactivate              Undo effects of NVM on current shell
+</span><span class='line'>    nvm <span class="nb">alias</span> <span class="o">[</span>&lt;pattern&gt;<span class="o">]</span>       Show all aliases beginning with &lt;pattern&gt;
+</span><span class='line'>    nvm <span class="nb">alias</span> &lt;name&gt; &lt;version&gt;  Set an <span class="nb">alias </span>named &lt;name&gt; pointing to &lt;version&gt;
+</span><span class='line'>    nvm <span class="nb">unalias</span> &lt;name&gt;          Deletes the <span class="nb">alias </span>named &lt;name&gt;
+</span><span class='line'>    nvm copy-packages &lt;version&gt; Install global NPM packages contained in &lt;version&gt; to current version
+</span><span class='line'>
+</span><span class='line'>Example:
+</span><span class='line'>    nvm install v0.4.12         Install a specific version number
+</span><span class='line'>    nvm use 0.2                 Use the latest available 0.2.x release
+</span><span class='line'>    nvm run 0.4.12 myApp.js     Run myApp.js using node v0.4.12
+</span><span class='line'>    nvm <span class="nb">alias </span>default 0.4       Auto use the latest installed v0.4.x version
+</span></code></pre></td></tr></table></div></figure>
+
+
+<h2>Node.js のインストール</h2>
+
+<p>インストールできるバージョン一覧</p>
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+</pre></td><td class='code'><pre><code class='sh'><span class='line'><span class="nv">$ </span>nvm ls-remote
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p>Mojito を使いたいので、0.9 より低いバージョンをインストール</p>
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+</pre></td><td class='code'><pre><code class='sh'><span class='line'><span class="nv">$ </span>nvm install v0.8.19
+</span></code></pre></td></tr></table></div></figure>
+
+
+<h2>Mojito のインストール</h2>
+
+<ul>
+<li><a href="http://developer.yahoo.com/cocktails/mojito/docs/getting_started/quickstart.html">http://developer.yahoo.com/cocktails/mojito/docs/getting_started/quickstart.html</a></li>
+</ul>
+
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+</pre></td><td class='code'><pre><code class='sh'><span class='line'><span class="nv">$ </span>npm install mojito -g
+</span></code></pre></td></tr></table></div></figure>
+
+</div>
+
+
+  <footer>
+    <p class="meta">
+      
+  
+
+<span class="byline author vcard">Posted by <span class="fn">kentaktwo</span></span>
+
+      
+
+
+
+
+
+
+
+
+  
+
+
+<time datetime="2013-05-03T13:17:00+09:00" pubdate data-updated="true">May 3<span>rd</span>, 2013</time>
+      
+
+<span class="categories">
+  
+    <a class='category' href='/blog/categories/node-js/'>node.js</a>
+  
+</span>
+
+
+    </p>
+    
+      <div class="sharing">
+  
+  <a href="http://twitter.com/share" class="twitter-share-button" data-url="http://kentaktwo.github.com/blog/2013/05/03/install-nodejs/" data-via="" data-counturl="http://kentaktwo.github.com/blog/2013/05/03/install-nodejs/" >Tweet</a>
+  
+  
+  
+</div>
+
+    
+    <p class="meta">
+      
+        <a class="basic-alignment left" href="/blog/2013/05/03/mac-sleep/" title="Previous Post: Mac で休止状態にする">&laquo; Mac で休止状態にする</a>
+      
+      
+    </p>
+  </footer>
+</article>
+
+  <section>
+    <h1>Comments</h1>
+    <div id="disqus_thread" aria-live="polite"><noscript>Please enable JavaScript to view the <a href="http://disqus.com/?ref_noscript">comments powered by Disqus.</a></noscript>
+</div>
+  </section>
+
+</div>
+
+<aside class="sidebar">
+  
+    <section>
+  <h1>Recent Posts</h1>
+  <ul id="recent_posts">
+    
+      <li class="post">
+        <a href="/blog/2013/05/03/install-nodejs/">nvm + Node.js + Mojito のインストール</a>
+      </li>
+    
+      <li class="post">
+        <a href="/blog/2013/05/03/mac-sleep/">Mac で休止状態にする</a>
+      </li>
+    
+      <li class="post">
+        <a href="/blog/2013/05/01/lua-chapter-6/">Programming in Lua Chapter 6</a>
+      </li>
+    
+      <li class="post">
+        <a href="/blog/2013/04/30/lua-chapter-5/">Programming In Lua Chapter 5</a>
+      </li>
+    
+      <li class="post">
+        <a href="/blog/2013/04/29/lua-chapter-4/">Programming In Lua Chapter 4</a>
+      </li>
+    
+  </ul>
+</section>
+
+
+
+
+
+
+  
+</aside>
+
+
+    </div>
+  </div>
+  <footer role="contentinfo"><p>
+  Copyright &copy; 2013 - kentaktwo -
+  <span class="credit">Powered by <a href="http://octopress.org">Octopress</a></span>
+</p>
+
+</footer>
+  
+
+<script type="text/javascript">
+      var disqus_shortname = 'apprengineerlog';
+      
+        
+        // var disqus_developer = 1;
+        var disqus_identifier = 'http://kentaktwo.github.com/blog/2013/05/03/install-nodejs/';
+        var disqus_url = 'http://kentaktwo.github.com/blog/2013/05/03/install-nodejs/';
+        var disqus_script = 'embed.js';
+      
+    (function () {
+      var dsq = document.createElement('script'); dsq.type = 'text/javascript'; dsq.async = true;
+      dsq.src = 'http://' + disqus_shortname + '.disqus.com/' + disqus_script;
+      (document.getElementsByTagName('head')[0] || document.getElementsByTagName('body')[0]).appendChild(dsq);
+    }());
+</script>
+
+
+
+
+
+
+
+  <script type="text/javascript">
+    (function(){
+      var twitterWidgets = document.createElement('script');
+      twitterWidgets.type = 'text/javascript';
+      twitterWidgets.async = true;
+      twitterWidgets.src = 'http://platform.twitter.com/widgets.js';
+      document.getElementsByTagName('head')[0].appendChild(twitterWidgets);
+    })();
+  </script>
+
+
+
+
+
+</body>
+</html>

@@ -1,0 +1,107 @@
+<?xml version="1.0" encoding="utf-8"?>
+<feed xmlns="http://www.w3.org/2005/Atom">
+
+  <title><![CDATA[Category: node.js | ApprEngineer.log]]></title>
+  <link href="http://kentaktwo.github.com/blog/categories/node-js/atom.xml" rel="self"/>
+  <link href="http://kentaktwo.github.com/"/>
+  <updated>2013-05-03T13:32:31+09:00</updated>
+  <id>http://kentaktwo.github.com/</id>
+  <author>
+    <name><![CDATA[kentaktwo]]></name>
+    
+  </author>
+  <generator uri="http://octopress.org/">Octopress</generator>
+
+  
+  <entry>
+    <title type="html"><![CDATA[nvm + Node.js + Mojito のインストール]]></title>
+    <link href="http://kentaktwo.github.com/blog/2013/05/03/install-nodejs/"/>
+    <updated>2013-05-03T13:17:00+09:00</updated>
+    <id>http://kentaktwo.github.com/blog/2013/05/03/install-nodejs</id>
+    <content type="html"><![CDATA[<p>Ubuntu 12.04 LTS に nvm + Node.js + Mojito をインストール</p>
+
+<!--more-->
+
+
+<h2>nvm とは</h2>
+
+<p>Node Version Manager<br/>
+複数のバージョンの Node.js をインストールし、必要に応じて切り替えることができる。</p>
+
+<h2>nvm のインストール</h2>
+
+<ul>
+<li><p>ソースを取ってくるだけ
+<code>sh
+$ mkdir .nvm
+$ cd .nvm
+$ git clone git://github.com/creationix/nvm.git .
+</code></p></li>
+<li><p>起動時に nvm コマンドが使えるようにする<br/>
+zsh の場合、nvm.sh の10行目で (修正されたはずなのに) エラーが出てしまったので、<br/>
+そこを通らないように、先に <code>NVM_DIR</code> も設定しておく。
+``` sh .zshrc</p>
+
+<h2>NVM</h2>
+
+<p>export NVM_DIR=$HOME/.nvm/
+source $HOME/.nvm/nvm.sh
+```</p></li>
+<li>ヘルプ表示
+``` sh
+$ nvm</li>
+</ul>
+
+
+<p>Node Version Manager</p>
+
+<p>Usage:</p>
+
+<pre><code>nvm help                    Show this message
+nvm install [-s] &lt;version&gt;  Download and install a &lt;version&gt;
+nvm uninstall &lt;version&gt;     Uninstall a version
+nvm use &lt;version&gt;           Modify PATH to use &lt;version&gt;    nvm run &lt;version&gt; [&lt;args&gt;]  Run &lt;version&gt; with &lt;args&gt; as arguments
+nvm ls                      List installed versions
+nvm ls &lt;version&gt;            List versions matching a given description
+nvm ls-remote               List remote versions available for install
+nvm deactivate              Undo effects of NVM on current shell
+nvm alias [&lt;pattern&gt;]       Show all aliases beginning with &lt;pattern&gt;
+nvm alias &lt;name&gt; &lt;version&gt;  Set an alias named &lt;name&gt; pointing to &lt;version&gt;
+nvm unalias &lt;name&gt;          Deletes the alias named &lt;name&gt;
+nvm copy-packages &lt;version&gt; Install global NPM packages contained in &lt;version&gt; to current version
+</code></pre>
+
+<p>Example:</p>
+
+<pre><code>nvm install v0.4.12         Install a specific version number
+nvm use 0.2                 Use the latest available 0.2.x release
+nvm run 0.4.12 myApp.js     Run myApp.js using node v0.4.12
+nvm alias default 0.4       Auto use the latest installed v0.4.x version
+</code></pre>
+
+<p>```</p>
+
+<h2>Node.js のインストール</h2>
+
+<p>インストールできるバージョン一覧
+<code>sh
+$ nvm ls-remote
+</code>
+Mojito を使いたいので、0.9 より低いバージョンをインストール
+<code>sh
+$ nvm install v0.8.19
+</code></p>
+
+<h2>Mojito のインストール</h2>
+
+<ul>
+<li><a href="http://developer.yahoo.com/cocktails/mojito/docs/getting_started/quickstart.html">http://developer.yahoo.com/cocktails/mojito/docs/getting_started/quickstart.html</a>
+<code>sh
+$ npm install mojito -g
+</code></li>
+</ul>
+
+]]></content>
+  </entry>
+  
+</feed>
