@@ -16,8 +16,9 @@
 
 
 
-<meta name="description" content="VM に Cent OS 入れたのだが、外からアクセスできない。
-どうもインストール時には iptables が動いてて、外からのアクセスを拒否してるらしい。 $ sudo /etc/rc.d/init.d/iptables stop で iptables を無効にできる。 参考: http:// &hellip;">
+<meta name="description" content="CentOS で iptables を無効化する方法 VM に Cent OS 入れたのだが、外からアクセスできない。
+どうもインストール時には iptables が動いてて、外からのアクセスを拒否してるらしい。 1
+$ sudo /etc/rc.d/init.d/iptables stop で &hellip;">
 
 <meta name="keywords" content="unix ">
 
@@ -35,8 +36,9 @@
 <meta property="og:type" content="article">
 <meta property="og:url" content="http://kentaktwo.github.com/blog/2012/10/14/disable-iptables">
 <meta property="og:title" content="iptables を無効にする">
-<meta property="og:description" content="VM に Cent OS 入れたのだが、外からアクセスできない。
-どうもインストール時には iptables が動いてて、外からのアクセスを拒否してるらしい。 $ sudo /etc/rc.d/init.d/iptables stop で iptables を無効にできる。 参考: http:// &hellip;">
+<meta property="og:description" content="CentOS で iptables を無効化する方法 VM に Cent OS 入れたのだが、外からアクセスできない。
+どうもインストール時には iptables が動いてて、外からのアクセスを拒否してるらしい。 1
+$ sudo /etc/rc.d/init.d/iptables stop で &hellip;">
 
   <meta property="og:image" content="/images/bluenote_drum.jpg">
 
@@ -116,11 +118,17 @@
       </div><!-- /.header-title-wrap -->
     </header>
     <div class="entry-content">
-      <p>VM に Cent OS 入れたのだが、外からアクセスできない。
+      <p>CentOS で iptables を無効化する方法</p>
+
+<!--more-->
+
+
+<p>VM に Cent OS 入れたのだが、外からアクセスできない。
 どうもインストール時には iptables が動いてて、外からのアクセスを拒否してるらしい。</p>
 
-<pre><code>$ sudo /etc/rc.d/init.d/iptables stop
-</code></pre>
+<figure class='code'><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+</pre></td><td class='code'><pre><code class=''><span class='line'>$ sudo /etc/rc.d/init.d/iptables stop</span></code></pre></td></tr></table></div></figure>
+
 
 <p>で iptables を無効にできる。</p>
 

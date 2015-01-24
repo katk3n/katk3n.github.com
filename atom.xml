@@ -4,7 +4,7 @@
   <title><![CDATA[ApprEngineer.log]]></title>
   <link href="http://kentaktwo.github.com/atom.xml" rel="self"/>
   <link href="http://kentaktwo.github.com/"/>
-  <updated>2015-01-24T22:26:12+09:00</updated>
+  <updated>2015-01-24T23:42:45+09:00</updated>
   <id>http://kentaktwo.github.com/</id>
   <author>
     <name><![CDATA[kentaktwo]]></name>
@@ -996,19 +996,27 @@ table, userdata, function の比較は参照単位で行われる。</p>
 
 <h2>ユーザの追加</h2>
 
-<pre><code># useradd -g wheel &lt;username&gt;
-# passwd &lt;username&gt;
-# vi /etc/sudoers  # wheel に sudo 権限を与える
-# usermod -G wheel &lt;username&gt;  # useradd で wheel group に入れ忘れた場合
-</code></pre>
+<figure class='code'><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+</pre></td><td class='code'><pre><code class=''><span class='line'>$ useradd -g wheel &lt;username&gt;
+</span><span class='line'>$ passwd &lt;username&gt;
+</span><span class='line'>$ vi /etc/sudoers  # wheel に sudo 権限を与える
+</span><span class='line'>$ usermod -G wheel &lt;username&gt;  # useradd で wheel group に入れ忘れた場合</span></code></pre></td></tr></table></div></figure>
+
 
 <h2>iptables, SELinux 無効化</h2>
 
-<pre><code># chkconfig iptables off
-# chkconfig ip6tables off
-# vi /etc/sysconfig/selinux
-SELINUX=disabled
-</code></pre>
+<figure class='code'><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+</pre></td><td class='code'><pre><code class=''><span class='line'>$ chkconfig iptables off
+</span><span class='line'>$ chkconfig ip6tables off
+</span><span class='line'>$ vi /etc/sysconfig/selinux
+</span><span class='line'>SELINUX=disabled</span></code></pre></td></tr></table></div></figure>
+
 
 <p>SELINUX を無効にすると、kernel panic を起こすことがあるので、<br/>
 <code>/boot/grub/grub.conf</code> の <code>kernel</code> 行に <code>enforcing=0</code> を追記する。<br/>
@@ -2224,11 +2232,17 @@ XSI-conforming system の場合、ファイルサイズは大きくなる (hole 
     <link href="http://kentaktwo.github.com/blog/2012/10/14/disable-iptables/"/>
     <updated>2012-10-14T00:37:00+09:00</updated>
     <id>http://kentaktwo.github.com/blog/2012/10/14/disable-iptables</id>
-    <content type="html"><![CDATA[<p>VM に Cent OS 入れたのだが、外からアクセスできない。
+    <content type="html"><![CDATA[<p>CentOS で iptables を無効化する方法</p>
+
+<!--more-->
+
+
+<p>VM に Cent OS 入れたのだが、外からアクセスできない。
 どうもインストール時には iptables が動いてて、外からのアクセスを拒否してるらしい。</p>
 
-<pre><code>$ sudo /etc/rc.d/init.d/iptables stop
-</code></pre>
+<figure class='code'><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+</pre></td><td class='code'><pre><code class=''><span class='line'>$ sudo /etc/rc.d/init.d/iptables stop</span></code></pre></td></tr></table></div></figure>
+
 
 <p>で iptables を無効にできる。</p>
 

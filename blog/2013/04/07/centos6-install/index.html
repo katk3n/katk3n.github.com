@@ -157,19 +157,27 @@
 
 <h2>ユーザの追加</h2>
 
-<pre><code># useradd -g wheel &lt;username&gt;
-# passwd &lt;username&gt;
-# vi /etc/sudoers  # wheel に sudo 権限を与える
-# usermod -G wheel &lt;username&gt;  # useradd で wheel group に入れ忘れた場合
-</code></pre>
+<figure class='code'><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+</pre></td><td class='code'><pre><code class=''><span class='line'>$ useradd -g wheel &lt;username&gt;
+</span><span class='line'>$ passwd &lt;username&gt;
+</span><span class='line'>$ vi /etc/sudoers  # wheel に sudo 権限を与える
+</span><span class='line'>$ usermod -G wheel &lt;username&gt;  # useradd で wheel group に入れ忘れた場合</span></code></pre></td></tr></table></div></figure>
+
 
 <h2>iptables, SELinux 無効化</h2>
 
-<pre><code># chkconfig iptables off
-# chkconfig ip6tables off
-# vi /etc/sysconfig/selinux
-SELINUX=disabled
-</code></pre>
+<figure class='code'><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+</pre></td><td class='code'><pre><code class=''><span class='line'>$ chkconfig iptables off
+</span><span class='line'>$ chkconfig ip6tables off
+</span><span class='line'>$ vi /etc/sysconfig/selinux
+</span><span class='line'>SELINUX=disabled</span></code></pre></td></tr></table></div></figure>
+
 
 <p>SELINUX を無効にすると、kernel panic を起こすことがあるので、<br/>
 <code>/boot/grub/grub.conf</code> の <code>kernel</code> 行に <code>enforcing=0</code> を追記する。<br/>

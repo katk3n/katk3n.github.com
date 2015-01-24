@@ -4,7 +4,7 @@
   <title><![CDATA[Category: Unix | ApprEngineer.log]]></title>
   <link href="http://kentaktwo.github.com/blog/categories/unix/atom.xml" rel="self"/>
   <link href="http://kentaktwo.github.com/"/>
-  <updated>2015-01-24T22:26:12+09:00</updated>
+  <updated>2015-01-24T23:42:45+09:00</updated>
   <id>http://kentaktwo.github.com/</id>
   <author>
     <name><![CDATA[kentaktwo]]></name>
@@ -59,17 +59,17 @@
 
 <h2>ユーザの追加</h2>
 
-<pre><code># useradd -g wheel &lt;username&gt;
-# passwd &lt;username&gt;
-# vi /etc/sudoers  # wheel に sudo 権限を与える
-# usermod -G wheel &lt;username&gt;  # useradd で wheel group に入れ忘れた場合
+<pre><code>$ useradd -g wheel &lt;username&gt;
+$ passwd &lt;username&gt;
+$ vi /etc/sudoers  # wheel に sudo 権限を与える
+$ usermod -G wheel &lt;username&gt;  # useradd で wheel group に入れ忘れた場合
 </code></pre>
 
 <h2>iptables, SELinux 無効化</h2>
 
-<pre><code># chkconfig iptables off
-# chkconfig ip6tables off
-# vi /etc/sysconfig/selinux
+<pre><code>$ chkconfig iptables off
+$ chkconfig ip6tables off
+$ vi /etc/sysconfig/selinux
 SELINUX=disabled
 </code></pre>
 
@@ -1058,7 +1058,12 @@ return buf if OK, NULL on error
     <link href="http://kentaktwo.github.com/blog/2012/10/14/disable-iptables/"/>
     <updated>2012-10-14T00:37:00+09:00</updated>
     <id>http://kentaktwo.github.com/blog/2012/10/14/disable-iptables</id>
-    <content type="html"><![CDATA[<p>VM に Cent OS 入れたのだが、外からアクセスできない。
+    <content type="html"><![CDATA[<p>CentOS で iptables を無効化する方法</p>
+
+<!--more-->
+
+
+<p>VM に Cent OS 入れたのだが、外からアクセスできない。
 どうもインストール時には iptables が動いてて、外からのアクセスを拒否してるらしい。</p>
 
 <pre><code>$ sudo /etc/rc.d/init.d/iptables stop
