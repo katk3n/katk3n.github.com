@@ -133,25 +133,42 @@ Octopress という技術ブログ向けフレームワークがあるという�
 
 <h2>新規投稿</h2>
 
-<pre><code>rake new_post['title']
-</code></pre>
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+</pre></td><td class='code'><pre><code class='sh'><span class='line'><span class="nv">$ </span>rake new_post<span class="o">[</span><span class="s1">&#39;title&#39;</span><span class="o">]</span>
+</span></code></pre></td></tr></table></div></figure>
 
-<p>なお、自分の環境だとファイルが作られたときのフォーマットが iso-2022-jp になっているようなので、初回は
-    # In vim
-    :set fileencoding=utf-8
-で文字コードを直す。</p>
+
+<p>なお、自分の環境だとファイルが作られたときのフォーマットが iso-2022-jp になっているようなので、初回は</p>
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+</pre></td><td class='code'><pre><code class='sh'><span class='line'><span class="c"># In vim</span>
+</span><span class='line'>:set <span class="nv">fileencoding</span><span class="o">=</span>utf-8
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p>で文字コードを直す。</p>
 
 <h2>デプロイ</h2>
 
-<pre><code># ページの作成
-rake generate
-# プレビュー
-rake preview
-# デプロイ
-rake deploy
-# 作成とデプロイを同時にやる場合
-rake_gendeploy
-</code></pre>
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+<span class='line-number'>7</span>
+<span class='line-number'>8</span>
+</pre></td><td class='code'><pre><code class='sh'><span class='line'><span class="c"># ページの作成</span>
+</span><span class='line'><span class="nv">$ </span>rake generate
+</span><span class='line'><span class="c"># プレビュー</span>
+</span><span class='line'><span class="nv">$ </span>rake preview
+</span><span class='line'><span class="c"># デプロイ</span>
+</span><span class='line'><span class="nv">$ </span>rake deploy
+</span><span class='line'><span class="c"># 作成とデプロイを同時にやる場合</span>
+</span><span class='line'><span class="nv">$ </span>rake_gendeploy
+</span></code></pre></td></tr></table></div></figure>
+
 
 <h2>markdown 記法</h2>
 
@@ -160,9 +177,6 @@ rake_gendeploy
 <p>参考：<br/>
 <a href="http://www.kotono8.com/wiki/Markdown#.E8.A6.8B.E5.87.BA.E3.81.97">http://www.kotono8.com/wiki/Markdown#.E8.A6.8B.E5.87.BA.E3.81.97</a>
 <a href="http://nakama.cc.sophia.ac.jp/help.php?file=advanced_markdown.html">http://nakama.cc.sophia.ac.jp/help.php?file=advanced_markdown.html</a></p>
-
-<p>見た目の変更とかは後々やろうと思います。<br/>
-とりあえず、前に書いた記事のうちいくつかを移してみよう。</p>
 
       <footer class="entry-meta">
         <span class="entry-tags"><a href="/categories/#octopress" title="Pages tagged octopress" class="tag">octopress</a></span>
@@ -184,17 +198,14 @@ rake_gendeploy
           </div><!-- /.read-more-content -->
         
         <div class="read-more-list">
-          
             <div class="list-item">
-              <h4><a href="/blog/2013/05/03/mac-sleep/" title="Mac で休止状態にする">Mac で休止状態にする</a></h4>
-              <span>Published on May 03, 2013</span>
+                <h4><a href="/blog/2012/01/25/vbox-portforwarding/" title="VirtualBox に入れたゲスト OS に ssh login">VirtualBox に入れたゲスト OS に ssh login</a></h4>
+                <span>Published on January 25, 2012</span>
             </div><!-- /.list-item -->
-          
             <div class="list-item">
-              <h4><a href="/blog/2013/05/01/lua-chapter-6/" title="Programming in Lua Chapter 6">Programming in Lua Chapter 6</a></h4>
-              <span>Published on May 01, 2013</span>
+                <h4></h4>
+                <span></span>
             </div><!-- /.list-item -->
-          
         </div><!-- /.read-more-list -->
       </div><!-- /.read-more -->
     
