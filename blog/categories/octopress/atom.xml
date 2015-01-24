@@ -1,10 +1,10 @@
 <?xml version="1.0" encoding="utf-8"?>
 <feed xmlns="http://www.w3.org/2005/Atom">
 
-  <title><![CDATA[Category: octopress | ApprEngineer.log]]></title>
+  <title><![CDATA[Category: Octopress | ApprEngineer.log]]></title>
   <link href="http://kentaktwo.github.com/blog/categories/octopress/atom.xml" rel="self"/>
   <link href="http://kentaktwo.github.com/"/>
-  <updated>2013-05-03T13:32:31+09:00</updated>
+  <updated>2015-01-24T17:08:49+09:00</updated>
   <id>http://kentaktwo.github.com/</id>
   <author>
     <name><![CDATA[kentaktwo]]></name>
@@ -36,13 +36,10 @@ Octopress という技術ブログ向けフレームワークがあるという�
 <pre><code>rake new_post['title']
 </code></pre>
 
-<p>なお、自分の環境だとファイルが作られたときのフォーマットが iso-2022-jp になっているようなので、初回は</p>
-
-<pre><code># In vim
-:set fileencoding=utf-8
-</code></pre>
-
-<p>で文字コードを直す。</p>
+<p>なお、自分の環境だとファイルが作られたときのフォーマットが iso-2022-jp になっているようなので、初回は
+    # In vim
+    :set fileencoding=utf-8
+で文字コードを直す。</p>
 
 <h2>デプロイ</h2>
 

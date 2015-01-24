@@ -1,10 +1,10 @@
 <?xml version="1.0" encoding="utf-8"?>
 <feed xmlns="http://www.w3.org/2005/Atom">
 
-  <title><![CDATA[Category: apue | ApprEngineer.log]]></title>
+  <title><![CDATA[Category: Apue | ApprEngineer.log]]></title>
   <link href="http://kentaktwo.github.com/blog/categories/apue/atom.xml" rel="self"/>
   <link href="http://kentaktwo.github.com/"/>
-  <updated>2013-05-03T13:32:31+09:00</updated>
+  <updated>2015-01-24T17:08:49+09:00</updated>
   <id>http://kentaktwo.github.com/</id>
   <author>
     <name><![CDATA[kentaktwo]]></name>
@@ -14,7 +14,7 @@
 
   
   <entry>
-    <title type="html"><![CDATA[Advanced Programming in the UNIX environment Chapter 5]]></title>
+    <title type="html"><![CDATA[Advanced Programming in the UNIX Environment Chapter 5]]></title>
     <link href="http://kentaktwo.github.com/blog/2013/01/18/apue-chapter-5/"/>
     <updated>2013-01-18T21:10:00+09:00</updated>
     <id>http://kentaktwo.github.com/blog/2013/01/18/apue-chapter-5</id>
@@ -28,9 +28,9 @@
 <ul>
 <li>システムコールでの I/O は file descriptor を使用していた。</li>
 <li>standard I/O library では、<em>stream</em> と呼ばれるものを使用する。</li>
-<li>stream は single-byte, multibyte ("wide") 両方の文字セットで使用できる。</li>
-<li>read や write を single-byte か multibyte どちらで行うかを決めるものを stream's orientation と呼ぶ。</li>
-<li><code>fwide()</code> 関数で stream's orientation を変更することができる。</li>
+<li>stream は single-byte, multibyte (&ldquo;wide&rdquo;) 両方の文字セットで使用できる。</li>
+<li>read や write を single-byte か multibyte どちらで行うかを決めるものを stream&rsquo;s orientation と呼ぶ。</li>
+<li><code>fwide()</code> 関数で stream&rsquo;s orientation を変更することができる。</li>
 </ul>
 
 
@@ -80,20 +80,21 @@ standard error stream などは Unbuffered である (すぐに表示してほ�
 
 <h2>Opening a Stream</h2>
 
-<p>``` c
-FILE <em>fopen(const char </em>restrict pathname, const char <em>restrict type);
-FILE </em>freopen(const char <em>restrict pathname, const char </em>restrict type, FILE <em>restrict fp);
-FILE </em>fdopen(int filedes, const char *restrict type);</p>
+<pre><code class="c">FILE *fopen(const char *restrict pathname, const char *restrict type);
+FILE *freopen(const char *restrict pathname, const char *restrict type, FILE *restrict fp);
+FILE *fdopen(int filedes, const char *restrict type);
 
-<p>return file pointer if OK, NULL on error
-<code>``
--</code>fopen()<code>はファイル名を指定して open する。
--</code>freopen()` はファイル名を指定して、指定した stream に open する。</p>
-
-<pre><code>- stdin, stdout, stderr などに open したい場合に使う。
+return file pointer if OK, NULL on error
 </code></pre>
 
 <ul>
+<li><code>fopen()</code> はファイル名を指定して open する。</li>
+<li><code>freopen()</code> はファイル名を指定して、指定した stream に open する。
+
+<ul>
+<li>stdin, stdout, stderr などに open したい場合に使う。</li>
+</ul>
+</li>
 <li><code>fdopen()</code> は file descriptor を指定して open する。</li>
 <li><em>type</em> は
 
@@ -123,97 +124,110 @@ FILE </em>fdopen(int filedes, const char *restrict type);</p>
 
 <h3>Character-at-a-time I/O</h3>
 
-<p>文字単位で入出力する。
-``` c</p>
+<p>文字単位で入出力する。</p>
 
-<h1>include &lt;stdio.h></h1>
+<pre><code class="c">#include &lt;stdio.h&gt;
 
-<p>/<em> Input Functions </em>/
-int getc(FILE <em>fp);
-int fgetc(FILE </em>fp);
-int getchar(void);</p>
+/* Input Functions */
+int getc(FILE *fp);
+int fgetc(FILE *fp);
+int getchar(void);
 
-<p>return next character if OK, EOF on end of file or error</p>
+return next character if OK, EOF on end of file or error
 
-<p>/<em> Output Functions </em>/
-int putc(int c, FILE <em>fp);
-int fputc(int c, FILE </em>fp);
-int putchar(int c);</p>
+/* Output Functions */
+int putc(int c, FILE *fp);
+int fputc(int c, FILE *fp);
+int putchar(int c);
 
-<p>return c if OK, EOF on error
-<code>``
--</code>getchar()<code>は</code>getc(stdin)<code>と同じ
--</code>getc()<code>はマクロの場合があるが、</code>fgetc()<code>は必ず関数である
--</code>EOF` は多くの場合 -1 として定義される</p>
-
-<p><code>EOF</code> が返ってきたときに、EOF なのかエラーなのかわからないため、それを判別する関数が用意されている。
-``` c</p>
-
-<h1>include &lt;stdio.h></h1>
-
-<p>int ferror(FILE <em>fp);
-int feof(FILE </em>fp);</p>
-
-<p>return nonzero if condition is true, 0 otherwise
-<code>``
-- FILE Object の中で、error flag や end-of-file flag が管理されている。
--</code>clearerr()` でそれらの flag をクリアできる。</p>
-
-<p><code>ungetc()</code> で1文字読み戻すことができる。
-``` c</p>
-
-<h1>include &lt;stdio.h></h1>
-
-<p>int ungetc(int c, FILE *fp);</p>
-
-<p>return c if OK, EOF on error
-```
-- 読み戻せるのは1文字まで</p>
-
-<h3>Line-at-a-time I/O</h3>
-
-<p>``` c</p>
-
-<h1>include &lt;stdio.h></h1>
-
-<p>char <em>fgets(char </em>restrict buf, int n, FILE <em>restrict fp);
-char </em>gets(char *buf);</p>
-
-<p>return buf if OK, NULL on end of file or error
-<code>``
-- 改行記号に達するか、_n - 1_ byte まで読み込む (最後に null byte を入れるため)
--</code>gets()` は buffer size を指定できないため、使ってはいけない</p>
-
-<p>```</p>
-
-<h1>include &lt;stdio.h></h1>
-
-<p>int fputs(const char <em>restrict str, FILE </em>restrict fp);
-int puts(const char *str);</p>
-
-<p>return non-negative value if OK, EOF on error
-<code>``
-- null byte まで書きだす (null byte は書き出されない)
-- 改行記号が入っている必要はない
--</code>puts()<code>に</code>gets()` のような脆弱性は無いが、使わない方がいいだろう</p>
-
-<h3>Binary I/O</h3>
-
-<p>``` c</p>
-
-<h1>include &lt;stdio.h></h1>
-
-<p>size_t fread(void <em>restrict ptr, size_t size, size_t nobj, FILE </em>restrict fp);
-size_t fwrite(const void <em>restrict ptr, size_t size, size_t nobj, FILE </em>restrict fp);</p>
-
-<p>return number of objects read or written
-```
-- 1単位あたりのサイズを <em>size</em> で指定して、読み書きする単位数を <em>nobj</em> で指定する</p>
-
-<pre><code>- _size_ は `sizeof(float)` や構造体のサイズなど
+return c if OK, EOF on error
 </code></pre>
 
 <ul>
+<li><code>getchar()</code> は <code>getc(stdin)</code> と同じ</li>
+<li><code>getc()</code> はマクロの場合があるが、<code>fgetc()</code> は必ず関数である</li>
+<li><code>EOF</code> は多くの場合 -1 として定義される</li>
+</ul>
+
+
+<p><code>EOF</code> が返ってきたときに、EOF なのかエラーなのかわからないため、それを判別する関数が用意されている。</p>
+
+<pre><code class="c">#include &lt;stdio.h&gt;
+
+int ferror(FILE *fp);
+int feof(FILE *fp);
+
+return nonzero if condition is true, 0 otherwise
+</code></pre>
+
+<ul>
+<li>FILE Object の中で、error flag や end-of-file flag が管理されている。</li>
+<li><code>clearerr()</code> でそれらの flag をクリアできる。</li>
+</ul>
+
+
+<p><code>ungetc()</code> で1文字読み戻すことができる。</p>
+
+<pre><code class="c">#include &lt;stdio.h&gt;
+
+int ungetc(int c, FILE *fp);
+
+return c if OK, EOF on error
+</code></pre>
+
+<ul>
+<li>読み戻せるのは1文字まで</li>
+</ul>
+
+
+<h3>Line-at-a-time I/O</h3>
+
+<pre><code class="c">#include &lt;stdio.h&gt;
+
+char *fgets(char *restrict buf, int n, FILE *restrict fp);
+char *gets(char *buf);
+
+return buf if OK, NULL on end of file or error
+</code></pre>
+
+<ul>
+<li>改行記号に達するか、<em>n - 1</em> byte まで読み込む (最後に null byte を入れるため)</li>
+<li><code>gets()</code> は buffer size を指定できないため、使ってはいけない</li>
+</ul>
+
+
+<pre><code>#include &lt;stdio.h&gt;
+
+int fputs(const char *restrict str, FILE *restrict fp);
+int puts(const char *str);
+
+return non-negative value if OK, EOF on error
+</code></pre>
+
+<ul>
+<li>null byte まで書きだす (null byte は書き出されない)</li>
+<li>改行記号が入っている必要はない</li>
+<li><code>puts()</code> に <code>gets()</code> のような脆弱性は無いが、使わない方がいいだろう</li>
+</ul>
+
+
+<h3>Binary I/O</h3>
+
+<pre><code class="c">#include &lt;stdio.h&gt;
+
+size_t fread(void *restrict ptr, size_t size, size_t nobj, FILE *restrict fp);
+size_t fwrite(const void *restrict ptr, size_t size, size_t nobj, FILE *restrict fp);
+
+return number of objects read or written
+</code></pre>
+
+<ul>
+<li>1単位あたりのサイズを <em>size</em> で指定して、読み書きする単位数を <em>nobj</em> で指定する
+
+<ul>
+<li><em>size</em> は <code>sizeof(float)</code> や構造体のサイズなど</li>
+</ul>
+</li>
 <li>バイナリや、構造体を読み書きするのに使う
 
 <ul>
@@ -248,45 +262,56 @@ size_t fwrite(const void <em>restrict ptr, size_t size, size_t nobj, FILE </em>r
 
 <h3>Formatted Output</h3>
 
-<p>``` c</p>
+<pre><code class="c">#include &lt;stdio.h&gt;
 
-<h1>include &lt;stdio.h></h1>
+int printf(const char *restrict format, ...);
+int fprintf(FILE *restrict fp, const char *restrict format, ...);
 
-<p>int printf(const char <em>restrict format, ...);
-int fprintf(FILE </em>restrict fp, const char *restrict format, ...);</p>
+return number of characters output if OK, nagative value if output error
 
-<p>return number of characters output if OK, nagative value if output error</p>
+int sprintf(char *restrict buf, const char *restrict format, ...);
+int snprintf(char *restrict buf, size_t n, const char *restrict format, ...);
 
-<p>int sprintf(char <em>restrict buf, const char </em>restrict format, ...);
-int snprintf(char <em>restrict buf, size_t n, const char </em>restrict format, ...);</p>
+return number of characters stored in array if OK, negative value if encoding error
+</code></pre>
 
-<p>return number of characters stored in array if OK, negative value if encoding error
-<code>
-- `sprintf()` はオーバーフローする恐れがあるので、`snprintf()` を使うこと。
-- % 記号で始まるやつ (conversion specification) のフォーマットは以下の通り
-</code> c
-%[flags][fldwidth][precision][lenmodifier]convtype
-<code>``
-- "..." の代わりに、</code>va_list<code>になった</code>vprintf()<code>系の関数もある (</code>&lt;stdarg.h>` を includeする)。</p>
+<ul>
+<li><code>sprintf()</code> はオーバーフローする恐れがあるので、<code>snprintf()</code> を使うこと。</li>
+<li>% 記号で始まるやつ (conversion specification) のフォーマットは以下の通り</li>
+</ul>
+
+
+<pre><code class="c">%[flags][fldwidth][precision][lenmodifier]convtype
+</code></pre>
+
+<ul>
+<li>&ldquo;&hellip;&rdquo; の代わりに、<code>va_list</code> になった <code>vprintf()</code> 系の関数もある (<code>&lt;stdarg.h&gt;</code> を includeする)。</li>
+</ul>
+
 
 <h3>Formatted Input</h3>
 
-<p>``` c</p>
+<pre><code class="c">#include &lt;stdio.h&gt;
+int scanf(const char *restrict format, ...);
+int fscanf(FILE *restrict fp, const char *restrict format, ...);
+int sscanf(const char *restrict buf, const char *restrict format, ...);
 
-<h1>include &lt;stdio.h></h1>
+return number of input items assigned, EOF if input error or end of file before any conversion
+</code></pre>
 
-<p>int scanf(const char <em>restrict format, ...);
-int fscanf(FILE </em>restrict fp, const char <em>restrict format, ...);
-int sscanf(const char </em>restrict buf, const char *restrict format, ...);</p>
+<ul>
+<li>conversion specification のフォーマットは以下の通り</li>
+</ul>
 
-<p>return number of input items assigned, EOF if input error or end of file before any conversion
-<code>
-- conversion specification のフォーマットは以下の通り
-</code> c
-%[*][fldwidth][lenmodifier]convtype
-<code>``
-- 頭にアスタリスクがついているやつについては conversion 結果が変数に格納されない
-- "..." の代わりに、</code>va_list<code>になった</code>vscanf()<code>系の関数もある (</code>&lt;stdarg.h>` を includeする)。</p>
+
+<pre><code class="c">%[*][fldwidth][lenmodifier]convtype
+</code></pre>
+
+<ul>
+<li>頭にアスタリスクがついているやつについては conversion 結果が変数に格納されない</li>
+<li>&ldquo;&hellip;&rdquo; の代わりに、<code>va_list</code> になった <code>vscanf()</code> 系の関数もある (<code>&lt;stdarg.h&gt;</code> を includeする)。</li>
+</ul>
+
 
 <h2>Implementation Details</h2>
 
@@ -297,51 +322,50 @@ int sscanf(const char </em>restrict buf, const char *restrict format, ...);</p>
 
 <h2>Temporary Files</h2>
 
-<p>``` c</p>
+<pre><code class="c">#include &lt;stdio.h&gt;
 
-<h1>include &lt;stdio.h></h1>
+char *tmpnam(char *ptr);
+returns pointer to unique pathname
 
-<p>char <em>tmpnam(char </em>ptr);
-returns pointer to unique pathname</p>
-
-<p>FILE *tmpfile(void);
+FILE *tmpfile(void);
 returns file pointer if OK, NULL on error
-<code>``
--</code>tmpnam()` は存在しているファイル名とかぶらないパス名を作成する。</p>
-
-<pre><code>- 最大 `TMP_MAX` 回は異なるパス名が生成される (`TMP_MAX` は `&lt;stdio.h&gt;` で定義されている)。
-- _ptr_ が `NULL` の場合、作られたパス名は static area に格納される。
-- _ptr_ が `NULL` でない場合、その参照先の buffer は少なくとも
- `L_tmpnam` 以上のサイズがある必要がある (`L_tmpnam` は `&lt;stdio.h&gt;` で定義されている)。
 </code></pre>
 
 <ul>
+<li><code>tmpnam()</code> は存在しているファイル名とかぶらないパス名を作成する。
+
+<ul>
+<li>最大 <code>TMP_MAX</code> 回は異なるパス名が生成される (<code>TMP_MAX</code> は <code>&lt;stdio.h&gt;</code> で定義されている)。</li>
+<li><em>ptr</em> が <code>NULL</code> の場合、作られたパス名は static area に格納される。</li>
+<li><em>ptr</em> が <code>NULL</code> でない場合、その参照先の buffer は少なくとも
+<code>L_tmpnam</code> 以上のサイズがある必要がある (<code>L_tmpnam</code> は <code>&lt;stdio.h&gt;</code> で定義されている)。</li>
+</ul>
+</li>
 <li><code>tmpfile()</code> は type が <code>wb+</code> の一時ファイルを作成する。これはプログラム終了時に削除される。</li>
 </ul>
 
 
-<p>以下の2つの関数が XSI で定義されている
-``` c</p>
+<p>以下の2つの関数が XSI で定義されている</p>
 
-<h1>include &lt;stdio.h></h1>
+<pre><code class="c">#include &lt;stdio.h&gt;
+char *tempnam(const char *directory, const char *prefix);
+returns pointer to unique pathname
 
-<p>char <em>tempnam(const char </em>directory, const char *prefix);
-returns pointer to unique pathname</p>
-
-<h1>include &lt;stdio.h></h1>
-
-<p>int mkstemp(char *template);
+#include &lt;stdio.h&gt;
+int mkstemp(char *template);
 returns file descriptor if OK, -1 on error
-<code>``
--</code>tempnam()<code>はディレクトリとプレフィックスが指定できる</code>tmpnam()` である。</p>
-
-<pre><code>- _directory_ は環境変数 `TMP_DIR` が最優先される。
-`TMP_DIR` が参照するディレクトリが存在しない場合、スキップされる。
-- _directory_ が `NULL` の場合、`P_tmpdir` が使われる。
-- _prefix_ にはファイル名の先頭を最大5文字まで指定することができる。
 </code></pre>
 
 <ul>
+<li><code>tempnam()</code> はディレクトリとプレフィックスが指定できる <code>tmpnam()</code> である。
+
+<ul>
+<li><em>directory</em> は環境変数 <code>TMP_DIR</code> が最優先される。
+<code>TMP_DIR</code> が参照するディレクトリが存在しない場合、スキップされる。</li>
+<li><em>directory</em> が <code>NULL</code> の場合、<code>P_tmpdir</code> が使われる。</li>
+<li><em>prefix</em> にはファイル名の先頭を最大5文字まで指定することができる。</li>
+</ul>
+</li>
 <li><code>mkstemp()</code> は一時ファイルを作るが、file pointer の代わりに file descriptor を返す。
 
 <ul>
@@ -354,7 +378,7 @@ returns file descriptor if OK, -1 on error
   </entry>
   
   <entry>
-    <title type="html"><![CDATA[Advanced Programming in the UNIX enviroment Chapter 4]]></title>
+    <title type="html"><![CDATA[Advanced Programming in the UNIX Enviroment Chapter 4]]></title>
     <link href="http://kentaktwo.github.com/blog/2012/10/14/apue-chapter-4/"/>
     <updated>2012-10-14T14:25:00+09:00</updated>
     <id>http://kentaktwo.github.com/blog/2012/10/14/apue-chapter-4</id>
@@ -365,16 +389,13 @@ returns file descriptor if OK, -1 on error
 
 <h2>stat, fstat and lstat Functions</h2>
 
-<p>``` c</p>
+<pre><code class="c">#include &lt;sys/stat.h&gt;
+int stat(const char *restrict pathname, struct stat *restrict buf);
+int fstat(int filedes, struct stat *buf);
+int lstat(const char *restrict pathname, struct stat *restrict buf);
 
-<h1>include &lt;sys/stat.h></h1>
-
-<p>int stat(const char <em>restrict pathname, struct stat </em>restrict buf);
-int fstat(int filedes, struct stat <em>buf);
-int lstat(const char </em>restrict pathname, struct stat *restrict buf);</p>
-
-<p>return 0 if OK, -1 on error
-```</p>
+return 0 if OK, -1 on error
+</code></pre>
 
 <ul>
 <li>ファイルについての情報が書かれた構造体 (stat 構造体) を返す。
@@ -392,26 +413,22 @@ int lstat(const char </em>restrict pathname, struct stat *restrict buf);</p>
 </ul>
 
 
-<p>``` c
-struct stat {</p>
-
-<pre><code>mode_t      st_mode;    /* file type &amp; mode (permissions) */
-ino_t       st_ino;     /* i-node number (serial number) */
-dev_t       st_dev;     /* device number (file system) */
-dev_t       st_rdev;    /* device number for special files */
-nlink_t     st_nlink;   /* number of links */
-uid_t       st_uid;     /* user ID of owner */
-gid_t       st_gid;     /* group ID of owner */
-off_t       st_size;    /* size in bytes, for regular files */
-time_t      st_atime;   /* time of last access */
-time_t      st_mtime;   /* time of last modification */
-time_t      st_ctime;   /* time of last file status change */
-blksize_t   st_blksize; /* best I/O block size */
-blkcnt_t    st_blocks;  /* number of disk blocks allocated */
+<pre><code class="c">struct stat {
+    mode_t      st_mode;    /* file type &amp; mode (permissions) */
+    ino_t       st_ino;     /* i-node number (serial number) */
+    dev_t       st_dev;     /* device number (file system) */
+    dev_t       st_rdev;    /* device number for special files */
+    nlink_t     st_nlink;   /* number of links */
+    uid_t       st_uid;     /* user ID of owner */
+    gid_t       st_gid;     /* group ID of owner */
+    off_t       st_size;    /* size in bytes, for regular files */
+    time_t      st_atime;   /* time of last access */
+    time_t      st_mtime;   /* time of last modification */
+    time_t      st_ctime;   /* time of last file status change */
+    blksize_t   st_blksize; /* best I/O block size */
+    blkcnt_t    st_blocks;  /* number of disk blocks allocated */
+};
 </code></pre>
-
-<p>};
-```</p>
 
 <h2>File Types</h2>
 
@@ -482,14 +499,11 @@ effective user (group) ID をそのファイルのオーナー (<code>st_uid</co
 
 <h2>access Function</h2>
 
-<p>``` c</p>
+<pre><code class="c">#include &lt;unistd.h&gt;
+int access(const char *pathname, int mode);
 
-<h1>include &lt;unistd.h></h1>
-
-<p>int access(const char *pathname, int mode);</p>
-
-<p>return 0 if OK, -1 on error
-```</p>
+return 0 if OK, -1 on error
+</code></pre>
 
 <ul>
 <li>(effective でなく) real user (group) ID がファイルへの権限を持っているか調べる。</li>
@@ -499,35 +513,31 @@ effective user (group) ID をそのファイルのオーナー (<code>st_uid</co
 
 <h2>umask Function</h2>
 
-<p>``` c</p>
+<pre><code class="c">#include &lt;sys/stat.h&gt;
+mode_t umask(mode_t cmask);
 
-<h1>include &lt;sys/stat.h></h1>
-
-<p>mode_t umask(mode_t cmask);</p>
-
-<p>return: 変更前の mask
-```
-- ファイル作成時に umask に設定した権限を除外することができる。</p>
-
-<pre><code>- `S_IROTH | S_IWOTH` みたいにして設定
+return: 変更前の mask
 </code></pre>
 
 <ul>
+<li>ファイル作成時に umask に設定した権限を除外することができる。
+
+<ul>
+<li><code>S_IROTH | S_IWOTH</code> みたいにして設定</li>
+</ul>
+</li>
 <li>プログラム内で設定した umask はプログラムが終了すると元に戻る。</li>
 </ul>
 
 
 <h2>chmod and fchmod Functions</h2>
 
-<p>``` c</p>
+<pre><code class="c">#include &lt;sys/stat.h&gt;
+int chmod(const char *pathname, mode_t mode);
+int fchmod(int filedes, mode_t mode);
 
-<h1>include &lt;sys/stat.h></h1>
-
-<p>int chmod(const char *pathname, mode_t mode);
-int fchmod(int filedes, mode_t mode);</p>
-
-<p>return 0 if OK, -1 on error
-```</p>
+return 0 if OK, -1 on error
+</code></pre>
 
 <ul>
 <li>ファイルのアクセス権限を変更する。</li>
@@ -535,11 +545,10 @@ int fchmod(int filedes, mode_t mode);</p>
 </ul>
 
 
-<p><code>c
-struct stat statbuf;
+<pre><code class="c">struct stat statbuf;
 stat("foo", &amp;statbuf);
 chmod("foo", (statbuf.st_mode &amp; ~S_IXGRP) | S_ISGID);
-</code></p>
+</code></pre>
 
 <ul>
 <li><code>ls -l</code> したときに execute 権限にある <code>S</code> は execute 権限は無いが、
@@ -590,16 +599,13 @@ directory への write 権限を持っていて、かつ
 </ul>
 
 
-<p>``` c</p>
-
-<h1>include &lt;unistd.h></h1>
-
-<p>int chown(const char <em>pathname, uid_t owner, gid_t group);
+<pre><code class="c">#include &lt;unistd.h&gt;
+int chown(const char *pathname, uid_t owner, gid_t group);
 int fchown(int filedes, uid_t owner, gid_t group);
-int lchown(const char </em>pathname, uid_t owner, gid_t group);</p>
+int lchown(const char *pathname, uid_t owner, gid_t group);
 
-<p>return 0 if OK, -1 on error
-```</p>
+return 0 if OK, -1 on error
+</code></pre>
 
 <ul>
 <li><code>lchown()</code> はシンボリックリンク自体のオーナーを変更する</li>
@@ -620,7 +626,7 @@ int lchown(const char </em>pathname, uid_t owner, gid_t group);</p>
 <li>regular file の場合、ファイルサイズ 0 が許容される。これはファイルの最初が end-of-file の場合である。</li>
 <li>directory の場合、ファイルサイズは 16 や 512 などの複数の値になる。</li>
 <li>symbolic link の場合、ファイルサイズはリンク先のファイル名の長さ (byte) になる。
-例えば、リンク先が "usr/lib" のとき、ファイルサイズは 7 になる。</li>
+例えば、リンク先が &ldquo;usr/lib&rdquo; のとき、ファイルサイズは 7 になる。</li>
 </ul>
 </li>
 <li>最近の UNIX システムでは、<code>st_blksize</code> と <code>st_blocks</code> というフィールドも用意されている
@@ -636,15 +642,12 @@ int lchown(const char </em>pathname, uid_t owner, gid_t group);</p>
 
 <h2>File Truncation</h2>
 
-<p>``` c</p>
+<pre><code class="c">#include &lt;unistd.h&gt;
+int truncate(const char *pathname, off_t length);
+int ftruncate(int filedes, off_t length);
 
-<h1>include &lt;unistd.h></h1>
-
-<p>int truncate(const char *pathname, off_t length);
-int ftruncate(int filedes, off_t length);</p>
-
-<p>return 0 if OK, -1 on error
-```</p>
+return 0 if OK, -1 on error
+</code></pre>
 
 <ul>
 <li>ファイルの長さを <em>length</em> バイトに切り詰める</li>
@@ -695,15 +698,12 @@ XSI-conforming system の場合、ファイルサイズは大きくなる (hole 
 
 <h2>link, unlink, remove, and rename Functions</h2>
 
-<p>``` c</p>
+<pre><code class="c">#include &lt;unistd.h&gt;
+int link(cont char *existingpath, const char *newpath);
+int unlink(const char *pathname);
 
-<h1>include &lt;unistd.h></h1>
-
-<p>int link(cont char <em>existingpath, const char </em>newpath);
-int unlink(const char *pathname);</p>
-
-<p>return 0 if OK, -1 on error
-```</p>
+return 0 if OK, -1 on error
+</code></pre>
 
 <ul>
 <li><code>link()</code> は <em>existingpath</em> を参照する新しい directory entry を <em>newpath</em> に作成する。
@@ -740,14 +740,11 @@ int unlink(const char *pathname);</p>
 </ul>
 
 
-<p>``` c</p>
+<pre><code class="c">#include &lt;stdio.h&gt;
+int remove(const char *pathname);
 
-<h1>include &lt;stdio.h></h1>
-
-<p>int remove(const char *pathname);</p>
-
-<p>return 0 if OK, -1 on error
-```</p>
+return 0 if OK, -1 on error
+</code></pre>
 
 <ul>
 <li><p><code>remove()</code> は対象が file なら <code>unlink()</code> と同じであり、directory なら <code>rmdir()</code> と同じである。</p></li>
@@ -755,14 +752,11 @@ int unlink(const char *pathname);</p>
 </ul>
 
 
-<p>``` c</p>
+<pre><code class="c">#include &lt;stdio.h&gt;
+int rename(const char *oldname, const char *newname);
 
-<h1>include &lt;stdio.h></h1>
-
-<p>int rename(const char <em>oldname, const char </em>newname);</p>
-
-<p>return 0 if OK, -1 on error
-```</p>
+return 0 if OK, -1 on error
+</code></pre>
 
 <ul>
 <li><em>newname</em> が既に存在していた場合、<em>newname</em> は削除され、<em>oldname</em> が <em>newname</em> に rename される。
@@ -802,29 +796,27 @@ int unlink(const char *pathname);</p>
 </ul>
 
 
-<p>``` c</p>
+<pre><code class="c">#include &lt;unistd.h&gt;
+int symlink(const char *actualpath, const char *sympath);
 
-<h1>include &lt;unistd.h></h1>
-
-<p>int symlink(const char <em>actualpath, const char </em>sympath);</p>
-
-<p>return 0 if OK, -1 on error
-```</p>
+return 0 if OK, -1 on error
+</code></pre>
 
 <ul>
 <li><code>open()</code> は symbolic link をたどってしまうため、symbolic link 自身を open したい場合は <code>readlink()</code> を使う</li>
 </ul>
 
 
-<p>``` c</p>
+<pre><code class="c">#include &lt;unistd.h&gt;
+ssize_t readlink(const char *restrict pathname, char *restrict buf, size_t bufsize);
 
-<h1>include &lt;unistd.h></h1>
+return number of bytes read if OK, -1 on error
+</code></pre>
 
-<p>ssize_t readlink(const char <em>restrict pathname, char </em>restrict buf, size_t bufsize);</p>
+<ul>
+<li>この関数1つで open, read, close を行なっている。</li>
+</ul>
 
-<p>return number of bytes read if OK, -1 on error
-```
-- この関数1つで open, read, close を行なっている。</p>
 
 <h2>File Times</h2>
 
@@ -837,24 +829,19 @@ int unlink(const char *pathname);</p>
 
 <p>ファイルの access time や modification time を変更するには <code>utime()</code> を使う</p>
 
-<p>``` c</p>
+<pre><code class="c">#include &lt;utime.h&gt;
+int utime(const char *pathname, const struct utimbuf *times);
 
-<h1>include &lt;utime.h></h1>
-
-<p>int utime(const char <em>pathname, const struct utimbuf </em>times);</p>
-
-<p>return 0 if OK, -1 on error
-<code>
-`utimbuf` 構造体は以下のようになっている
-</code> c
-struct utimbuf {</p>
-
-<pre><code>time_t actime;  /* access time */
-time_t modtime; /* modification time*/
+return 0 if OK, -1 on error
 </code></pre>
 
-<p>}
-```</p>
+<p><code>utimbuf</code> 構造体は以下のようになっている</p>
+
+<pre><code class="c">struct utimbuf {
+    time_t actime;  /* access time */
+    time_t modtime; /* modification time*/
+}
+</code></pre>
 
 <ul>
 <li><em>times</em> が null の場合、access time と modification time は現在の時刻に更新される。</li>
@@ -865,55 +852,55 @@ time_t modtime; /* modification time*/
 <h2>mkdir and rmdir Functions</h2>
 
 <ul>
-<li><code>mkdir()</code> で空の directory を作成できる。
-``` c
-
-<h1>include &lt;sys/stat.h></h1>
-
-<p>int mkdir(const char *pathname, mode_t mode);
-return 0 if OK, -1 on error
-```</p></li>
-<li><code>.</code> と <code>..</code> は自動的に作られる。</li>
-<li><em>mode</em> にはプロセスの mask による変更が加えられる。</li>
-<li><p>directory の場合、execute bit を付けないと directory 内のファイルにアクセスできなくなるので注意</p></li>
-<li><p>空の directory を削除するには <code>rmdir()</code> を使う
-``` c</p>
-
-<h1>include &lt;unistd.h></h1>
-
-<p>int rmdir(const char *pathname);</p></li>
+<li><code>mkdir()</code> で空の directory を作成できる。</li>
 </ul>
 
 
-<p>return 0 if OK, -1 on error
-```
-- link count が 0 でも、その directory を open しているプロセスがあれば、close されるまで領域は解放されない。
-解放はされないが、その directory 内に新しくファイルを置くことはできなくなる。</p>
+<pre><code class="c">#include &lt;sys/stat.h&gt;
+int mkdir(const char *pathname, mode_t mode);
+return 0 if OK, -1 on error
+</code></pre>
+
+<ul>
+<li><code>.</code> と <code>..</code> は自動的に作られる。</li>
+<li><em>mode</em> にはプロセスの mask による変更が加えられる。</li>
+<li><p>directory の場合、execute bit を付けないと directory 内のファイルにアクセスできなくなるので注意</p></li>
+<li><p>空の directory を削除するには <code>rmdir()</code> を使う</p></li>
+</ul>
+
+
+<pre><code class="c">#include &lt;unistd.h&gt;
+int rmdir(const char *pathname);
+
+return 0 if OK, -1 on error
+</code></pre>
+
+<ul>
+<li>link count が 0 でも、その directory を open しているプロセスがあれば、close されるまで領域は解放されない。
+解放はされないが、その directory 内に新しくファイルを置くことはできなくなる。</li>
+</ul>
+
 
 <h2>Reading Directories</h2>
 
-<p>directory を読むには、以下のような関数を使う
-``` c</p>
+<p>directory を読むには、以下のような関数を使う</p>
 
-<h1>include &lt;dirent.h></h1>
-
-<p>DIR <em>opendir(const char </em>pathname);    return pointer if OK, NULL on error
-struct dirent <em>readdir(DIR </em>dp);       return pointer if OK, NULL at end of directory or error
-void rewinddir(DIR <em>dp);
-int closedir(DIR </em>dp);                 return 0 if OK, -1 on error
-long telldir(DIR <em>dp);                 return current location in directory associated with dp
-void seekdir(DIR </em>dp, long loc);
-<code>
-`dirent` 構造体 の定義は実装依存だが、少なくとも以下の2つは含まれている
-</code> c
-struct dirent {</p>
-
-<pre><code>ino_t d_ino;                    /* i-node number */ 
-char  d_name[NAME_MAX + 1];     /* null-terminated filename */
+<pre><code class="c">#include &lt;dirent.h&gt;
+DIR *opendir(const char *pathname);    return pointer if OK, NULL on error
+struct dirent *readdir(DIR *dp);       return pointer if OK, NULL at end of directory or error
+void rewinddir(DIR *dp);
+int closedir(DIR *dp);                 return 0 if OK, -1 on error
+long telldir(DIR *dp);                 return current location in directory associated with dp
+void seekdir(DIR *dp, long loc);
 </code></pre>
 
-<p>}
-```</p>
+<p><code>dirent</code> 構造体 の定義は実装依存だが、少なくとも以下の2つは含まれている</p>
+
+<pre><code class="c">struct dirent {
+    ino_t d_ino;                    /* i-node number */ 
+    char  d_name[NAME_MAX + 1];     /* null-terminated filename */
+}
+</code></pre>
 
 <ul>
 <li><code>DIR</code> は <code>FILE</code> 構造体のようなもので、directory が read されるのを管理するための構造体</li>
@@ -932,32 +919,28 @@ char  d_name[NAME_MAX + 1];     /* null-terminated filename */
 </ul>
 </li>
 <li><p>current working directory はプロセスの attribute である。</p></li>
-<li><p><code>chdir()</code> や <code>fchdir()</code> を使うと、それを呼んだプロセスの current working directory が変更できる
-``` c</p>
-
-<h1>include &lt;unistd.h></h1>
-
-<p>int chdir(const char *pathname);
-int fchdir(int filedes);</p></li>
+<li><p><code>chdir()</code> や <code>fchdir()</code> を使うと、それを呼んだプロセスの current working directory が変更できる</p></li>
 </ul>
 
 
-<p>return 0 if OK, -1 on error
-```</p>
+<pre><code class="c">#include &lt;unistd.h&gt;
+int chdir(const char *pathname);
+int fchdir(int filedes);
+
+return 0 if OK, -1 on error
+</code></pre>
 
 <ul>
 <li>kernel は current working directory の full path を管理しているわけではない</li>
-<li>full path を取得するのは、v-node を辿っていけばいいが、そのような関数は既にあり、<code>getcwd()</code> で full path が取得できる
-``` c
-
-<h1>include &lt;unistd.h></h1>
-
-<p>char <em>getcwd(char </em>buf, size_t size);</p></li>
+<li>full path を取得するのは、v-node を辿っていけばいいが、そのような関数は既にあり、<code>getcwd()</code> で full path が取得できる</li>
 </ul>
 
 
-<p>return buf if OK, NULL on error
-```</p>
+<pre><code class="c">#include &lt;unistd.h&gt;
+char *getcwd(char *buf, size_t size);
+
+return buf if OK, NULL on error
+</code></pre>
 
 <h2>Device Special Files</h2>
 
@@ -989,7 +972,7 @@ int fchdir(int filedes);</p></li>
   </entry>
   
   <entry>
-    <title type="html"><![CDATA[Advanced Programming in the UNIX enviroment Chapter 3]]></title>
+    <title type="html"><![CDATA[Advanced Programming in the UNIX Environment Chapter 3]]></title>
     <link href="http://kentaktwo.github.com/blog/2012/06/30/apue-chapter-3/"/>
     <updated>2012-06-30T13:49:00+09:00</updated>
     <id>http://kentaktwo.github.com/blog/2012/06/30/apue-chapter-3</id>
@@ -1021,19 +1004,18 @@ int fchdir(int filedes);</p></li>
 
 <h2>open Function</h2>
 
-<p>``` c</p>
-
-<h1>include &lt;fcntl.h></h1>
-
-<p>int open(const char <em>pathname, int oflag, ... /</em> mode_t mode */ );
-<code>``
-- ファイルを開いたり作成したりする
-- 第二引数 (_oflag_) に入れるオプションは</code>&lt;fcntl.h>` に定義されている</p>
-
-<pre><code>- `O_RDONLY`, `O_WRONLY`, `O_RDWR` のいずれかは必須
+<pre><code class="c">#include &lt;fcntl.h&gt;
+int open(const char *pathname, int oflag, ... /* mode_t mode */ );
 </code></pre>
 
 <ul>
+<li>ファイルを開いたり作成したりする</li>
+<li>第二引数 (<em>oflag</em>) に入れるオプションは <code>&lt;fcntl.h&gt;</code> に定義されている
+
+<ul>
+<li><code>O_RDONLY</code>, <code>O_WRONLY</code>, <code>O_RDWR</code> のいずれかは必須</li>
+</ul>
+</li>
 <li>open される file descriptor は使われていないもののうち最小のものになる
 
 <ul>
@@ -1053,43 +1035,44 @@ int fchdir(int filedes);</p></li>
 
 <h2>creat Function</h2>
 
-<p>``` c</p>
-
-<h1>include &lt;fcntl.h></h1>
-
-<p>int creat(const char *pathname, mode_t mode);
-<code>``
--</code>open(pathname, O_WRONLY | O_CREAT | O_TRUNC, mode);` と同じ</p>
-
-<h2>close Function</h2>
-
-<p>``` c</p>
-
-<h1>include &lt;unistd.h></h1>
-
-<p>int close(int filedes);
-```
-- プロセスが終了するときにはカーネルによって自動的に close される</p>
-
-<h2>lseek Function</h2>
-
-<p>``` c</p>
-
-<h1>include &lt;unistd.h></h1>
-
-<p>off_t lseek(int filedes, off_t offset, int whence);
-<code>``
-- オフセットの位置を指定する
-- open されたファイルは現在のファイルの始めからのオフセットを非負整数で持っている
-- デフォルトでは open されたときオフセットは 0 に設定される (</code>O_APPEND` を設定している場合を除く)
-- <em>offset</em> の値の適用の仕方は <em>whence</em> の値による</p>
-
-<pre><code>- `SEEK_SET`: ファイルの始めから _offset_ 進めたところ
-- `SEEK_CUR`: 現在のオフセットから _offset_ 進めたところ
-- `SEEK_END`: ファイルの終わり（正確には現在のファイルサイズ）から _offset_ 進めたところ
+<pre><code class="c">#include &lt;fcntl.h&gt;
+int creat(const char *pathname, mode_t mode);
 </code></pre>
 
 <ul>
+<li><code>open(pathname, O_WRONLY | O_CREAT | O_TRUNC, mode);</code> と同じ</li>
+</ul>
+
+
+<h2>close Function</h2>
+
+<pre><code class="c">#include &lt;unistd.h&gt;
+int close(int filedes);
+</code></pre>
+
+<ul>
+<li>プロセスが終了するときにはカーネルによって自動的に close される</li>
+</ul>
+
+
+<h2>lseek Function</h2>
+
+<pre><code class="c">#include &lt;unistd.h&gt;
+off_t lseek(int filedes, off_t offset, int whence);
+</code></pre>
+
+<ul>
+<li>オフセットの位置を指定する</li>
+<li>open されたファイルは現在のファイルの始めからのオフセットを非負整数で持っている</li>
+<li>デフォルトでは open されたときオフセットは 0 に設定される (<code>O_APPEND</code> を設定している場合を除く)</li>
+<li><em>offset</em> の値の適用の仕方は <em>whence</em> の値による
+
+<ul>
+<li><code>SEEK_SET</code>: ファイルの始めから <em>offset</em> 進めたところ</li>
+<li><code>SEEK_CUR</code>: 現在のオフセットから <em>offset</em> 進めたところ</li>
+<li><code>SEEK_END</code>: ファイルの終わり（正確には現在のファイルサイズ）から <em>offset</em> 進めたところ</li>
+</ul>
+</li>
 <li><code>lseek</code> は新しいファイルオフセットを返すので、これを利用して現在のオフセットを取得することができる
 <code>c
 off_t currpos = lseek(fd, 0, SEEK_CUR);
@@ -1108,26 +1091,30 @@ off_t currpos = lseek(fd, 0, SEEK_CUR);
 
 <h2>read Function</h2>
 
-<p>``` c</p>
-
-<h1>include &lt;unistd.h></h1>
-
-<p>ssize_t read(int filedes, void *buf, size_t nbytes);
-```
-- 戻り値は実際に読み込んだバイト数</p>
-
-<pre><code>- EOF のときは 0
+<pre><code class="c">#include &lt;unistd.h&gt;
+ssize_t read(int filedes, void *buf, size_t nbytes);
 </code></pre>
+
+<ul>
+<li>戻り値は実際に読み込んだバイト数
+
+<ul>
+<li>EOF のときは 0</li>
+</ul>
+</li>
+</ul>
+
 
 <h2>write Function</h2>
 
-<p>``` c</p>
+<pre><code class="c">#include &lt;unistd.h&gt;
+ssize_t write(int filedes, const void *buf, size_t nbytes);
+</code></pre>
 
-<h1>include &lt;unistd.h></h1>
+<ul>
+<li>ディスクがいっぱいで書き込めなくなったときはエラー (-1) を返す</li>
+</ul>
 
-<p>ssize_t write(int filedes, const void *buf, size_t nbytes);
-```
-- ディスクがいっぱいで書き込めなくなったときはエラー (-1) を返す</p>
 
 <h2>File Sharing</h2>
 
@@ -1166,31 +1153,28 @@ off_t currpos = lseek(fd, 0, SEEK_CUR);
 
 <h2>Atomic Operations</h2>
 
-<p>``` c</p>
+<pre><code class="c">#include &lt;unistd.h&gt;
+ssize_t pread(int filedes, void *buf, size_t nbytes, off_t offset);
+ssize_t pwrite(int filedes, const void *buf, size_t nbytes, off_t offset);
+</code></pre>
 
-<h1>include &lt;unistd.h></h1>
-
-<p>ssize_t pread(int filedes, void <em>buf, size_t nbytes, off_t offset);
-ssize_t pwrite(int filedes, const void </em>buf, size_t nbytes, off_t offset);
-<code>``
-</code>lseek<code>と</code>read<code>または</code>write` を atomic に行なってくれる</p>
+<p><code>lseek</code> と <code>read</code> または <code>write</code> を atomic に行なってくれる</p>
 
 <h2>dup and dup2 Functions</h2>
 
-<p>``` c</p>
-
-<h1>include &lt;unistd.h></h1>
-
-<p>int dup(int filedes);
+<pre><code class="c">#include &lt;unistd.h&gt;
+int dup(int filedes);
 int dup2(int filedes, int filedes2);
-```
-- file descriptor を複製する</p>
-
-<pre><code>- dup では複製されたディスクリプタは使用可能なディスクリプタのうち最小のものとなる
-- dup2 では複製されたディスクリプタの番号を _filedes2_ で指定する
 </code></pre>
 
 <ul>
+<li>file descriptor を複製する
+
+<ul>
+<li>dup では複製されたディスクリプタは使用可能なディスクリプタのうち最小のものとなる</li>
+<li>dup2 では複製されたディスクリプタの番号を <em>filedes2</em> で指定する</li>
+</ul>
+</li>
 <li>元のディスクリプタと複製されたディスクリプタは同じ file table を指す
 
 <ul>
@@ -1202,22 +1186,21 @@ int dup2(int filedes, int filedes2);
 
 <h2>sync, fsync, and fdatasync Functions</h2>
 
-<p>``` c</p>
-
-<h1>include &lt;unistd.h></h1>
-
-<p>int fsync(int filedes);
+<pre><code class="c">#include &lt;unistd.h&gt;
+int fsync(int filedes);
 int fdatasync(int filedes);
 int sync(void);
-<code>``
-- UNIX の実装では、write されたデータはカーネルによって一旦バッファにコピーされ、少し後にディスクに書き込まれる
--</code>sync` を呼ぶと、すべての変更されたブロックを書き込む</p>
-
-<pre><code>- 通常デーモンによって30秒に1回 `sync` が呼ばれている
-- ディスクの書き込みが終わるのを待たずに return する
 </code></pre>
 
 <ul>
+<li>UNIX の実装では、write されたデータはカーネルによって一旦バッファにコピーされ、少し後にディスクに書き込まれる</li>
+<li><code>sync</code> を呼ぶと、すべての変更されたブロックを書き込む
+
+<ul>
+<li>通常デーモンによって30秒に1回 <code>sync</code> が呼ばれている</li>
+<li>ディスクの書き込みが終わるのを待たずに return する</li>
+</ul>
+</li>
 <li><code>fsync</code> は特定のファイルディスクリプタに対して行う
 
 <ul>
@@ -1235,21 +1218,24 @@ int sync(void);
 
 <h2>fcntl Function</h2>
 
-<p>``` c</p>
-
-<h1>include &lt;fcntl.h></h1>
-
-<p>int fcntl(int filedes, int cmd, ... /<em> int arg </em>/ );
-```
-- open されたファイルのプロパティを変更する
-- 以下のようなことができる (<em>cmd</em> で指定)</p>
-
-<pre><code>- descriptor の複製
-- descriptor flag の取得・設定
-- file status flag の取得・設定
-- オーナーシップ (process ID, group ID) の取得・設定
-- record lock の取得・設定（詳しくは14章）
+<pre><code class="c">#include &lt;fcntl.h&gt;
+int fcntl(int filedes, int cmd, ... /* int arg */ );
 </code></pre>
+
+<ul>
+<li>open されたファイルのプロパティを変更する</li>
+<li>以下のようなことができる (<em>cmd</em> で指定)
+
+<ul>
+<li>descriptor の複製</li>
+<li>descriptor flag の取得・設定</li>
+<li>file status flag の取得・設定</li>
+<li>オーナーシップ (process ID, group ID) の取得・設定</li>
+<li>record lock の取得・設定（詳しくは14章）</li>
+</ul>
+</li>
+</ul>
+
 
 <h2>/dev/fd</h2>
 
@@ -1276,7 +1262,7 @@ filter file2 | cat file1 /dev/fd/0 file3 | lpr
   </entry>
   
   <entry>
-    <title type="html"><![CDATA[Advanced Programming in the UNIX environment Chapter 2]]></title>
+    <title type="html"><![CDATA[Advanced Programming in the UNIX Environment Chapter 2]]></title>
     <link href="http://kentaktwo.github.com/blog/2012/05/02/apue-chapter-2/"/>
     <updated>2012-05-02T14:31:00+09:00</updated>
     <id>http://kentaktwo.github.com/blog/2012/05/02/apue-chapter-2</id>
@@ -1329,9 +1315,9 @@ filter file2 | cat file1 /dev/fd/0 file3 | lpr
 <li>e.g. pathname の最大値
 
 <ol>
-<li><code>&lt;limits.h&gt;</code> に定義されていればその値を使う</li>
-<li>定義されていなければ、<code>pathconf("/", _PC_PATH_MAX)</code> して取得する</li>
-<li>取得できなければ、適当な値を推測して使う</li>
+<li> <code>&lt;limits.h&gt;</code> に定義されていればその値を使う</li>
+<li> 定義されていなければ、<code>pathconf("/", _PC_PATH_MAX)</code> して取得する</li>
+<li> 取得できなければ、適当な値を推測して使う</li>
 </ol>
 </li>
 </ul>
@@ -1355,7 +1341,7 @@ filter file2 | cat file1 /dev/fd/0 file3 | lpr
   </entry>
   
   <entry>
-    <title type="html"><![CDATA[Advanced Programming in the UNIX environment Chapter 1]]></title>
+    <title type="html"><![CDATA[Advanced Programming in the UNIX Environment Chapter 1]]></title>
     <link href="http://kentaktwo.github.com/blog/2012/04/28/apue-chapter-1/"/>
     <updated>2012-04-28T22:45:00+09:00</updated>
     <id>http://kentaktwo.github.com/blog/2012/04/28/apue-chapter-1</id>
@@ -1378,12 +1364,13 @@ filter file2 | cat file1 /dev/fd/0 file3 | lpr
 
 <ul>
 <li>ログイン名は たいてい <code>/etc/passwd</code> に書かれている
-``` sh
-
-<h1>最近はパスワードは別ファイルになっていることが多い</h1>
-
-<p><loginName>:<encryptedPassword>:<userID>:<groupID>:<comment>:<homeDirectory>:<shellProgram>
-```</p></li>
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+</pre></td><td class='code'><pre><code class='sh'><span class='line'>&lt;h1&gt;最近はパスワードは別ファイルになっていることが多い&lt;/h1&gt;
+</span><span class='line'>
+</span><span class='line'>&lt;p&gt;&lt;loginName&gt;:&lt;encryptedPassword&gt;:&lt;userID&gt;:&lt;groupID&gt;:&lt;comment&gt;:&lt;homeDirectory&gt;:&lt;shellProgram&gt;
+</span></code></pre></td></tr></table></div></figure></p></li>
 </ul>
 
 
@@ -1513,9 +1500,9 @@ filter file2 | cat file1 /dev/fd/0 file3 | lpr
 <li>プロセスのシグナルの処理の仕方は 3 通りある
 
 <ol>
-<li>シグナルを無視する</li>
-<li>デフォルトの動作を実行させる</li>
-<li>シグナルが起きた時に呼ぶ関数を与える</li>
+<li> シグナルを無視する</li>
+<li> デフォルトの動作を実行させる</li>
+<li> シグナルが起きた時に呼ぶ関数を与える</li>
 </ol>
 </li>
 <li>DELETE または Ctrl-C は <em>interrupt key</em>, Ctrl-backslash は <em>quit key</em> と呼ばれ、実行中のプロセスを終了させるのに使う</li>
@@ -1530,13 +1517,13 @@ filter file2 | cat file1 /dev/fd/0 file3 | lpr
 <li>UNIX は2種類の時間を管理している
 
 <ol>
-<li>Calendar time: Epoch (UTC 1970 1/1 00:00:00) からの秒数
+<li> Calendar time: Epoch (UTC 1970 1/1 00:00:00) からの秒数
 
 <ul>
 <li><code>time_t</code> 型はこの値を持っている</li>
 </ul>
 </li>
-<li>Process time: clock によって計測される
+<li> Process time: clock によって計測される
 
 <ul>
 <li>プロセスによって使われたリソースを計測するのに使う</li>
@@ -1566,7 +1553,7 @@ filter file2 | cat file1 /dev/fd/0 file3 | lpr
 <h2>System Calls and Library Functions</h2>
 
 <ul>
-<li>system call のドキュメントは <em>UNIX Programmer's Manual</em> の Section 2 にある</li>
+<li>system call のドキュメントは <em>UNIX Programmer&rsquo;s Manual</em> の Section 2 にある</li>
 <li>Section 3 にはプログラマが普段使うであろう関数 (Library functions) の説明が書かれている (<code>printf()</code> etc.)
 
 <ul>

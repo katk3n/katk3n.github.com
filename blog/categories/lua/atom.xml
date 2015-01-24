@@ -1,10 +1,10 @@
 <?xml version="1.0" encoding="utf-8"?>
 <feed xmlns="http://www.w3.org/2005/Atom">
 
-  <title><![CDATA[Category: lua | ApprEngineer.log]]></title>
+  <title><![CDATA[Category: Lua | ApprEngineer.log]]></title>
   <link href="http://kentaktwo.github.com/blog/categories/lua/atom.xml" rel="self"/>
   <link href="http://kentaktwo.github.com/"/>
-  <updated>2013-05-03T13:32:31+09:00</updated>
+  <updated>2015-01-24T17:08:49+09:00</updated>
   <id>http://kentaktwo.github.com/</id>
   <author>
     <name><![CDATA[kentaktwo]]></name>
@@ -48,28 +48,41 @@ foo = function(x) return 2*x end
 </ul>
 </li>
 <li>Lua の中では変数に入った関数は <em>closure</em> として振る舞う。
-``` lua
-function newCounter()
-  local i = 0
-  return function()  -- anonymous function
-
-<pre><code>  i = i + 1
-  return i
-</code></pre>
-
-<p>  end
-end</p></li>
-</ul>
-
-
-<p>c1 = newCounter()
-print(c1())  --> 1
-print(c1())  --> 2
-c2 = newCounter()
-print(c2())  --> 1
-print(c1())  --> 3
-print(c2())  --> 2
-```
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+<span class='line-number'>7</span>
+<span class='line-number'>8</span>
+<span class='line-number'>9</span>
+<span class='line-number'>10</span>
+<span class='line-number'>11</span>
+<span class='line-number'>12</span>
+<span class='line-number'>13</span>
+<span class='line-number'>14</span>
+<span class='line-number'>15</span>
+<span class='line-number'>16</span>
+<span class='line-number'>17</span>
+</pre></td><td class='code'><pre><code class='lua'><span class='line'><span class="k">function</span> <span class="nf">newCounter</span><span class="p">()</span>
+</span><span class='line'>  <span class="kd">local</span> <span class="n">i</span> <span class="o">=</span> <span class="mi">0</span>
+</span><span class='line'>  <span class="k">return</span> <span class="k">function</span><span class="p">()</span>  <span class="err">&amp;</span><span class="n">ndash</span><span class="p">;</span> <span class="n">anonymous</span> <span class="k">function</span>
+</span><span class='line'>      <span class="nf">i</span> <span class="o">=</span> <span class="n">i</span> <span class="o">+</span> <span class="mi">1</span>
+</span><span class='line'>      <span class="k">return</span> <span class="n">i</span>
+</span><span class='line'>  <span class="k">end</span>
+</span><span class='line'><span class="k">end</span><span class="o">&lt;/</span><span class="n">li</span><span class="o">&gt;</span>
+</span><span class='line'><span class="o">&lt;/</span><span class="n">ul</span><span class="o">&gt;</span>
+</span><span class='line'>
+</span><span class='line'>
+</span><span class='line'><span class="o">&lt;</span><span class="n">p</span><span class="o">&gt;</span><span class="n">c1</span> <span class="o">=</span> <span class="n">newCounter</span><span class="p">()</span>
+</span><span class='line'><span class="nb">print</span><span class="p">(</span><span class="n">c1</span><span class="p">())</span>  <span class="err">&amp;</span><span class="n">ndash</span><span class="p">;</span><span class="o">&gt;</span> <span class="mi">1</span>
+</span><span class='line'><span class="nb">print</span><span class="p">(</span><span class="n">c1</span><span class="p">())</span>  <span class="err">&amp;</span><span class="n">ndash</span><span class="p">;</span><span class="o">&gt;</span> <span class="mi">2</span>
+</span><span class='line'><span class="n">c2</span> <span class="o">=</span> <span class="n">newCounter</span><span class="p">()</span>
+</span><span class='line'><span class="nb">print</span><span class="p">(</span><span class="n">c2</span><span class="p">())</span>  <span class="err">&amp;</span><span class="n">ndash</span><span class="p">;</span><span class="o">&gt;</span> <span class="mi">1</span>
+</span><span class='line'><span class="nb">print</span><span class="p">(</span><span class="n">c1</span><span class="p">())</span>  <span class="err">&amp;</span><span class="n">ndash</span><span class="p">;</span><span class="o">&gt;</span> <span class="mi">3</span>
+</span><span class='line'><span class="nb">print</span><span class="p">(</span><span class="n">c2</span><span class="p">())</span>  <span class="err">&amp;</span><span class="n">ndash</span><span class="p">;</span><span class="o">&gt;</span> <span class="mi">2</span>
+</span></code></pre></td></tr></table></div></figure>
 関数自体は closure のプロトタイプのようなものである。</p>
 
 <ul>
@@ -163,7 +176,7 @@ function f(x) return (g(x)) end        -- f(x) が g(x) の結果を1つにま�
   </entry>
   
   <entry>
-    <title type="html"><![CDATA[Programming In Lua Chapter 5]]></title>
+    <title type="html"><![CDATA[Programming in Lua Chapter 5]]></title>
     <link href="http://kentaktwo.github.com/blog/2013/04/30/lua-chapter-5/"/>
     <updated>2013-04-30T23:34:00+09:00</updated>
     <id>http://kentaktwo.github.com/blog/2013/04/30/lua-chapter-5</id>
@@ -205,13 +218,17 @@ x = foo()           -- x="a"
 x, y, z = foo()     -- x="a", y="b", z=nil
 </code></li>
 <li>複数の戻り値を受け取れるのは、その関数が文の中で最後に呼ばれたときのみ。
-<code>lua
-x, y, z = 10, foo()     -- x=10, y="a", z="b"
-x. y, z = foo(), 10     -- x="a", y=10, z=nil
-print(foo())            --&gt; a    b
-print(foo(), 1)         --&gt; a    1
-t = {foo(), 4}          -- t[1] = "a", t[2] = 4
-</code></li>
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+</pre></td><td class='code'><pre><code class='lua'><span class='line'><span class="n">x</span><span class="p">,</span> <span class="n">y</span><span class="p">,</span> <span class="n">z</span> <span class="o">=</span> <span class="mi">10</span><span class="p">,</span> <span class="n">foo</span><span class="p">()</span>     <span class="err">&amp;</span><span class="n">ndash</span><span class="p">;</span> <span class="n">x</span><span class="o">=</span><span class="mi">10</span><span class="p">,</span> <span class="n">y</span><span class="o">=</span><span class="err">&amp;</span><span class="n">ldquo</span><span class="p">;</span><span class="n">a</span><span class="err">&amp;</span><span class="n">rdquo</span><span class="p">;,</span> <span class="n">z</span><span class="o">=</span><span class="err">&amp;</span><span class="n">ldquo</span><span class="p">;</span><span class="n">b</span><span class="err">&amp;</span><span class="n">rdquo</span><span class="p">;</span><span class="o">&lt;/</span><span class="n">li</span><span class="o">&gt;</span>
+</span><span class='line'><span class="o">&lt;</span><span class="n">li</span><span class="o">&gt;</span><span class="n">y</span><span class="p">,</span> <span class="n">z</span> <span class="o">=</span> <span class="n">foo</span><span class="p">(),</span> <span class="mi">10</span>     <span class="err">&amp;</span><span class="n">ndash</span><span class="p">;</span> <span class="n">x</span><span class="o">=</span><span class="err">&amp;</span><span class="n">ldquo</span><span class="p">;</span><span class="n">a</span><span class="err">&amp;</span><span class="n">rdquo</span><span class="p">;,</span> <span class="n">y</span><span class="o">=</span><span class="mi">10</span><span class="p">,</span> <span class="n">z</span><span class="o">=</span><span class="kc">nil</span>
+</span><span class='line'><span class="nb">print</span><span class="p">(</span><span class="n">foo</span><span class="p">())</span>            <span class="err">&amp;</span><span class="n">ndash</span><span class="p">;</span><span class="o">&gt;</span> <span class="n">a</span>    <span class="n">b</span>
+</span><span class='line'><span class="nb">print</span><span class="p">(</span><span class="n">foo</span><span class="p">(),</span> <span class="mi">1</span><span class="p">)</span>         <span class="err">&amp;</span><span class="n">ndash</span><span class="p">;</span><span class="o">&gt;</span> <span class="n">a</span>    <span class="mi">1</span>
+</span><span class='line'><span class="n">t</span> <span class="o">=</span> <span class="p">{</span><span class="n">foo</span><span class="p">(),</span> <span class="mi">4</span><span class="p">}</span>          <span class="err">&amp;</span><span class="n">ndash</span><span class="p">;</span> <span class="n">t</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span> <span class="o">=</span> <span class="err">&amp;</span><span class="n">ldquo</span><span class="p">;</span><span class="n">a</span><span class="err">&amp;</span><span class="n">rdquo</span><span class="p">;,</span> <span class="n">t</span><span class="p">[</span><span class="mi">2</span><span class="p">]</span> <span class="o">=</span> <span class="mi">4</span>
+</span></code></pre></td></tr></table></div></figure></li>
 <li>関数を余分に括弧で囲んで呼び出すと、戻り値を1つのみにすることができる。
 <code>lua
 print((foo()))          --&gt; a
@@ -223,50 +240,66 @@ print((foo()))          --&gt; a
 
 <ul>
 <li><code>...</code> で可変引数が扱える。
-``` lua
-function add(...)
-  local s = 0
-  for i, v in ipairs{...} do
-
-<pre><code>  s = s + v
-</code></pre>
-
-<p>  end
-  return s
-end</p></li>
-</ul>
-
-
-<p>print(add(3, 4, 10, 25, 12))    --> 54
-<code>
-- printf() のような関数が書ける
-</code> lua
-function fwrite(fmt, ...)</p>
-
-<pre><code>return io.write(string.format(fmt, ...))
-</code></pre>
-
-<p>end
-```</p>
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+<span class='line-number'>7</span>
+<span class='line-number'>8</span>
+<span class='line-number'>9</span>
+<span class='line-number'>10</span>
+<span class='line-number'>11</span>
+<span class='line-number'>12</span>
+<span class='line-number'>13</span>
+<span class='line-number'>14</span>
+<span class='line-number'>15</span>
+<span class='line-number'>16</span>
+<span class='line-number'>17</span>
+</pre></td><td class='code'><pre><code class='lua'><span class='line'><span class="k">function</span> <span class="nf">add</span><span class="p">(</span><span class="err">&amp;</span><span class="n">hellip</span><span class="p">;)</span>
+</span><span class='line'>  <span class="kd">local</span> <span class="n">s</span> <span class="o">=</span> <span class="mi">0</span>
+</span><span class='line'>  <span class="k">for</span> <span class="n">i</span><span class="p">,</span> <span class="n">v</span> <span class="k">in</span> <span class="nb">ipairs</span><span class="p">{</span><span class="err">&amp;</span><span class="n">hellip</span><span class="p">;}</span> <span class="k">do</span>
+</span><span class='line'>      <span class="n">s</span> <span class="o">=</span> <span class="n">s</span> <span class="o">+</span> <span class="n">v</span>
+</span><span class='line'>  <span class="k">end</span>
+</span><span class='line'>  <span class="k">return</span> <span class="n">s</span>
+</span><span class='line'><span class="k">end</span><span class="o">&lt;/</span><span class="n">li</span><span class="o">&gt;</span>
+</span><span class='line'><span class="o">&lt;/</span><span class="n">ul</span><span class="o">&gt;</span>
+</span><span class='line'>
+</span><span class='line'>
+</span><span class='line'><span class="o">&lt;</span><span class="n">p</span><span class="o">&gt;</span><span class="nb">print</span><span class="p">(</span><span class="n">add</span><span class="p">(</span><span class="mi">3</span><span class="p">,</span> <span class="mi">4</span><span class="p">,</span> <span class="mi">10</span><span class="p">,</span> <span class="mi">25</span><span class="p">,</span> <span class="mi">12</span><span class="p">))</span>    <span class="err">&amp;</span><span class="n">ndash</span><span class="p">;</span><span class="o">&gt;</span> <span class="mi">54</span>
+</span><span class='line'><span class="o">&lt;</span><span class="n">code</span><span class="o">&gt;</span>
+</span><span class='line'><span class="o">-</span> <span class="n">printf</span><span class="p">()</span> <span class="err">のような関数が書ける</span>
+</span><span class='line'><span class="o">&lt;/</span><span class="n">code</span><span class="o">&gt;</span> <span class="n">lua</span>
+</span><span class='line'><span class="k">function</span> <span class="nf">fwrite</span><span class="p">(</span><span class="n">fmt</span><span class="p">,</span> <span class="err">&amp;</span><span class="n">hellip</span><span class="p">;)</span>
+</span><span class='line'>    <span class="k">return</span> <span class="nb">io.write</span><span class="p">(</span><span class="nb">string.format</span><span class="p">(</span><span class="n">fmt</span><span class="p">,</span> <span class="err">&amp;</span><span class="n">hellip</span><span class="p">;))</span>
+</span><span class='line'><span class="k">end</span>
+</span></code></pre></td></tr></table></div></figure></p>
 
 <h2>Named Arguments</h2>
 
 <ul>
 <li>Lua に <code>foo(x="a", y="b")</code> のように引数に名前をつけて関数を呼び出す機能は無いが、table を用いて似たようなことができる。
-``` lua
-function foo1(arg)
-  return foo(arg.x, arg.y)
-end</li>
-</ul>
-
-
-<p>foo1{x="a", y="b"}
-```</p>
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+<span class='line-number'>7</span>
+</pre></td><td class='code'><pre><code class='lua'><span class='line'><span class="k">function</span> <span class="nf">foo1</span><span class="p">(</span><span class="n">arg</span><span class="p">)</span>
+</span><span class='line'>  <span class="k">return</span> <span class="n">foo</span><span class="p">(</span><span class="n">arg</span><span class="p">.</span><span class="n">x</span><span class="p">,</span> <span class="n">arg</span><span class="p">.</span><span class="n">y</span><span class="p">)</span>
+</span><span class='line'><span class="k">end</span><span class="o">&lt;/</span><span class="n">li</span><span class="o">&gt;</span>
+</span><span class='line'><span class="o">&lt;/</span><span class="n">ul</span><span class="o">&gt;</span>
+</span><span class='line'>
+</span><span class='line'>
+</span><span class='line'><span class="o">&lt;</span><span class="n">p</span><span class="o">&gt;</span><span class="n">foo1</span><span class="p">{</span><span class="n">x</span><span class="o">=</span><span class="err">&amp;</span><span class="n">ldquo</span><span class="p">;</span><span class="n">a</span><span class="err">&amp;</span><span class="n">rdquo</span><span class="p">;,</span> <span class="n">y</span><span class="o">=</span><span class="err">&amp;</span><span class="n">ldquo</span><span class="p">;</span><span class="n">b</span><span class="err">&amp;</span><span class="n">rdquo</span><span class="p">;}</span>
+</span></code></pre></td></tr></table></div></figure></p>
 ]]></content>
   </entry>
   
   <entry>
-    <title type="html"><![CDATA[Programming In Lua Chapter 4]]></title>
+    <title type="html"><![CDATA[Programming in Lua Chapter 4]]></title>
     <link href="http://kentaktwo.github.com/blog/2013/04/29/lua-chapter-4/"/>
     <updated>2013-04-29T23:48:00+09:00</updated>
     <id>http://kentaktwo.github.com/blog/2013/04/29/lua-chapter-4</id>
@@ -283,21 +316,33 @@ end</li>
 x, y = y, x  -- swap 'x' for 'y'
 </code></li>
 <li>変数の数の方が多かった場合、多かった分の変数には nil が入る。
-``` lua
-a, b, c = 0, 1
-print(a, b, c)  --> 0  1  nil</li>
-</ul>
-
-
-<p>-- 初期化するときは注意
-a, b, c = 0
-print(a, b, c)  --> 0  nil  nil
-<code>
-- 代入値の方が多かった場合、多かった分の値は無視される。
-</code> lua
-a, b = 3, 4, 5
-print(a, b)  --> 3  4
-```</p>
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+<span class='line-number'>7</span>
+<span class='line-number'>8</span>
+<span class='line-number'>9</span>
+<span class='line-number'>10</span>
+<span class='line-number'>11</span>
+<span class='line-number'>12</span>
+<span class='line-number'>13</span>
+</pre></td><td class='code'><pre><code class='lua'><span class='line'><span class="n">a</span><span class="p">,</span> <span class="n">b</span><span class="p">,</span> <span class="n">c</span> <span class="o">=</span> <span class="mi">0</span><span class="p">,</span> <span class="mi">1</span>
+</span><span class='line'><span class="nb">print</span><span class="p">(</span><span class="n">a</span><span class="p">,</span> <span class="n">b</span><span class="p">,</span> <span class="n">c</span><span class="p">)</span>  <span class="err">&amp;</span><span class="n">ndash</span><span class="p">;</span><span class="o">&gt;</span> <span class="mi">0</span>  <span class="mi">1</span>  <span class="kc">nil</span><span class="o">&lt;/</span><span class="n">li</span><span class="o">&gt;</span>
+</span><span class='line'><span class="o">&lt;/</span><span class="n">ul</span><span class="o">&gt;</span>
+</span><span class='line'>
+</span><span class='line'>
+</span><span class='line'><span class="o">&lt;</span><span class="n">p</span><span class="o">&gt;</span><span class="err">&amp;</span><span class="n">ndash</span><span class="p">;</span> <span class="err">初期化するときは注意</span>
+</span><span class='line'><span class="n">a</span><span class="p">,</span> <span class="n">b</span><span class="p">,</span> <span class="n">c</span> <span class="o">=</span> <span class="mi">0</span>
+</span><span class='line'><span class="nb">print</span><span class="p">(</span><span class="n">a</span><span class="p">,</span> <span class="n">b</span><span class="p">,</span> <span class="n">c</span><span class="p">)</span>  <span class="err">&amp;</span><span class="n">ndash</span><span class="p">;</span><span class="o">&gt;</span> <span class="mi">0</span>  <span class="kc">nil</span>  <span class="kc">nil</span>
+</span><span class='line'><span class="o">&lt;</span><span class="n">code</span><span class="o">&gt;</span>
+</span><span class='line'><span class="o">-</span> <span class="err">代入値の方が多かった場合、多かった分の値は無視される。</span>
+</span><span class='line'><span class="o">&lt;/</span><span class="n">code</span><span class="o">&gt;</span> <span class="n">lua</span>
+</span><span class='line'><span class="n">a</span><span class="p">,</span> <span class="n">b</span> <span class="o">=</span> <span class="mi">3</span><span class="p">,</span> <span class="mi">4</span><span class="p">,</span> <span class="mi">5</span>
+</span><span class='line'><span class="nb">print</span><span class="p">(</span><span class="n">a</span><span class="p">,</span> <span class="n">b</span><span class="p">)</span>  <span class="err">&amp;</span><span class="n">ndash</span><span class="p">;</span><span class="o">&gt;</span> <span class="mi">3</span>  <span class="mi">4</span>
+</span></code></pre></td></tr></table></div></figure></p>
 
 <h2>Local Variables and Blocks</h2>
 
@@ -326,25 +371,19 @@ print(a)            --&gt; foo
 
 <h3>if then else</h3>
 
-<p>``` lua
-if op == "+" then</p>
-
-<pre><code>r = a + b
+<pre><code class="lua">if op == "+" then
+    r = a + b
+elseif op == "-" then
+    r = a - b
+else
+    r = nil
+end
 </code></pre>
 
-<p>elseif op == "-" then</p>
+<ul>
+<li><code>else if</code> ではなく <code>elseif</code></li>
+</ul>
 
-<pre><code>r = a - b
-</code></pre>
-
-<p>else</p>
-
-<pre><code>r = nil
-</code></pre>
-
-<p>end
-<code>``
--</code>else if<code>ではなく</code>elseif`</p>
 
 <h3>while</h3>
 
@@ -353,50 +392,41 @@ if op == "+" then</p>
 <h3>repeat</h3>
 
 <p>C 言語でいう do-while みたいなやつ
-``` lua
-repeat</p>
-
-<pre><code>line = os.read()
-</code></pre>
-
-<p>until line ~= ""
+<code>lua
+repeat
+    line = os.read()
+until line ~= ""
 print(line)
-```
+</code>
 - 他の多くのプログラミング言語と違い、repeat 内のローカル変数は until の中でも有効。</p>
 
 <h3>Numeric for</h3>
 
-<p>``` lua
--- i=10 から始めて、1 まで -1 刻みで <something> をする。
-for i=10, 1, -1 do</p>
+<pre><code class="lua">-- i=10 から始めて、1 まで -1 刻みで &lt;something&gt; をする。
+for i=10, 1, -1 do
+    &lt;something&gt;
+end
 
-<pre><code>&lt;something&gt;
+-- 3つ目を省略すると 1 刻みになる。
+for i=1, #a do
+    a[i] = a[i] + 1     -- すべての a[i] に1をたす
+end
 </code></pre>
 
-<p>end</p>
+<ul>
+<li><code>break</code> が使える。</li>
+</ul>
 
-<p>-- 3つ目を省略すると 1 刻みになる。
-for i=1, #a do</p>
-
-<pre><code>a[i] = a[i] + 1     -- すべての a[i] に1をたす
-</code></pre>
-
-<p>end
-<code>``
--</code>break` が使える。</p>
 
 <h3>Generic for</h3>
 
 <p>イテレータ関数を使って要素を回す
-``` lua
+<code>lua
 -- 配列 'a' の全要素を表示する
-for i, v in ipairs(a) do</p>
-
-<pre><code>print(v)
-</code></pre>
-
-<p>end
-```</p>
+for i, v in ipairs(a) do
+    print(v)
+end
+</code></p>
 
 <h2>break and return</h2>
 
@@ -422,7 +452,7 @@ end
   </entry>
   
   <entry>
-    <title type="html"><![CDATA[Programming In Lua Chapter 3]]></title>
+    <title type="html"><![CDATA[Programming in Lua Chapter 3]]></title>
     <link href="http://kentaktwo.github.com/blog/2013/04/29/lua-chapter-3/"/>
     <updated>2013-04-29T23:04:00+09:00</updated>
     <id>http://kentaktwo.github.com/blog/2013/04/29/lua-chapter-3</id>
@@ -436,27 +466,28 @@ end
 <p>Lua がサポートしている演算子は<br/>
 <code>+</code>, <code>-</code> (二項演算子), <code>*</code>, <code>/</code>, <code>^</code> (累乗), <code>%</code>, <code>-</code> (単項演算子)</p>
 
-<p><code>%</code> の定義は
-<code>lua
-a % b == a - floor(a/b)*b
-</code>
-<code>%</code> 演算子は小数でも有効で、例えば <code>x - x%0.01</code> とすれば、<code>x</code> の小数第二位までが取れる。</p>
+<p><code>%</code> の定義は</p>
+
+<pre><code class="lua">a % b == a - floor(a/b)*b
+</code></pre>
+
+<p><code>%</code> 演算子は小数でも有効で、例えば <code>x - x%0.01</code> とすれば、<code>x</code> の小数第二位までが取れる。</p>
 
 <h2>Relational Operators</h2>
 
 <p>Lua の比較演算子は、型の一致も含めてチェックする。<br/>
 よって <code>1 == "1"</code> は false。<br/>
-ちなみに "等しくない" は <code>!=</code> ではなく <code>~=</code>。<br/>
-table, userdata, function の比較は参照単位で行われる。
-``` lua</p>
+ちなみに &ldquo;等しくない&rdquo; は <code>!=</code> ではなく <code>~=</code>。<br/>
+table, userdata, function の比較は参照単位で行われる。</p>
 
-<blockquote><p>a = {}; a.x = 1; a.y = 0
-b = {}; b.x = 1; b.y = 0
-c = a
-= a == b  --> false
-= a == c  --> true
-<code>``
-</code>2 &lt; "15"` のように型が違う値の大小関係を調べようとするとエラーになる。</p></blockquote>
+<pre><code class="lua">&gt; a = {}; a.x = 1; a.y = 0
+&gt; b = {}; b.x = 1; b.y = 0
+&gt; c = a
+&gt; = a == b  --&gt; false
+&gt; = a == c  --&gt; true
+</code></pre>
+
+<p><code>2 &lt; "15"</code> のように型が違う値の大小関係を調べようとするとエラーになる。</p>
 
 <h2>Logical Operators</h2>
 
@@ -464,56 +495,57 @@ c = a
 <code>x and y</code> は、x が true なら y, false なら x<br/>
 <code>x or y</code> は、x が true なら x, false なら y</p>
 
-<p><code>lua
-x = x or v
-</code>
-は <code>if not x then x = v end</code> と同じで、x にデフォルト値を入れるときなどに使える。</p>
+<pre><code class="lua">x = x or v
+</code></pre>
 
-<p><code>lua
-(a and b) or c
-</code>
-で、C 言語の <code>a ? b : c</code> と同じことができる。</p>
+<p>は <code>if not x then x = v end</code> と同じで、x にデフォルト値を入れるときなどに使える。</p>
+
+<pre><code class="lua">(a and b) or c
+</code></pre>
+
+<p>で、C 言語の <code>a ? b : c</code> と同じことができる。</p>
 
 <h2>Table Constructors</h2>
 
-<p>table を作るときに初期値が入れられる。index は 1 始まり。
-``` lua
---[[
+<p>table を作るときに初期値が入れられる。index は 1 始まり。</p>
+
+<pre><code class="lua">--[[
 t1[1] = "a" (t[0] ではない)
 t1[2] = "b"
 t1[3] = "c"
 t1["x"] = "d" (t.x = "d")
 t1["y"] = "e" (t.y = "e")
 --]]
-t1 = {"a", "b", "c", x="d", y="e"}</p>
+t1 = {"a", "b", "c", x="d", y="e"}
 
-<p>--[[
+--[[
 [] を使うと複雑な index も作れる
-{["x"] = 0} と {x=0} は同じ</p>
+{["x"] = 0} と {x=0} は同じ
 
-<p>t2[-1] = "a"
+t2[-1] = "a"
 t2["+"] = "add"
 t[22] = "s"
 --]]
 i = 20
-t2 = {[-1] = "a", ["+"] = "add", [i+2] = "s"}</p>
+t2 = {[-1] = "a", ["+"] = "add", [i+2] = "s"}
 
-<p>--[[
+
+--[[
 0 始まりの table を作ることもできるが、
 ほとんどの関数等は 1 始まりを想定して作られているのでやめたほうがいい。
 --]]
-t3 = {[0]="a", "b", "c", "d"}</p>
+t3 = {[0]="a", "b", "c", "d"}
 
-<p>--[[
+--[[
 要素の区切りにカンマの代わりにセミコロンが使える。
 --]]
 t4 = {x=10, y=45; "one", "two", "three"}
-```</p>
+</code></pre>
 ]]></content>
   </entry>
   
   <entry>
-    <title type="html"><![CDATA[Programming In Lua Chapter 2]]></title>
+    <title type="html"><![CDATA[Programming in Lua Chapter 2]]></title>
     <link href="http://kentaktwo.github.com/blog/2012/08/11/lua-chapter-2/"/>
     <updated>2012-08-11T20:50:00+09:00</updated>
     <id>http://kentaktwo.github.com/blog/2012/08/11/lua-chapter-2</id>
@@ -594,7 +626,7 @@ print(10 == "10")  --&gt; false
 <code>lua
 print(10 .. 20)  --&gt; 1020
 </code></li>
-<li>Lua 5.1 からは、'#' オペレータで文字列の長さが取れる
+<li>Lua 5.1 からは、&#8217;#&lsquo; オペレータで文字列の長さが取れる
 <code>lua
 a = "hello"
 print(#a)  --&gt; 5
@@ -624,7 +656,7 @@ a = nil  -- b はまだ table を参照している
 <li>グローバル変数と同様、定義されていないフィールドには <em>nil</em> が入っている</li>
 <li><code>a.name</code> は <code>a["name"]</code> のこと。<code>a[name]</code> ではないので注意</li>
 <li>Lua では配列のインデックスは 1 からスタート (0 ではない)</li>
-<li>Lua 5.1 以降では、'#' オペレータで数字インデックスで最後に <em>nil</em> が入っていないものを返す
+<li>Lua 5.1 以降では、&#8217;#&lsquo; オペレータで数字インデックスで最後に <em>nil</em> が入っていないものを返す
 <code>lua
 a = {}
 a[10000] = 1  -- 1 から 9999 番目に nil が入る (hole)

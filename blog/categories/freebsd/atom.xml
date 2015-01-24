@@ -1,10 +1,10 @@
 <?xml version="1.0" encoding="utf-8"?>
 <feed xmlns="http://www.w3.org/2005/Atom">
 
-  <title><![CDATA[Category: freebsd | ApprEngineer.log]]></title>
+  <title><![CDATA[Category: Freebsd | ApprEngineer.log]]></title>
   <link href="http://kentaktwo.github.com/blog/categories/freebsd/atom.xml" rel="self"/>
   <link href="http://kentaktwo.github.com/"/>
-  <updated>2013-05-03T13:32:31+09:00</updated>
+  <updated>2015-01-24T17:08:49+09:00</updated>
   <id>http://kentaktwo.github.com/</id>
   <author>
     <name><![CDATA[kentaktwo]]></name>
@@ -50,40 +50,30 @@ $ portsnap update
 <p>ports にあるパッケージは <code>/usr/ports/</code> 以下にカテゴリ別に置かれている。<br/>
 <a href="http://www.freebsd.org/cgi/ports.cgi">http://www.freebsd.org/cgi/ports.cgi</a><br/>
 からパッケージの検索ができる。<br/>
-また、</p>
-
-<pre><code>$ whereis &lt;package name&gt;
-</code></pre>
-
-<p>でどこのパッケージがあるか探すことができる。</p>
+また、
+    $ whereis <package name>
+でどこのパッケージがあるか探すことができる。</p>
 
 <h3>sudo</h3>
 
-<p>FreeBSD には デフォルトで sudo は入っていない</p>
-
-<pre><code>$ su root
-# cd /usr/ports/security/sudo
-# make install clean
-</code></pre>
-
-<p>インストール後 visudo で sudoers を編集</p>
+<p>FreeBSD には デフォルトで sudo は入っていない
+    $ su root
+    # cd /usr/ports/security/sudo
+    # make install clean
+インストール後 visudo で sudoers を編集</p>
 
 <h3>portaudit</h3>
 
-<p>パッケージのセキュリティに関する脆弱性を調べる</p>
-
-<pre><code>$ cd /usr/ports/ports-mgmt/portaudit
-$ sudo make install clean
-$ portaudit -F
-</code></pre>
+<p>パッケージのセキュリティに関する脆弱性を調べる
+    $ cd /usr/ports/ports-mgmt/portaudit
+    $ sudo make install clean
+    $ portaudit -F</p>
 
 <h3>portupgrade</h3>
 
-<p>portinstall, portupgrade 等が使えるようになる</p>
-
-<pre><code>$ cd /usr/ports/ports-mgmt/portsupgrade
-$ sudo make install clean
-</code></pre>
+<p>portinstall, portupgrade 等が使えるようになる
+    $ cd /usr/ports/ports-mgmt/portsupgrade
+    $ sudo make install clean</p>
 
 <h3>ports package の設定をやり直す</h3>
 
@@ -107,17 +97,11 @@ $ sudo make install clean
 
 <h2>httpd 起動のための設定</h2>
 
-<p>accept filter を使うために <code>accf_http.ko</code> というカーネルモジュールを読み込む必要がある。</p>
-
-<pre><code>$ sudo kldload accf_http.ko
-</code></pre>
-
-<p>OS 起動時に読み込ませるには、<code>/boot/loader.conf</code> に</p>
-
-<pre><code>accf_http_load="YES"
-</code></pre>
-
-<p>を追加する。</p>
+<p>accept filter を使うために <code>accf_http.ko</code> というカーネルモジュールを読み込む必要がある。
+    $ sudo kldload accf_http.ko
+OS 起動時に読み込ませるには、<code>/boot/loader.conf</code> に
+    accf_http_load=&ldquo;YES&rdquo;
+を追加する。</p>
 ]]></content>
   </entry>
   

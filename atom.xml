@@ -4,7 +4,7 @@
   <title><![CDATA[ApprEngineer.log]]></title>
   <link href="http://kentaktwo.github.com/atom.xml" rel="self"/>
   <link href="http://kentaktwo.github.com/"/>
-  <updated>2013-05-03T13:32:31+09:00</updated>
+  <updated>2015-01-24T17:08:49+09:00</updated>
   <id>http://kentaktwo.github.com/</id>
   <author>
     <name><![CDATA[kentaktwo]]></name>
@@ -14,7 +14,7 @@
 
   
   <entry>
-    <title type="html"><![CDATA[nvm + Node.js + Mojito のインストール]]></title>
+    <title type="html"><![CDATA[Nvm + Node.js + Mojito のインストール]]></title>
     <link href="http://kentaktwo.github.com/blog/2013/05/03/install-nodejs/"/>
     <updated>2013-05-03T13:17:00+09:00</updated>
     <id>http://kentaktwo.github.com/blog/2013/05/03/install-nodejs</id>
@@ -435,7 +435,7 @@ goto 文にすることでスタックオーバーフローしないようにす
   </entry>
   
   <entry>
-    <title type="html"><![CDATA[Programming In Lua Chapter 5]]></title>
+    <title type="html"><![CDATA[Programming in Lua Chapter 5]]></title>
     <link href="http://kentaktwo.github.com/blog/2013/04/30/lua-chapter-5/"/>
     <updated>2013-04-30T23:34:00+09:00</updated>
     <id>http://kentaktwo.github.com/blog/2013/04/30/lua-chapter-5</id>
@@ -591,7 +591,7 @@ goto 文にすることでスタックオーバーフローしないようにす
   </entry>
   
   <entry>
-    <title type="html"><![CDATA[Programming In Lua Chapter 4]]></title>
+    <title type="html"><![CDATA[Programming in Lua Chapter 4]]></title>
     <link href="http://kentaktwo.github.com/blog/2013/04/29/lua-chapter-4/"/>
     <updated>2013-04-29T23:48:00+09:00</updated>
     <id>http://kentaktwo.github.com/blog/2013/04/29/lua-chapter-4</id>
@@ -814,7 +814,7 @@ goto 文にすることでスタックオーバーフローしないようにす
   </entry>
   
   <entry>
-    <title type="html"><![CDATA[Programming In Lua Chapter 3]]></title>
+    <title type="html"><![CDATA[Programming in Lua Chapter 3]]></title>
     <link href="http://kentaktwo.github.com/blog/2013/04/29/lua-chapter-3/"/>
     <updated>2013-04-29T23:04:00+09:00</updated>
     <id>http://kentaktwo.github.com/blog/2013/04/29/lua-chapter-3</id>
@@ -841,7 +841,7 @@ goto 文にすることでスタックオーバーフローしないようにす
 
 <p>Lua の比較演算子は、型の一致も含めてチェックする。<br/>
 よって <code>1 == "1"</code> は false。<br/>
-ちなみに &#8220;等しくない&#8221; は <code>!=</code> ではなく <code>~=</code>。<br/>
+ちなみに &ldquo;等しくない&rdquo; は <code>!=</code> ではなく <code>~=</code>。<br/>
 table, userdata, function の比較は参照単位で行われる。</p>
 
 <figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
@@ -974,7 +974,7 @@ table, userdata, function の比較は参照単位で行われる。</p>
 
 <h1>インストール</h1>
 
-<p>&#8220;Install or Update an existing System&#8221; を選択して開始</p>
+<p>&ldquo;Install or Update an existing System&rdquo; を選択して開始</p>
 
 <h2>Disk Found</h2>
 
@@ -982,15 +982,15 @@ table, userdata, function の比較は参照単位で行われる。</p>
 
 <h2>Warning, Error processing Drive</h2>
 
-<p>&#8220;Re-initialize all&#8221; を選択</p>
+<p>&ldquo;Re-initialize all&rdquo; を選択</p>
 
 <h2>Time Zone Selection</h2>
 
-<p>&#8220;System clock uses UTC&#8221; にチェックを入れ、&#8221;Asia/Tokyo&#8221; を選択し、OK</p>
+<p>&ldquo;System clock uses UTC&rdquo; にチェックを入れ、&#8221;Asia/Tokyo&#8221; を選択し、OK</p>
 
 <h2>Partitioning Type</h2>
 
-<p>&#8220;Use entire drive&#8221; を選択</p>
+<p>&ldquo;Use entire drive&rdquo; を選択</p>
 
 <h1>初期設定</h1>
 
@@ -1042,7 +1042,7 @@ kernel panic を起こしてしまった場合は <a href="http://h2np.net/mynot
   </entry>
   
   <entry>
-    <title type="html"><![CDATA[Advanced Programming in the UNIX environment Chapter 5]]></title>
+    <title type="html"><![CDATA[Advanced Programming in the UNIX Environment Chapter 5]]></title>
     <link href="http://kentaktwo.github.com/blog/2013/01/18/apue-chapter-5/"/>
     <updated>2013-01-18T21:10:00+09:00</updated>
     <id>http://kentaktwo.github.com/blog/2013/01/18/apue-chapter-5</id>
@@ -1056,9 +1056,9 @@ kernel panic を起こしてしまった場合は <a href="http://h2np.net/mynot
 <ul>
 <li>システムコールでの I/O は file descriptor を使用していた。</li>
 <li>standard I/O library では、<em>stream</em> と呼ばれるものを使用する。</li>
-<li>stream は single-byte, multibyte (&#8220;wide&#8221;) 両方の文字セットで使用できる。</li>
-<li>read や write を single-byte か multibyte どちらで行うかを決めるものを stream&#8217;s orientation と呼ぶ。</li>
-<li><code>fwide()</code> 関数で stream&#8217;s orientation を変更することができる。</li>
+<li>stream は single-byte, multibyte (&ldquo;wide&rdquo;) 両方の文字セットで使用できる。</li>
+<li>read や write を single-byte か multibyte どちらで行うかを決めるものを stream&rsquo;s orientation と呼ぶ。</li>
+<li><code>fwide()</code> 関数で stream&rsquo;s orientation を変更することができる。</li>
 </ul>
 
 
@@ -1383,7 +1383,7 @@ standard error stream などは Unbuffered である (すぐに表示してほ�
 
 
 <ul>
-<li>&#8220;&#8230;&#8221; の代わりに、<code>va_list</code> になった <code>vprintf()</code> 系の関数もある (<code>&lt;stdarg.h&gt;</code> を includeする)。</li>
+<li>&ldquo;&hellip;&rdquo; の代わりに、<code>va_list</code> になった <code>vprintf()</code> 系の関数もある (<code>&lt;stdarg.h&gt;</code> を includeする)。</li>
 </ul>
 
 
@@ -1416,7 +1416,7 @@ standard error stream などは Unbuffered である (すぐに表示してほ�
 
 <ul>
 <li>頭にアスタリスクがついているやつについては conversion 結果が変数に格納されない</li>
-<li>&#8220;&#8230;&#8221; の代わりに、<code>va_list</code> になった <code>vscanf()</code> 系の関数もある (<code>&lt;stdarg.h&gt;</code> を includeする)。</li>
+<li>&ldquo;&hellip;&rdquo; の代わりに、<code>va_list</code> になった <code>vscanf()</code> 系の関数もある (<code>&lt;stdarg.h&gt;</code> を includeする)。</li>
 </ul>
 
 
@@ -1501,7 +1501,7 @@ standard error stream などは Unbuffered である (すぐに表示してほ�
   </entry>
   
   <entry>
-    <title type="html"><![CDATA[Advanced Programming in the UNIX enviroment Chapter 4]]></title>
+    <title type="html"><![CDATA[Advanced Programming in the UNIX Enviroment Chapter 4]]></title>
     <link href="http://kentaktwo.github.com/blog/2012/10/14/apue-chapter-4/"/>
     <updated>2012-10-14T14:25:00+09:00</updated>
     <id>http://kentaktwo.github.com/blog/2012/10/14/apue-chapter-4</id>
@@ -1799,7 +1799,7 @@ directory への write 権限を持っていて、かつ
 <li>regular file の場合、ファイルサイズ 0 が許容される。これはファイルの最初が end-of-file の場合である。</li>
 <li>directory の場合、ファイルサイズは 16 や 512 などの複数の値になる。</li>
 <li>symbolic link の場合、ファイルサイズはリンク先のファイル名の長さ (byte) になる。
-例えば、リンク先が &#8220;usr/lib&#8221; のとき、ファイルサイズは 7 になる。</li>
+例えば、リンク先が &ldquo;usr/lib&rdquo; のとき、ファイルサイズは 7 になる。</li>
 </ul>
 </li>
 <li>最近の UNIX システムでは、<code>st_blksize</code> と <code>st_blocks</code> というフィールドも用意されている
@@ -2220,7 +2220,7 @@ XSI-conforming system の場合、ファイルサイズは大きくなる (hole 
   </entry>
   
   <entry>
-    <title type="html"><![CDATA[iptables を無効にする]]></title>
+    <title type="html"><![CDATA[Iptables を無効にする]]></title>
     <link href="http://kentaktwo.github.com/blog/2012/10/14/disable-iptables/"/>
     <updated>2012-10-14T00:37:00+09:00</updated>
     <id>http://kentaktwo.github.com/blog/2012/10/14/disable-iptables</id>
@@ -2237,7 +2237,7 @@ XSI-conforming system の場合、ファイルサイズは大きくなる (hole 
   </entry>
   
   <entry>
-    <title type="html"><![CDATA[Programming In Lua Chapter 2]]></title>
+    <title type="html"><![CDATA[Programming in Lua Chapter 2]]></title>
     <link href="http://kentaktwo.github.com/blog/2012/08/11/lua-chapter-2/"/>
     <updated>2012-08-11T20:50:00+09:00</updated>
     <id>http://kentaktwo.github.com/blog/2012/08/11/lua-chapter-2</id>
@@ -2359,7 +2359,7 @@ XSI-conforming system の場合、ファイルサイズは大きくなる (hole 
 
 
 <ul>
-<li>Lua 5.1 からは、&#8217;#&#8217; オペレータで文字列の長さが取れる</li>
+<li>Lua 5.1 からは、&#8217;#&lsquo; オペレータで文字列の長さが取れる</li>
 </ul>
 
 
@@ -2410,7 +2410,7 @@ XSI-conforming system の場合、ファイルサイズは大きくなる (hole 
 <li>グローバル変数と同様、定義されていないフィールドには <em>nil</em> が入っている</li>
 <li><code>a.name</code> は <code>a["name"]</code> のこと。<code>a[name]</code> ではないので注意</li>
 <li>Lua では配列のインデックスは 1 からスタート (0 ではない)</li>
-<li>Lua 5.1 以降では、&#8217;#&#8217; オペレータで数字インデックスで最後に <em>nil</em> が入っていないものを返す</li>
+<li>Lua 5.1 以降では、&#8217;#&lsquo; オペレータで数字インデックスで最後に <em>nil</em> が入っていないものを返す</li>
 </ul>
 
 
@@ -2445,7 +2445,7 @@ XSI-conforming system の場合、ファイルサイズは大きくなる (hole 
   </entry>
   
   <entry>
-    <title type="html"><![CDATA[Programming In Lua Chapter 1]]></title>
+    <title type="html"><![CDATA[Programming in Lua Chapter 1]]></title>
     <link href="http://kentaktwo.github.com/blog/2012/07/24/lua-chapter-1/"/>
     <updated>2012-07-24T01:05:00+09:00</updated>
     <id>http://kentaktwo.github.com/blog/2012/07/24/lua-chapter-1</id>
@@ -2926,7 +2926,7 @@ XSI-conforming system の場合、ファイルサイズは大きくなる (hole 
   </entry>
   
   <entry>
-    <title type="html"><![CDATA[Advanced Programming in the UNIX enviroment Chapter 3]]></title>
+    <title type="html"><![CDATA[Advanced Programming in the UNIX Environment Chapter 3]]></title>
     <link href="http://kentaktwo.github.com/blog/2012/06/30/apue-chapter-3/"/>
     <updated>2012-06-30T13:49:00+09:00</updated>
     <id>http://kentaktwo.github.com/blog/2012/06/30/apue-chapter-3</id>
@@ -3280,10 +3280,10 @@ XSI-conforming system の場合、ファイルサイズは大きくなる (hole 
 <li>シンプルなプロトコル
 
 <ol>
-<li>アプリケーションがメッセージを UDP socket に書く</li>
-<li>UDP socket は UDP datagram にカプセル化される</li>
-<li>UDP datagram は IP datagram にカプセル化される</li>
-<li>IP datagram が目的地に送信される</li>
+<li> アプリケーションがメッセージを UDP socket に書く</li>
+<li> UDP socket は UDP datagram にカプセル化される</li>
+<li> UDP datagram は IP datagram にカプセル化される</li>
+<li> IP datagram が目的地に送信される</li>
 </ol>
 </li>
 <li>UDP datagram が目的地に届けられる補償は無い</li>
@@ -3480,7 +3480,7 @@ IANA が管理していないポート。 <em>ephemeral ports</em> （transport 
   </entry>
   
   <entry>
-    <title type="html"><![CDATA[Advanced Programming in the UNIX environment Chapter 2]]></title>
+    <title type="html"><![CDATA[Advanced Programming in the UNIX Environment Chapter 2]]></title>
     <link href="http://kentaktwo.github.com/blog/2012/05/02/apue-chapter-2/"/>
     <updated>2012-05-02T14:31:00+09:00</updated>
     <id>http://kentaktwo.github.com/blog/2012/05/02/apue-chapter-2</id>
@@ -3533,9 +3533,9 @@ IANA が管理していないポート。 <em>ephemeral ports</em> （transport 
 <li>e.g. pathname の最大値
 
 <ol>
-<li><code>&lt;limits.h&gt;</code> に定義されていればその値を使う</li>
-<li>定義されていなければ、<code>pathconf("/", _PC_PATH_MAX)</code> して取得する</li>
-<li>取得できなければ、適当な値を推測して使う</li>
+<li> <code>&lt;limits.h&gt;</code> に定義されていればその値を使う</li>
+<li> 定義されていなければ、<code>pathconf("/", _PC_PATH_MAX)</code> して取得する</li>
+<li> 取得できなければ、適当な値を推測して使う</li>
 </ol>
 </li>
 </ul>
@@ -3731,7 +3731,7 @@ Ethernet: Datalink layer
   </entry>
   
   <entry>
-    <title type="html"><![CDATA[Advanced Programming in the UNIX environment Chapter 1]]></title>
+    <title type="html"><![CDATA[Advanced Programming in the UNIX Environment Chapter 1]]></title>
     <link href="http://kentaktwo.github.com/blog/2012/04/28/apue-chapter-1/"/>
     <updated>2012-04-28T22:45:00+09:00</updated>
     <id>http://kentaktwo.github.com/blog/2012/04/28/apue-chapter-1</id>
@@ -3890,9 +3890,9 @@ Ethernet: Datalink layer
 <li>プロセスのシグナルの処理の仕方は 3 通りある
 
 <ol>
-<li>シグナルを無視する</li>
-<li>デフォルトの動作を実行させる</li>
-<li>シグナルが起きた時に呼ぶ関数を与える</li>
+<li> シグナルを無視する</li>
+<li> デフォルトの動作を実行させる</li>
+<li> シグナルが起きた時に呼ぶ関数を与える</li>
 </ol>
 </li>
 <li>DELETE または Ctrl-C は <em>interrupt key</em>, Ctrl-backslash は <em>quit key</em> と呼ばれ、実行中のプロセスを終了させるのに使う</li>
@@ -3907,13 +3907,13 @@ Ethernet: Datalink layer
 <li>UNIX は2種類の時間を管理している
 
 <ol>
-<li>Calendar time: Epoch (UTC 1970 1/1 00:00:00) からの秒数
+<li> Calendar time: Epoch (UTC 1970 1/1 00:00:00) からの秒数
 
 <ul>
 <li><code>time_t</code> 型はこの値を持っている</li>
 </ul>
 </li>
-<li>Process time: clock によって計測される
+<li> Process time: clock によって計測される
 
 <ul>
 <li>プロセスによって使われたリソースを計測するのに使う</li>
@@ -3943,7 +3943,7 @@ Ethernet: Datalink layer
 <h2>System Calls and Library Functions</h2>
 
 <ul>
-<li>system call のドキュメントは <em>UNIX Programmer&#8217;s Manual</em> の Section 2 にある</li>
+<li>system call のドキュメントは <em>UNIX Programmer&rsquo;s Manual</em> の Section 2 にある</li>
 <li>Section 3 にはプログラマが普段使うであろう関数 (Library functions) の説明が書かれている (<code>printf()</code> etc.)
 
 <ul>
@@ -4069,12 +4069,9 @@ Ethernet: Datalink layer
 </ul>
 
 
-<p>起動したら root/toor で root にログインして、</p>
-
-<pre><code>$ startx
-</code></pre>
-
-<p>で GUI を起動する。</p>
+<p>起動したら root/toor で root にログインして、
+    $ startx
+で GUI を起動する。</p>
 
 <h2>設定</h2>
 
@@ -4090,12 +4087,9 @@ Ethernet: Datalink layer
 <pre><code>$ visudo
 </code></pre>
 
-<p>エディタは vi でないので注意。</p>
-
-<pre><code>%&lt;username&gt; ALL=(ALL) ALL
-</code></pre>
-
-<p>を追加。</p>
+<p>エディタは vi でないので注意。
+    %<username> ALL=(ALL) ALL
+を追加。</p>
 
 <h3>host 名の変更</h3>
 
@@ -4141,11 +4135,9 @@ $ sudo apt-get install openssh-server
 </span></code></pre></td></tr></table></div></figure>
 
 
-<p>sshd 再起動</p>
-
-<pre><code>$ sudo /etc/init.d/ssh restart
-$ sudo lsof -nPi:22  # 確認
-</code></pre>
+<p>sshd 再起動
+    $ sudo /etc/init.d/ssh restart
+    $ sudo lsof -nPi:22  # 確認</p>
 
 <p>鍵の設定が終わったら、PasswordAuthentication を no に戻しておく。</p>
 ]]></content>

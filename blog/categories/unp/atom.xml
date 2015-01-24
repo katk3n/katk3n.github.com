@@ -1,10 +1,10 @@
 <?xml version="1.0" encoding="utf-8"?>
 <feed xmlns="http://www.w3.org/2005/Atom">
 
-  <title><![CDATA[Category: unp | ApprEngineer.log]]></title>
+  <title><![CDATA[Category: Unp | ApprEngineer.log]]></title>
   <link href="http://kentaktwo.github.com/blog/categories/unp/atom.xml" rel="self"/>
   <link href="http://kentaktwo.github.com/"/>
-  <updated>2013-05-03T13:32:31+09:00</updated>
+  <updated>2015-01-24T17:08:49+09:00</updated>
   <id>http://kentaktwo.github.com/</id>
   <author>
     <name><![CDATA[kentaktwo]]></name>
@@ -29,103 +29,95 @@
 
 <h3>IPv4 Socket Address Structure</h3>
 
-<p>``` c</p>
+<pre><code class="c">#include &lt;netinet/in.h&gt;
+struct in_addr {
+    in_addr_t       s_addr;         /* 32-bit IPv4 address */
+};
 
-<h1>include &lt;netinet/in.h></h1>
-
-<p>struct in_addr {</p>
-
-<pre><code>in_addr_t       s_addr;         /* 32-bit IPv4 address */
+struct sockaddr_in {
+    uint8_t         sin_len;        /* length of structure (16) */
+    sa_family_t     sin_family;     /* AF_INET */
+    in_port_t       sin_port;       /* 16-bit TCP or UDP port number */
+    struct in_addr  sin_addr;       /* 32-bit IPv4 address */
+    char            sin_zero[8];    /* unused */
+};
 </code></pre>
 
-<p>};</p>
+<ul>
+<li><code>sin_zero</code> はソケットアドレス構造体のサイズを少なくとも 16 bytes にするため</li>
+<li>IP アドレスとポート番号は常にネットワークバイトオーダー</li>
+<li><code>sin_addr</code> が構造体になっているのは歴史的な理由から。昔は union でクラス A, B, C のアドレスを処理していたらしい。</li>
+</ul>
 
-<p>struct sockaddr_in {</p>
-
-<pre><code>uint8_t         sin_len;        /* length of structure (16) */
-sa_family_t     sin_family;     /* AF_INET */
-in_port_t       sin_port;       /* 16-bit TCP or UDP port number */
-struct in_addr  sin_addr;       /* 32-bit IPv4 address */
-char            sin_zero[8];    /* unused */
-</code></pre>
-
-<p>};
-<code>``
--</code>sin_zero<code>はソケットアドレス構造体のサイズを少なくとも 16 bytes にするため
-- IP アドレスとポート番号は常にネットワークバイトオーダー
--</code>sin_addr` が構造体になっているのは歴史的な理由から。昔は union でクラス A, B, C のアドレスを処理していたらしい。</p>
 
 <h3>Generic Socket Address Structure</h3>
 
-<p>``` c</p>
-
-<h1>include &lt;sys/socket.h></h1>
-
-<p>struct sockaddr {</p>
-
-<pre><code>uint8_t     sa_len;
-sa_family_t sa_family;      /* address family: AF_xxx value */
-char        sa_data[14];    /* protocol-specific address */
+<pre><code class="c">#include &lt;sys/socket.h&gt;
+struct sockaddr {
+    uint8_t     sa_len;
+    sa_family_t sa_family;      /* address family: AF_xxx value */
+    char        sa_data[14];    /* protocol-specific address */
+};
 </code></pre>
 
-<p>};
-<code>
-- ソケット関数に渡すときは、`sockaddr` にキャストして渡す
-</code> c
-struct sockaddr_in serv;  /<em> IPv4 </em>/</p>
-
-<p>/<em> fill in serv{} </em>/</p>
-
-<p>bind(sockfd, (struct sockaddr *)&amp;serv, sizeof(serv));
-```</p>
+<ul>
+<li>ソケット関数に渡すときは、<code>sockaddr</code> にキャストして渡す
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+<span class='line-number'>7</span>
+</pre></td><td class='code'><pre><code class='c'><span class='line'><span class="k">struct</span> <span class="n">sockaddr_in</span> <span class="n">serv</span><span class="p">;</span>  <span class="o">/&lt;</span><span class="n">em</span><span class="o">&gt;</span> <span class="n">IPv4</span> <span class="o">&lt;/</span><span class="n">em</span><span class="o">&gt;/&lt;/</span><span class="n">li</span><span class="o">&gt;</span>
+</span><span class='line'><span class="o">&lt;/</span><span class="n">ul</span><span class="o">&gt;</span>
+</span><span class='line'>
+</span><span class='line'>
+</span><span class='line'><span class="o">&lt;</span><span class="n">p</span><span class="o">&gt;/&lt;</span><span class="n">em</span><span class="o">&gt;</span> <span class="n">fill</span> <span class="n">in</span> <span class="n">serv</span><span class="p">{}</span> <span class="o">&lt;/</span><span class="n">em</span><span class="o">&gt;/&lt;/</span><span class="n">p</span><span class="o">&gt;</span>
+</span><span class='line'>
+</span><span class='line'><span class="o">&lt;</span><span class="n">p</span><span class="o">&gt;</span><span class="n">bind</span><span class="p">(</span><span class="n">sockfd</span><span class="p">,</span> <span class="p">(</span><span class="k">struct</span> <span class="n">sockaddr</span> <span class="o">*</span><span class="p">)</span><span class="o">&amp;</span><span class="n">amp</span><span class="p">;</span><span class="n">serv</span><span class="p">,</span> <span class="k">sizeof</span><span class="p">(</span><span class="n">serv</span><span class="p">));</span>
+</span></code></pre></td></tr></table></div></figure></p>
 
 <h3>IPv6 Socket Address Structure</h3>
 
-<p>``` c</p>
+<pre><code class="c">#include &lt;netinet/in.h&gt;
+struct in6_addr {
+    uint8_t         s6_addr[16];        /* 128-bit IPv6 address */
+};
 
-<h1>include &lt;netinet/in.h></h1>
+# define SIN6_LEN  /* required for compile-time tests */
 
-<p>struct in6_addr {</p>
-
-<pre><code>uint8_t         s6_addr[16];        /* 128-bit IPv6 address */
+struct sockaddr_in6 {
+    uint8_t         sin6_len;           /* length of this struct (28) */
+    sa_family_t     sin6_family;        /* AF_INET6 */
+    in_port_t       sin6_port;          /* transport layer port# */
+    uint32_t        sin6_flowinfo;      /* flow information, undefined */
+    struct in6_addr sin6_addr;          /* IPv6 address */
+    uint32_t        sin6_scope_id;      /* set of interfaces for a scope */
+};
 </code></pre>
 
-<p>};</p>
+<ul>
+<li>システムがソケットアドレス構造体の長さをサポートする場合、<code>SIN6_LEN</code> を定義しなくてはならない</li>
+<li>アドレスとポート番号はネットワークバイトオーダー</li>
+</ul>
 
-<h1>define SIN6_LEN  /<em> required for compile-time tests </em>/</h1>
-
-<p>struct sockaddr_in6 {</p>
-
-<pre><code>uint8_t         sin6_len;           /* length of this struct (28) */
-sa_family_t     sin6_family;        /* AF_INET6 */
-in_port_t       sin6_port;          /* transport layer port# */
-uint32_t        sin6_flowinfo;      /* flow information, undefined */
-struct in6_addr sin6_addr;          /* IPv6 address */
-uint32_t        sin6_scope_id;      /* set of interfaces for a scope */
-</code></pre>
-
-<p>};
-<code>``
-- システムがソケットアドレス構造体の長さをサポートする場合、</code>SIN6_LEN` を定義しなくてはならない
-- アドレスとポート番号はネットワークバイトオーダー</p>
 
 <h3>New Generic Socket Address Structure</h3>
 
-<p>``` c</p>
-
-<h1>include &lt;netinet/in.h></h1>
-
-<p>struct sockaddr_storage {</p>
-
-<pre><code>uint8_t     ss_len;     /* length of this struct (implementation dependent) */
-sa_family_t ss_family;  /* address family: AF_xxx value */
-/* implementation-dependent elements to provide */
+<pre><code class="c">#include &lt;netinet/in.h&gt;
+struct sockaddr_storage {
+    uint8_t     ss_len;     /* length of this struct (implementation dependent) */
+    sa_family_t ss_family;  /* address family: AF_xxx value */
+    /* implementation-dependent elements to provide */
+};
 </code></pre>
 
-<p>};
-```
-- IPv6 をサポートするためにできた generic socket
-- システムがサポートするソケットアドレス構造体をカバーできるよう十分大きいサイズが取られる</p>
+<ul>
+<li>IPv6 をサポートするためにできた generic socket</li>
+<li>システムがサポートするソケットアドレス構造体をカバーできるよう十分大きいサイズが取られる</li>
+</ul>
+
 
 <h2>Value-Result Arguments</h2>
 
@@ -151,18 +143,25 @@ sa_family_t ss_family;  /* address family: AF_xxx value */
 </ul>
 </li>
 <li>ホストバイトオーダーとネットワークバイトオーダーを変換する関数が用意されている
-``` c
-
-<h1>include &lt;netinet/in.h></h1>
-
-<p>uint16_t htons(uint16_t host16bitvalue);
-uint32_t htonl(uint32_t host32bitvalue);</p></li>
-</ul>
-
-
-<p>uint16_t ntohs(uint16_t net16bitvalue);
-uint32_t ntohl(uint32_t net32bitvalue);
-```</p>
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+<span class='line-number'>7</span>
+<span class='line-number'>8</span>
+<span class='line-number'>9</span>
+</pre></td><td class='code'><pre><code class='c'><span class='line'><span class="o">&lt;</span><span class="n">h1</span><span class="o">&gt;</span><span class="n">include</span> <span class="o">&amp;</span><span class="n">lt</span><span class="p">;</span><span class="n">netinet</span><span class="o">/</span><span class="n">in</span><span class="p">.</span><span class="n">h</span><span class="o">&gt;&lt;/</span><span class="n">h1</span><span class="o">&gt;</span>
+</span><span class='line'>
+</span><span class='line'><span class="o">&lt;</span><span class="n">p</span><span class="o">&gt;</span><span class="kt">uint16_t</span> <span class="n">htons</span><span class="p">(</span><span class="kt">uint16_t</span> <span class="n">host16bitvalue</span><span class="p">);</span>
+</span><span class='line'><span class="kt">uint32_t</span> <span class="nf">htonl</span><span class="p">(</span><span class="kt">uint32_t</span> <span class="n">host32bitvalue</span><span class="p">);</span><span class="o">&lt;/</span><span class="n">p</span><span class="o">&gt;&lt;/</span><span class="n">li</span><span class="o">&gt;</span>
+</span><span class='line'><span class="o">&lt;/</span><span class="n">ul</span><span class="o">&gt;</span>
+</span><span class='line'>
+</span><span class='line'>
+</span><span class='line'><span class="o">&lt;</span><span class="n">p</span><span class="o">&gt;</span><span class="kt">uint16_t</span> <span class="n">ntohs</span><span class="p">(</span><span class="kt">uint16_t</span> <span class="n">net16bitvalue</span><span class="p">);</span>
+</span><span class='line'><span class="kt">uint32_t</span> <span class="nf">ntohl</span><span class="p">(</span><span class="kt">uint32_t</span> <span class="n">net32bitvalue</span><span class="p">);</span>
+</span></code></pre></td></tr></table></div></figure></p>
 
 <h2>Byte Manipulation Functions</h2>
 
@@ -172,22 +171,33 @@ uint32_t ntohl(uint32_t net32bitvalue);
 <ul>
 <li><code>b</code> で始まる関数 (4.2BSD)</li>
 <li><code>mem</code> で始まる関数 (ANSI C)
-``` c
-
-<h1>include &lt;strings.h></h1>
-
-void bzero(void <em>dest, size_t nbytes);
-void bcopy(const void </em>src, void <em>dest, size_t nbytes);
-int bcmp(const void </em>ptr1, const void *ptr2, size_t nbytes);
-<code>
-</code> c
-
-<h1>include &lt;string.h></h1>
-
-<p>void <em>memset(void </em>dest, int c, size_t len);
-void <em>memcpy(void </em>dest, const void <em>src, size_t nbytes);
-int memcmp(const void </em>ptr1, const void *ptr2, size_t nbytes);
-```</p></li>
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+<span class='line-number'>7</span>
+<span class='line-number'>8</span>
+<span class='line-number'>9</span>
+<span class='line-number'>10</span>
+<span class='line-number'>11</span>
+<span class='line-number'>12</span>
+<span class='line-number'>13</span>
+</pre></td><td class='code'><pre><code class='c'><span class='line'><span class="o">&lt;</span><span class="n">h1</span><span class="o">&gt;</span><span class="n">include</span> <span class="o">&amp;</span><span class="n">lt</span><span class="p">;</span><span class="n">strings</span><span class="p">.</span><span class="n">h</span><span class="o">&gt;&lt;/</span><span class="n">h1</span><span class="o">&gt;</span>
+</span><span class='line'>
+</span><span class='line'><span class="kt">void</span> <span class="n">bzero</span><span class="p">(</span><span class="kt">void</span> <span class="o">&lt;</span><span class="n">em</span><span class="o">&gt;</span><span class="n">dest</span><span class="p">,</span> <span class="kt">size_t</span> <span class="n">nbytes</span><span class="p">);</span>
+</span><span class='line'><span class="kt">void</span> <span class="nf">bcopy</span><span class="p">(</span><span class="k">const</span> <span class="kt">void</span> <span class="o">&lt;/</span><span class="n">em</span><span class="o">&gt;</span><span class="n">src</span><span class="p">,</span> <span class="kt">void</span> <span class="o">&lt;</span><span class="n">em</span><span class="o">&gt;</span><span class="n">dest</span><span class="p">,</span> <span class="kt">size_t</span> <span class="n">nbytes</span><span class="p">);</span>
+</span><span class='line'><span class="kt">int</span> <span class="nf">bcmp</span><span class="p">(</span><span class="k">const</span> <span class="kt">void</span> <span class="o">&lt;/</span><span class="n">em</span><span class="o">&gt;</span><span class="n">ptr1</span><span class="p">,</span> <span class="k">const</span> <span class="kt">void</span> <span class="o">*</span><span class="n">ptr2</span><span class="p">,</span> <span class="kt">size_t</span> <span class="n">nbytes</span><span class="p">);</span>
+</span><span class='line'><span class="o">&lt;</span><span class="n">code</span><span class="o">&gt;</span>
+</span><span class='line'><span class="o">&lt;/</span><span class="n">code</span><span class="o">&gt;</span> <span class="n">c</span>
+</span><span class='line'>
+</span><span class='line'><span class="o">&lt;</span><span class="n">h1</span><span class="o">&gt;</span><span class="n">include</span> <span class="o">&amp;</span><span class="n">lt</span><span class="p">;</span><span class="n">string</span><span class="p">.</span><span class="n">h</span><span class="o">&gt;&lt;/</span><span class="n">h1</span><span class="o">&gt;</span>
+</span><span class='line'>
+</span><span class='line'><span class="o">&lt;</span><span class="n">p</span><span class="o">&gt;</span><span class="kt">void</span> <span class="o">&lt;</span><span class="n">em</span><span class="o">&gt;</span><span class="n">memset</span><span class="p">(</span><span class="kt">void</span> <span class="o">&lt;/</span><span class="n">em</span><span class="o">&gt;</span><span class="n">dest</span><span class="p">,</span> <span class="kt">int</span> <span class="n">c</span><span class="p">,</span> <span class="kt">size_t</span> <span class="n">len</span><span class="p">);</span>
+</span><span class='line'><span class="kt">void</span> <span class="o">&lt;</span><span class="n">em</span><span class="o">&gt;</span><span class="n">memcpy</span><span class="p">(</span><span class="kt">void</span> <span class="o">&lt;/</span><span class="n">em</span><span class="o">&gt;</span><span class="n">dest</span><span class="p">,</span> <span class="k">const</span> <span class="kt">void</span> <span class="o">&lt;</span><span class="n">em</span><span class="o">&gt;</span><span class="n">src</span><span class="p">,</span> <span class="kt">size_t</span> <span class="n">nbytes</span><span class="p">);</span>
+</span><span class='line'><span class="kt">int</span> <span class="nf">memcmp</span><span class="p">(</span><span class="k">const</span> <span class="kt">void</span> <span class="o">&lt;/</span><span class="n">em</span><span class="o">&gt;</span><span class="n">ptr1</span><span class="p">,</span> <span class="k">const</span> <span class="kt">void</span> <span class="o">*</span><span class="n">ptr2</span><span class="p">,</span> <span class="kt">size_t</span> <span class="n">nbytes</span><span class="p">);</span>
+</span></code></pre></td></tr></table></div></figure></p></li>
 </ul>
 </li>
 <li><code>bzero</code> は 0 にセットするが、<code>memset</code> は特定の値にセットできる</li>
@@ -214,13 +224,15 @@ int memcmp(const void </em>ptr1, const void *ptr2, size_t nbytes);
 <ul>
 <li>さらに、<code>inet_addr</code> は戻り値がアドレスを表す数値 (32-bit, ネットワークバイトオーダー) だが、
 エラー時に返す値 <code>INADDR_NONE</code> が 2<sup>32</sup> - 1 のため、255.255.255.255 が変換できない
-``` c
-
-<h1>include &lt;arpa/inet.h></h1>
-
-<p>int inet_pton(int family, const char <em>strptr, void </em>addrptr);  // 文字列から数値
-const char <em>inet_ntop(int family, const void </em>addrptr, char *strptr, size_t len);  // 数値から文字列
-```</p></li>
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+</pre></td><td class='code'><pre><code class='c'><span class='line'><span class="o">&lt;</span><span class="n">h1</span><span class="o">&gt;</span><span class="n">include</span> <span class="o">&amp;</span><span class="n">lt</span><span class="p">;</span><span class="n">arpa</span><span class="o">/</span><span class="n">inet</span><span class="p">.</span><span class="n">h</span><span class="o">&gt;&lt;/</span><span class="n">h1</span><span class="o">&gt;</span>
+</span><span class='line'>
+</span><span class='line'><span class="o">&lt;</span><span class="n">p</span><span class="o">&gt;</span><span class="kt">int</span> <span class="n">inet_pton</span><span class="p">(</span><span class="kt">int</span> <span class="n">family</span><span class="p">,</span> <span class="k">const</span> <span class="kt">char</span> <span class="o">&lt;</span><span class="n">em</span><span class="o">&gt;</span><span class="n">strptr</span><span class="p">,</span> <span class="kt">void</span> <span class="o">&lt;/</span><span class="n">em</span><span class="o">&gt;</span><span class="n">addrptr</span><span class="p">);</span>  <span class="c1">// 文字列から数値</span>
+</span><span class='line'><span class="k">const</span> <span class="kt">char</span> <span class="o">&lt;</span><span class="n">em</span><span class="o">&gt;</span><span class="n">inet_ntop</span><span class="p">(</span><span class="kt">int</span> <span class="n">family</span><span class="p">,</span> <span class="k">const</span> <span class="kt">void</span> <span class="o">&lt;/</span><span class="n">em</span><span class="o">&gt;</span><span class="n">addrptr</span><span class="p">,</span> <span class="kt">char</span> <span class="o">*</span><span class="n">strptr</span><span class="p">,</span> <span class="kt">size_t</span> <span class="n">len</span><span class="p">);</span>  <span class="c1">// 数値から文字列</span>
+</span></code></pre></td></tr></table></div></figure></p></li>
 </ul>
 </li>
 <li>数値はネットワークバイトオーダー</li>
@@ -251,10 +263,10 @@ const char <em>inet_ntop(int family, const void </em>addrptr, char *strptr, size
 <li>シンプルなプロトコル
 
 <ol>
-<li>アプリケーションがメッセージを UDP socket に書く</li>
-<li>UDP socket は UDP datagram にカプセル化される</li>
-<li>UDP datagram は IP datagram にカプセル化される</li>
-<li>IP datagram が目的地に送信される</li>
+<li> アプリケーションがメッセージを UDP socket に書く</li>
+<li> UDP socket は UDP datagram にカプセル化される</li>
+<li> UDP datagram は IP datagram にカプセル化される</li>
+<li> IP datagram が目的地に送信される</li>
 </ol>
 </li>
 <li>UDP datagram が目的地に届けられる補償は無い</li>
@@ -491,19 +503,16 @@ Ethernet: Datalink layer
 
 <ul>
 <li>エラーが起きた時に終了させる事はよくあるので、<em>wrapper function</em> として定義すると良い
-``` c
+<code>c
 int
 Socket(int family, int type, int protocol)
 {
   int n;
   if ((n = socket(family, type, protocol)) &lt; 0)
-
-<pre><code>  err_sys("socket error");
-</code></pre>
-
-<p>  return (n);
+      err_sys("socket error");
+  return (n);
 }
-```</p></li>
+</code></li>
 <li><p>スレッド関数はエラーが起きても <code>errno</code> に値をセットしないため、自分で関数の戻り値を <code>errno</code> にセットする必要がある
 <code>c
 int n;
@@ -511,21 +520,27 @@ if ((n = pthread_mutex_lock(&amp;ndone_mutex)) != 0)
   errno = n, err_sys("pthread_mutex_lock error");
 </code>
 wrapper function を書くと見やすくなる
-``` c
-void
-Pthread_mutex_lock(pthread_mutex_t *mptr)
-{
-  int n;</p>
-
-<p>  if ((n = pthread_mutex_lock(mptr)) == 0)</p>
-
-<pre><code>  return;
-</code></pre>
-
-<p>  errno = n;
-  err_sys("pthread_mutex_lock error");
-}
-```</p></li>
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+<span class='line-number'>7</span>
+<span class='line-number'>8</span>
+<span class='line-number'>9</span>
+<span class='line-number'>10</span>
+</pre></td><td class='code'><pre><code class='c'><span class='line'><span class="kt">void</span>
+</span><span class='line'><span class="nf">Pthread_mutex_lock</span><span class="p">(</span><span class="kt">pthread_mutex_t</span> <span class="o">*</span><span class="n">mptr</span><span class="p">)</span>
+</span><span class='line'><span class="p">{</span>
+</span><span class='line'>  <span class="kt">int</span> <span class="n">n</span><span class="p">;</span><span class="o">&lt;/</span><span class="n">p</span><span class="o">&gt;</span>
+</span><span class='line'>
+</span><span class='line'><span class="o">&lt;</span><span class="n">p</span><span class="o">&gt;</span>  <span class="k">if</span> <span class="p">((</span><span class="n">n</span> <span class="o">=</span> <span class="n">pthread_mutex_lock</span><span class="p">(</span><span class="n">mptr</span><span class="p">))</span> <span class="o">==</span> <span class="mi">0</span><span class="p">)</span>
+</span><span class='line'>      <span class="k">return</span><span class="p">;</span>
+</span><span class='line'>  <span class="n">errno</span> <span class="o">=</span> <span class="n">n</span><span class="p">;</span>
+</span><span class='line'>  <span class="n">err_sys</span><span class="p">(</span><span class="o">&amp;</span><span class="n">ldquo</span><span class="p">;</span><span class="n">pthread_mutex_lock</span> <span class="n">error</span><span class="o">&amp;</span><span class="n">rdquo</span><span class="p">;);</span>
+</span><span class='line'><span class="p">}</span>
+</span></code></pre></td></tr></table></div></figure></p></li>
 </ul>
 
 

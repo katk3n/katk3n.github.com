@@ -1,10 +1,10 @@
 <?xml version="1.0" encoding="utf-8"?>
 <feed xmlns="http://www.w3.org/2005/Atom">
 
-  <title><![CDATA[Category: linux | ApprEngineer.log]]></title>
+  <title><![CDATA[Category: Linux | ApprEngineer.log]]></title>
   <link href="http://kentaktwo.github.com/blog/categories/linux/atom.xml" rel="self"/>
   <link href="http://kentaktwo.github.com/"/>
-  <updated>2013-05-03T13:32:31+09:00</updated>
+  <updated>2015-01-24T17:08:49+09:00</updated>
   <id>http://kentaktwo.github.com/</id>
   <author>
     <name><![CDATA[kentaktwo]]></name>
@@ -43,12 +43,9 @@
 </ul>
 
 
-<p>起動したら root/toor で root にログインして、</p>
-
-<pre><code>$ startx
-</code></pre>
-
-<p>で GUI を起動する。</p>
+<p>起動したら root/toor で root にログインして、
+    $ startx
+で GUI を起動する。</p>
 
 <h2>設定</h2>
 
@@ -64,12 +61,9 @@
 <pre><code>$ visudo
 </code></pre>
 
-<p>エディタは vi でないので注意。</p>
-
-<pre><code>%&lt;username&gt; ALL=(ALL) ALL
-</code></pre>
-
-<p>を追加。</p>
+<p>エディタは vi でないので注意。
+    %<username> ALL=(ALL) ALL
+を追加。</p>
 
 <h3>host 名の変更</h3>
 
@@ -80,17 +74,14 @@ $ sudo vi /etc/hosts
 <h3>IP の設定</h3>
 
 <p>eth1 の部分を以下のように編集
-``` sh /etc/network/interfaces
+<code>sh /etc/network/interfaces
 auto eth1
-iface eth1 inet static</p>
-
-<pre><code>address 192.168.56.121
-netmask 255.255.255.0
-network 192.168.56.0
-broadcast 192.168.56.255
-</code></pre>
-
-<p>```</p>
+iface eth1 inet static
+    address 192.168.56.121
+    netmask 255.255.255.0
+    network 192.168.56.0
+    broadcast 192.168.56.255
+</code></p>
 
 <h3>ssh の設定</h3>
 
@@ -98,22 +89,16 @@ broadcast 192.168.56.255
 $ sudo apt-get install openssh-server
 </code></pre>
 
-<p>``` sh /etc/ssh/sshd_config</p>
+<pre><code class="sh /etc/ssh/sshd_config"># root でのログインを無効にする
+PermitRootLogin no
 
-<h1>root でのログインを無効にする</h1>
-
-<p>PermitRootLogin no</p>
-
-<h1>パスワード認証を一時的に有効にする</h1>
-
-<p>PasswordAuthentication yes
-```</p>
-
-<p>sshd 再起動</p>
-
-<pre><code>$ sudo /etc/init.d/ssh restart
-$ sudo lsof -nPi:22  # 確認
+# パスワード認証を一時的に有効にする
+PasswordAuthentication yes
 </code></pre>
+
+<p>sshd 再起動
+    $ sudo /etc/init.d/ssh restart
+    $ sudo lsof -nPi:22  # 確認</p>
 
 <p>鍵の設定が終わったら、PasswordAuthentication を no に戻しておく。</p>
 ]]></content>
