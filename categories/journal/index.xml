@@ -1,0 +1,25 @@
+<?xml version="1.0" encoding="utf-8" standalone="yes" ?>
+<rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom">
+  <channel>
+    <title>Journal on kentaktwo blog</title>
+    <link>http://kentaktwo.github.io/categories/journal/</link>
+    <description>Recent content in Journal on kentaktwo blog</description>
+    <generator>Hugo -- gohugo.io</generator>
+    <language>ja-jp</language>
+    <lastBuildDate>Fri, 13 Apr 2018 00:02:06 +0900</lastBuildDate>
+    
+	<atom:link href="http://kentaktwo.github.io/categories/journal/index.xml" rel="self" type="application/rss+xml" />
+    
+    
+    <item>
+      <title>My First Journal</title>
+      <link>http://kentaktwo.github.io/2018/04/my-first-journal/</link>
+      <pubDate>Fri, 13 Apr 2018 00:02:06 +0900</pubDate>
+      
+      <guid>http://kentaktwo.github.io/2018/04/my-first-journal/</guid>
+      <description>To improve my English skill, I decided to try &amp;ldquo;journaling&amp;rdquo;. Journaling is introduced as a method to improve English speaking skill by writing journals in English and memorizing phrases in them. Journaling helps me increase my vocabularies and prepare for using phrases in English conversations.
+So I opened this blog and I&amp;rsquo;d like to try writing journals as often as possible. The primal purpose of this blog is to improve my English skill rather than express my thoughts.</description>
+    </item>
+    
+  </channel>
+</rss>
